@@ -5,12 +5,8 @@
 ## Features
 
 - **Dynamic Tab Management**: Effortlessly create and organize multiple tabs for a well-structured interface.
-- **Interactive Sliders and Toggles**: Modify game elements like speed, jump power, FOV, and gravity in real-time with responsive controls.
+- **Interactive Sliders and Toggles**: Modify game elements like speed, jump power, and FOV in real-time with responsive controls.
 - **Customizable Dropdown Menus**: Easily implement interactive dropdowns with user-defined options.
-- **Multilingual Support**: Offer your users a global experience by providing multilingual UI options.
-- **Device-Specific Features**: Customize the UI based on the user's platform (Mobile or PC) for optimal performance.
-
-## Usage
 
 ### Setting Up the UI Frame
 
@@ -19,12 +15,15 @@ Start by creating a frame to hold all your UI components.
 ```lua
 local Frame = akdo.createFrame("akdo")
 ```
+Title = akdo
+
 Adding Tabs
 Organize your controls by adding multiple tabs to the frame.
 
 ```lua
 local Main = akdo:addTab(Frame, "Main")
 ```
+
 Adding Controls
 Add interactive controls like sliders, dropdowns, and toggles to the tabs.
 
