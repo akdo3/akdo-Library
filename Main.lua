@@ -368,7 +368,7 @@ function akdo:createFrame(titleText)
 	end)
 
 	local tabContainer = Instance.new("ScrollingFrame")
-	tabContainer.Size = UDim2.new(0.255, 0, 0.813, 0)
+	tabContainer.Size = UDim2.new(0.2, 0, 0.815, 0)
 	tabContainer.Position = UDim2.new(0.015, 0, 0.153, 0)
 	tabContainer.BackgroundColor3 = Setting.Properties.Background_Border_Color
 	tabContainer.ScrollBarThickness = 3
