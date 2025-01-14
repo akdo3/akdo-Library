@@ -1,7 +1,6 @@
 # akdo UI Library for Roblox
 
 **akdo UI Library** is a versatile and easy-to-use UI framework that empowers Roblox developers to create advanced and dynamic user interfaces. With features like tabs, sliders, dropdowns, and toggles, it simplifies UI management and enhances the user experience.
----
 
 ## Features
 
