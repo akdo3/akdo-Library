@@ -7,7 +7,7 @@
 To load the library into your game, use the following code:
 
 ```lua
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/akdo3/akdo-Library/refs/heads/main/Main.lua"))()
+local akdo = loadstring(game:HttpGet("https://raw.githubusercontent.com/akdo3/akdo-Library/refs/heads/main/Main.lua"))()
 ```
 
 ### Setting Up the Frame
