@@ -14,7 +14,7 @@ local akdo = loadstring(game:HttpGet("https://raw.githubusercontent.com/akdo3/ak
 Start by creating a frame for your UI.
 
 ```lua
-local Frame = akdo.createFrame("akdo")
+local Frame = akdo:createFrame("akdo")
 ```
 
 `akdo` = Title of the frame.
@@ -23,7 +23,7 @@ local Frame = akdo.createFrame("akdo")
 Organize your controls by adding multiple tabs to the frame.
 
 ```lua
-local Main = akdo:addTab(Frame, "Main")
+local Main = Frame:addTab("Main")
 ```
 
 `Frame` = Parent of the tab.
@@ -34,7 +34,7 @@ Add interactive controls like buttons, sliders, dropdowns, and toggles to the ta
 
 ### Button
 ```lua
-akdo:addButton(Main, "Speed", "Change your speed", function()
+local Button = Main:addButton("Speed", "Change your speed", function()
     print("Clicked")
 end)
 ```
@@ -47,7 +47,7 @@ end)
 Use sliders to modify player attributes such as speed.
 
 ```lua
-akdo:addSlider(Main, "Speed", "Adjust the player's speed", 0, 500, function(value)
+local Main:addSlider("Speed", "Adjust the player's speed", 0, 500, function(value)
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
 end)
 ```
@@ -67,7 +67,7 @@ local options = {
     "Option 2",
     "Option 3",
 }
-akdo:addDropdown(Main, "Choose option", "Choose the option you want", options, 2, function(option)
+Main:addDropdown("Choose option", "Choose the option you want", options, 2, function(option)
     print("Selected option:", option)
 end)
 ```
@@ -81,7 +81,7 @@ end)
 Add toggles to enable or disable features.
 
 ```lua
-akdo:addToggle(Main, "Fly", "You Will Fly", function(value)
+local Main:addToggle("Fly", "You Will Fly", function(value)
     if value then
         print("On")
     else
@@ -96,24 +96,24 @@ end)
 
 ## Example
 ```lua
-local Frame = akdo.createFrame("akdo")
-local Main = akdo:addTab(Frame, "Main")
+local Frame = akdo:createFrame("akdo")
+local Main = Frame:addTab("Main")
 
-akdo:addSection(Player, "Section")
-akdo:addLabel(Player, "Label")
+local Main:addSection("Section")
+local Main:addLabel("Label")
 
-local button = akdo:addButton(Main, "Button", "Info, tutorial", function()
+local button = Main:addButton("Button", "Info, tutorial", function()
     print("Button Clicked")
 end)
 
-akdo:addSliderAndTextBox(Player, "Speed", "", "", 0, 500, function(value,value2) 
+local SliderAndTextBox = Main:addSliderAndTextBox("Speed", "", "", 0, 500, function(value,value2) 
     Humanoid.WalkSpeed = value2
 end, false, false, true)
 
 local table = {
     "egg 1", "egg 2", 
 }
-akdo:addDropdownAndToggle(Player, "Auto Hatch", table, 1, function(val1, val2)
+Main:addDropdownAndToggle(Player, "Auto Hatch", table, 1, function(val1, val2)
     print(val2)
     if val1 then
         if val2 == "egg 1" then
@@ -128,7 +128,7 @@ end)
 
 akdo:addSection(Player, "Toggle Section")
 
-akdo:addToggle(Player, "Noclip", "Make you pass through anything", function(val) 
+Main:addToggle(Player, "Noclip", "Make you pass through anything", function(val) 
     if val then
         print("On")
     else
@@ -138,7 +138,7 @@ end)
 
 local row = akdo:addRow(Player, 2)
 
-akdo:addToggle(row, "Fly", "", function(val) 
+Main:addToggle(row, "Fly", "", function(val) 
     if val then
         print("On")
     else
@@ -146,15 +146,11 @@ akdo:addToggle(row, "Fly", "", function(val)
     end
 end)
 
-akdo:addButton(row, "Button", "", function(val) 
+Main:addButton("Button", "", function(val) 
     print("Clicked")
 end)
 
-akdo:addButton(row, "Button", "one...?", function()
-    print("Clicked")
-end)
-
-akdo:addDropdown(Main, "Auto Hatch", "", {"egg 1", "egg 2","egg 3"}, 3, function(toggled, egg)
+Main:addDropdown(Main, "Auto Hatch", "", {"egg 1", "egg 2","egg 3"}, 3, function(toggled, egg)
     if toggled then
         print("Selected egg:", egg)
     else
@@ -165,69 +161,64 @@ end)
 
 ## Fast Code
 ```lua
-local Frame = akdo.createFrame("akdo")
-local Main = akdo:addTab(Frame, "Main")
+local Frame = akdo:createFrame("akdo")
+local Main = Frame:addTab("Main")
 
-akdo:addSection(Player, "Section")
+local Section = Main:addSection("Section")
 
-local button = akdo:addButton(Main, "Button", "Info, tutorial", function()
+local Button = Main:addButton("Button", "Info, tutorial", function()
 
 end)
 
-akdo:addSlider(Player, "Speed", "", "", 0, 500, function(value,value2)
+local Slider = Main:addSlider("Speed", "", "", 0, 500, function(value,value2)
 
 end)
 
 local table = {
-    "",
-    "", 
+	"",
+	"", 
 }
 
-akdo:addDropdownAndToggle(Player, "", table, 1, function(val1, val2)
-    if val1 then
-        if val2 == "
-" then
+local DropdownAndToggle = Main:addDropdownAndToggle("", table, 1, function(val1, val2)
+	if val1 then
+		if val2 == "" then
 
-        elseif val2 == "egg 2" then
+		elseif val2 == "egg 2" then
 
-        end
-    else
+		end
+	else
 
-    end
+	end
 end)
 
-akdo:addToggle(Player, "", "", function(val) 
-    if val then
-        print("On")
-    else
-        print("Off")
-    end
+local Toggle = Main:addToggle("", "", function(val) 
+	if val then
+		print("On")
+	else
+		print("Off")
+	end
 end)
 
-local row = akdo:addRow(Player, 2)
+local row = Main:addRow(2)
 
-akdo:addToggle(row, "Fly", "", function(val) 
-    if val then
-        print("On")
-    else
-        print("Off")
-    end
-end)
+local Toggle = Main:addToggle("Fly", "", function(val) 
+	if val then
+		print("On")
+	else
+		print("Off")
+	end
+end, row)
 
-akdo:addButton(row, "Button", "", function(val) 
-    print("Clicked")
-end)
+local Button = Main:addButton("Button", "", function(val) 
+	print("Clicked")
+end, row)
 
-akdo:addButton(row, "Button", "one...?", function()
-    print("Clicked")
-end)
-
-akdo:addDropdown(Main, "Auto Hatch", "", {"egg 1", "egg 2","egg 3"}, 3, function(toggled, egg)
-    if toggled then
-        print("Selected egg:", egg)
-    else
-        print("Off")
-    end
+local Dropdown = Main:addDropdown("Auto Hatch", "", {"egg 1", "egg 2","egg 3"}, 3, function(toggled, egg)
+	if toggled then
+		print("Selected egg:", egg)
+	else
+		print("Off")
+	end
 end)
 ```
 ## Suggestions
