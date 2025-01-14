@@ -10,7 +10,7 @@
 
 ## Load the library
 
-```lua
+```markdown
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/akdo3/akdo-Library/refs/heads/main/Main.lua"))()
 ```
 
@@ -83,6 +83,9 @@ end)
 Main = Which Tab the slider will be.
 Fly = Name of the Toggle, Must be in "".
 You Will Fly = This is the Info, Must be in "", If you dont need it make only this "".
+
+## Examples
+
 
 ### Suggestions
 We encourage suggestions to improve akdo Library! If you have any suggestions, error reports or feature requests, feel free to send them to this Discor server [].
