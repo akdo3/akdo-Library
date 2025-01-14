@@ -231,7 +231,7 @@ akdo:addDropdown(Main, "Auto Hatch", "", {"egg 1", "egg 2","egg 3"}, 3, function
 end)
 ```
 ## Suggestions
-We encourage suggestions to improve akdo Library! If you have any suggestions, error reports, or feature , feel free to send them to this Discord(https://discord.gg/xgvddUgwJT) Server.
+We encourage suggestions to improve akdo Library! If you have any suggestions, error reports, or feature , feel free to send them to this [Discord](https://discord.gg/xgvddUgwJT) Server.
 
 Key Improvements:
 Clearer Structure: Sections are organized for better readability.
