@@ -161,6 +161,7 @@ end)
 
 ## Fast Code
 ```lua
+local akdo = loadstring(game:HttpGet("https://raw.githubusercontent.com/akdo3/akdo-Library/refs/heads/main/Main.lua"))()
 local Frame = akdo:createFrame("akdo")
 local Main = Frame:addTab("Main")
 
