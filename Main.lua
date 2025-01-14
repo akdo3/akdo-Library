@@ -413,7 +413,7 @@ function akdo:createFrame(titleText)
 	local Tabs = {}
 	function Tabs:addTab(name)
 		local tabButton = Instance.new("TextButton")
-		tabButton.Size = UDim2.new(1, 0, 0, 40)
+		tabButton.Size = UDim2.new(1, 0, 0, 35)
 		tabButton.Text = name or "akdo"
 		tabButton.BackgroundColor3 = Setting.Properties.ButtonColor
 		tabButton.TextColor3 = Setting.Properties.TextColor
@@ -1113,7 +1113,7 @@ function akdo:createFrame(titleText)
 			toggleButton.ImageColor3 = Setting.Properties.TextColor 
 
 
-			DropdownList.Parent = parent
+			DropdownList.Parent = parent or tabContent
 			DropdownList.BackgroundColor3 = Setting.Properties.BackgroundColor
 			DropdownList.Position = UDim2.new(0, 0, 1, 0)
 			DropdownList.Size = UDim2.new(1, 0, 0, 0)
@@ -1122,12 +1122,8 @@ function akdo:createFrame(titleText)
 			DropdownList.ScrollingDirection = Enum.ScrollingDirection.Y
 			addCorner(DropdownList, Setting.ElementCorner)
 
-			UIGridLayout.Parent = DropdownList			
-			if itemsPerRow then
-				UIGridLayout.CellSize = UDim2.new(1 / itemsPerRow, -10, 0, 30)
-			else
-				UIGridLayout.CellSize = UDim2.new(1 , -10, 0, 30)
-			end
+			UIGridLayout.Parent = DropdownList
+			UIGridLayout.CellSize = UDim2.new(1 / itemsPerRow, -10, 0, 30)
 			UIGridLayout.CellPadding = UDim2.new(0, 5, 0, 5)
 			UIGridLayout.FillDirection = Enum.FillDirection.Horizontal
 
@@ -1138,16 +1134,7 @@ function akdo:createFrame(titleText)
 					wait(0.2)
 					DropdownList.Visible = false
 				else
-					local numRows
-					if items then
-						if itemsPerRow then
-							numRows = math.ceil(#items / itemsPerRow)
-						else
-							numRows = math.ceil(#items / 1)
-						end
-					else
-						numRows = math.ceil(1 / 1)
-					end
+					local numRows = math.ceil(#items / itemsPerRow)
 					local itemHeight = 35
 					local newHeight = numRows * itemHeight
 					local maxHeight = 100
@@ -1192,28 +1179,28 @@ function akdo:createFrame(titleText)
 				end
 			end)
 
-			if items then
-				for _, item in pairs(items) do
-					local ItemButton = Instance.new("TextButton")
-					ItemButton.Parent = DropdownList
-					ItemButton.BackgroundColor3 = Setting.Properties.ButtonColor
-					ItemButton.Text = item
-					ItemButton.Size = UDim2.new(1, 0, 0, 30)
-					ItemButton.TextColor3 = Setting.Properties.TextColor
-					ItemButton.TextScaled = true
+			for _, item in pairs(items) do
+				local ItemButton = Instance.new("TextButton")
+				ItemButton.Parent = DropdownList
+				ItemButton.BackgroundColor3 = Setting.Properties.ButtonColor
+				ItemButton.Text = item
+				ItemButton.Size = UDim2.new(1, 0, 0, 30)
+				ItemButton.TextColor3 = Setting.Properties.TextColor
+				ItemButton.TextScaled = true
 
-					ItemButton.MouseButton1Click:Connect(function()
-						DropdownButton.Text = name..": "..item
-						TweenService:Create(DropdownImage, Setting.TweenInfo, {Rotation = DropdownImage.Rotation - 90}):Play()
-						TweenService:Create(DropdownList, Setting.TweenInfo, {Size = UDim2.new(0.95, 0, 0, 0)}):Play()
-						wait(0.2)
-						DropdownList.Visible = false
-						Item = item
-						callback(toggled, item)
-					end)
-					addCorner(ItemButton, Setting.ElementCorner)
-				end
+				ItemButton.MouseButton1Click:Connect(function()
+					DropdownButton.Text = name..": "..item
+					TweenService:Create(DropdownImage, Setting.TweenInfo, {Rotation = DropdownImage.Rotation - 90}):Play()
+					TweenService:Create(DropdownList, Setting.TweenInfo, {Size = UDim2.new(0.95, 0, 0, 0)}):Play()
+					wait(0.2)
+					DropdownList.Visible = false
+					Item = item
+					callback(toggled, item)
+				end)
+				addCorner(ItemButton, Setting.ElementCorner)
 			end
+
+			return DTFrame
 		end
 
 		function EI:addSliderAndTextBox(name, Info, PlaceholderText, Min, Max, callback, stat, onlyLetters, onlyNumbers, parent)
