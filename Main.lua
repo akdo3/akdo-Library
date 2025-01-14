@@ -1590,9 +1590,9 @@ function akdo:createFrame(titleText)
 		
 		function EI:addLabel(text, parent)
 			local label = Instance.new("TextLabel")
-			label.Size = akdo.Setting.Properties.ButtonSize
+			label.Size = Setting.Properties.ButtonSize
 			label.Text = text or "Label"
-			label.TextColor3 = akdo.Setting.Properties.TextColor
+			label.TextColor3 = Setting.Properties.TextColor
 			label.TextScaled = true
 			label.BackgroundTransparency = 1
 			label.Parent = parent or tabContent
@@ -1600,13 +1600,13 @@ function akdo:createFrame(titleText)
 
 		function EI:addSection(text, parent)
 			local Section = Instance.new("TextLabel")
-			Section.Size = akdo.Setting.Properties.ButtonSize
+			Section.Size = Setting.Properties.ButtonSize
 			Section.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 			Section.Text = text or "Section"
-			Section.TextColor3 = akdo.Setting.Properties.TextColor
+			Section.TextColor3 = Setting.Properties.TextColor
 			Section.TextScaled = true
 			Section.Parent = parent or tabContent
-			akdo.addCorner(Section, akdo.Setting.ElementCorner)
+			akdo.addCorner(Section, Setting.ElementCorner)
 		end
 
 		function EI:addRow(framePerRow, lines, parent)
