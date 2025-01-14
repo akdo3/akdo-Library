@@ -93,6 +93,35 @@ end)
 `Main` = Tab where the toggle will be.
 `Fly` = Name of the toggle.
 `You Will Fly` = Info about the toggle.
+## Function
+#### addButton
+```lua
+local Button = akdo:addButton(name, Info, callback, parent)
+```
+#### Toggle
+```lua
+local Toggle = akdo:addToggle(name, Info, callback, parent)
+```
+#### Dropdown
+```lua
+local Dropdown = akdo:addDropdown(name, Info, items, itemsPerRow, callback, parent)
+```
+#### Slider
+```lua
+local Slider = akdo:addSlider(name, Info, Min, Max, callback, parent)
+```
+#### TextBox
+```lua
+local TextBox = akdo:addTextBox(name, Info, placeholderText, callback, parent, stat, onlyNumbers, onlyLetters)
+```
+#### DropdownAndToggle
+```lua
+local DropdownAndToggle = akdo:addDropdownAndToggle(name, items, itemsPerRow, callback, parent)
+```
+#### addSliderAndTextBox
+```lua
+local SliderAndTextBox = addSliderAndTextBox(name, Info, PlaceholderText, Min, Max, callback, parent, stat, onlyLetters, onlyNumbers)
+```
 
 ## Example
 ```lua
