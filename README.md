@@ -74,15 +74,7 @@ akdo:addToggle(Player, "name", "Info", function(value)
     end
 end)
 ```
-Language Selection
-Provide language options using a dropdown to enhance accessibility for different users.
 
-```lua
-local languages = { "English", "Arabic", "Spanish", ... }
-akdo:addDropdown(Main, "Language", "Choose your preferred language", languages, 4, function(_, language)
-    print("Selected language:", language)
-end)
-```
 Contribution
 We encourage contributions to improve the akdo UI Library! If you have any suggestions, bug reports, or feature requests, feel free to submit a pull request or open an issue.
 
