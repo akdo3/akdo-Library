@@ -47,7 +47,7 @@ end)
 Use sliders to modify player attributes such as speed.
 
 ```lua
-local Main:addSlider("Speed", "Adjust the player's speed", 0, 500, function(value)
+local Slider = Main:addSlider("Speed", "Adjust the player's speed", 0, 500, function(value)
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
 end)
 ```
@@ -67,7 +67,7 @@ local options = {
     "Option 2",
     "Option 3",
 }
-Main:addDropdown("Choose option", "Choose the option you want", options, 2, function(option)
+local Dropdown = Main:addDropdown("Choose option", "Choose the option you want", options, 2, function(option)
     print("Selected option:", option)
 end)
 ```
