@@ -100,7 +100,7 @@ end)
 `Fly` = Name of the toggle.
 `You Will Fly` = Info about the toggle.
 
-## Examples
+## Example
 ```lua
 local Frame = akdo.createFrame("akdo")
 local Main = akdo:addTab(Frame, "Main")
@@ -169,6 +169,73 @@ akdo:addDropdown(Main, "Auto Hatch", "", {"egg 1", "egg 2","egg 3"}, 3, function
 end)
 ```
 
+## Fast Code
+```lua
+local Frame = akdo.createFrame("akdo")
+local Main = akdo:addTab(Frame, "Main")
+
+akdo:addSection(Player, "Section")
+
+local button = akdo:addButton(Main, "Button", "Info, tutorial", function()
+
+end)
+
+akdo:addSlider(Player, "Speed", "", "", 0, 500, function(value,value2)
+
+end)
+
+local table = {
+    "",
+    "", 
+}
+
+akdo:addDropdownAndToggle(Player, "", table, 1, function(val1, val2)
+    if val1 then
+        if val2 == "
+" then
+
+        elseif val2 == "egg 2" then
+
+        end
+    else
+
+    end
+end)
+
+akdo:addToggle(Player, "", "", function(val) 
+    if val then
+        print("On")
+    else
+        print("Off")
+    end
+end)
+
+local row = akdo:addRow(Player, 2)
+
+akdo:addToggle(row, "Fly", "", function(val) 
+    if val then
+        print("On")
+    else
+        print("Off")
+    end
+end)
+
+akdo:addButton(row, "Button", "", function(val) 
+    print("Clicked")
+end)
+
+akdo:addButton(row, "Button", "one...?", function()
+    print("Clicked")
+end)
+
+akdo:addDropdown(Main, "Auto Hatch", "", {"egg 1", "egg 2","egg 3"}, 3, function(toggled, egg)
+    if toggled then
+        print("Selected egg:", egg)
+    else
+        print("Off")
+    end
+end)
+```
 ## Suggestions
 We encourage suggestions to improve the akdo Library! If you have any suggestions, error reports, or feature requests, feel free to send them to this Discord Server.
 
