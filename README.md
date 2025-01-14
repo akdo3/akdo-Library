@@ -8,7 +8,7 @@
 - **Interactive Sliders and Toggles**: Modify game elements like speed, jump power, and FOV in real-time with responsive controls.
 - **Customizable Dropdown Menus**: Easily implement interactive dropdowns with user-defined options.
 
-### Setting Up the UI Frame
+### Setting Up the Frame
 
 Start by creating a frame to hold all your UI components.
 
