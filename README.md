@@ -97,184 +97,69 @@ You Will Fly = This is the Info, Must be in "", If you dont need it make only th
 ## Examples
 
 ```lua
-local LocalPlayer = game.Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local Humanoid = Character:WaitForChild("Humanoid")
-
 local Frame = akdo.createFrame( "akdo")
 local Main = akdo:addTab(Frame, "Main")
-local DeviceType
 
-local Player = akdo:addTab(Frame, "Player")
+akdo:addSection(Player, "Section")
+akdo:addLabel(Player, "Label")
 
-akdo:addSection(Player, "This is Section")
-akdo:addLabel(Player, "This is Label")
+local button = akdo:addButton(Main, "Button", "Info , tut", function()
+	print("Button Clicked")
+end)
 
 akdo:addSliderAndTextBox(Player, "Speed", "", "", 0, 500, function(value,value2) 
-	Humanoid.WalkSpeed = value
 	Humanoid.WalkSpeed = value2
 end, false, false, true)
 
-akdo:addSliderAndTextBox(Player, "Jump", "", "", 0, 500, function(value,value2) 
-	Humanoid.JumpPower = value
-	Humanoid.JumpHeight = value
-	Humanoid.JumpPower = value2
-	Humanoid.JumpHeight = value2
-end, false, false, true)
-
-akdo:addSliderAndTextBox(Player, "Fov", "", "", 0, 120, function(value,value2) 
-	game.Workspace.CurrentCamera.FieldOfView = value
-	game.Workspace.CurrentCamera.FieldOfView = value2
-end, false, false, true)
-
-akdo:addSliderAndTextBox(Player, "Gravity", "", "", 0, 500, function(value,value2) 
-	game.Workspace.Gravity = value
-	game.Workspace.Gravity = value2
-end, false, false, true)
-
-local OldGravity = game.Workspace.Gravity
-local OldSpeed = Humanoid.WalkSpeed
-local OldJumpPower  = Humanoid.JumpPower
-local OldJumpHeight = Humanoid.JumpHeight
-
-akdo:addDropdownAndToggle(Player, "Choose", {"Super Hero", "Hero", "Normal"}, 3, function(val1,val2)
+local table = {
+	"egg 1", "egg 2", 
+}
+akdo:addDropdownAndToggle(Player, "Auto Hatch", table, 1, function(val1,val2)
 	print(val2)
 	if val1 then
-		if val2 == "Super Hero" then
-			Humanoid.WalkSpeed = 120
-			Humanoid.JumpPower = 150
-			Humanoid.JumpHeight = 50
-		elseif val2 == "Hero" then
-			Humanoid.WalkSpeed = 75
-			Humanoid.JumpPower = 100
-			Humanoid.JumpHeight = 25
-		elseif val2 == "Normal" then
-			Humanoid.WalkSpeed = 16
-			Humanoid.JumpPower = 50
-			Humanoid.JumpHeight = 7.5
+		if val2 == "egg 1" then
+			print("hatch egg 1")
+		elseif val2 == "egg 2" then
+			print("hatch egg 2")
 		end
 	else
-		Humanoid.WalkSpeed = OldSpeed
-		Humanoid.JumpPower = OldJumpPower
-		Humanoid.JumpHeight = OldJumpHeight
-	end
-end)
-
-akdo:addDropdownAndToggle(Player, "Choose", {"Super Speed & Jump", "Super Speed", "Super Jump"}, 3, function(val1,val2)
-	if val1 then
-		if val2 == "Super Speed & Jump" then
-			Humanoid.WalkSpeed = 120
-			Humanoid.JumpPower = 150
-			Humanoid.JumpHeight = 50
-		elseif val2 == "Super Speed" then
-			Humanoid.WalkSpeed = 120
-		elseif val2 == "Super Jump" then
-			Humanoid.JumpPower = 50
-			Humanoid.JumpHeight = 7.5
-		end
-	else
-		if val2 == "Super Speed & Jump" then
-			Humanoid.WalkSpeed = OldSpeed
-			Humanoid.JumpPower = OldJumpPower
-			Humanoid.JumpHeight = OldJumpHeight
-		elseif val2 == "Super Speed" then
-			Humanoid.WalkSpeed = OldSpeed
-		elseif val2 == "Super Jump" then
-			Humanoid.JumpPower = OldJumpPower
-			Humanoid.JumpHeight = OldJumpHeight
-		end
+		print("off")
 	end
 end)
 
 akdo:addSection(Player, "Toggle Section")
 
-akdo:addToggle(Player, "Space Fly", "Jump and you will go up but can move in the X-axis,After long time you will go down.", function(val) 
-	if val then
-		Humanoid.WalkSpeed = 750
-		Humanoid.JumpPower = 500
-		Humanoid.JumpHeight = 500
-		game.Workspace.Gravity = 0.1
-	else
-		Humanoid.WalkSpeed = OldSpeed
-		Humanoid.JumpPower = OldJumpPower
-		Humanoid.JumpHeight = OldJumpHeight
-		game.Workspace.Gravity = OldGravity
-	end
+akdo:addToggle(Player, "Noclip", "Make you Pass through anything", function(val) 
+    if val then
+        print("On")
+    else
+        print("Off")
+    end
 end)
 
-local row = akdo:addRow(Player, 4)
+local row = akdo:addRow(Player, 2)
 
 akdo:addToggle(row, "Fly", "", function(val) 
-	if val then
-		
+    if value then
+        print("On")
+    else
+        print("Off")
+    end
+end)
+
+akdo:addButton(row, "Button", "", function(val) 
+	print("Clicked")
+end)
+
+akdo:addButton(row, "Button", "one...?", function()
+	print("Clicked")
+end)
+
+akdo:addDropdown(Main, "Auto Hatch", "", {"egg 1", "egg 2","egg 3"}, 3, function(toggled, egg)
+	if toggled then
+		print("Selected egg:", egg)
 	else
-		
-	end
-end)
-
-akdo:addToggle(row, "NoClip", "", function(val) 
-	if val then
-		for _, part in ipairs(Character:GetDescendants()) do
-			if part:IsA("BasePart") and part.CanCollide then
-				part.CanCollide = false
-			end
-		end
-	else
-		for _, part in ipairs(Character:GetDescendants()) do
-			if part:IsA("BasePart") and not part.CanCollide then
-				part.CanCollide = true
-			end
-		end
-	end
-end)
-
-akdo:addToggle(row, "Inf Jump", "", function(val) 
-	if val then
-
-	else
-
-	end
-end)
-
-akdo:addToggle(Player, "Invisible", "", function(val) 
-	if val then
-
-	else
-
-	end
-end)
-
-akdo:addToggle(Player, "Reset Characte", "", function(val) 
-	if val then
-
-	else
-
-	end
-end)
-
-akdo:addButton(Player, "Refresh old stats", "When you disable any speed toggle, your stats will revert to the old ones, this makes your speed the old one.", function()
-	OldGravity 		= game	  .Workspace.Gravity
-	OldSpeed 		= Humanoid.WalkSpeed
-	OldJumpPower  	= Humanoid.JumpPower
-	OldJumpHeight 	= Humanoid.JumpHeight
-end)
-
-
-local languages = {
-	"English", "Arabic", "Spanish", "French", "German", "Chinese", "Japanese", "Korean", 
-	"Russian", "Portuguese", "Italian", "Dutch", "Hindi", "Bengali", "Turkish", 
-	"Swedish", "Norwegian", "Finnish", "Danish", "Greek", "Hebrew", "Thai", "Vietnamese", 
-	"Polish", "Czech", "Slovak", "Hungarian", "Romanian", "Ukrainian", "Indonesian", 
-	"Malay", "Filipino", "Serbian", "Croatian", "Slovenian", "Bulgarian", "Lithuanian", 
-	"Latvian", "Estonian", "Persian", "Urdu", "Tamil", "Telugu", "Kannada", "Malayalam", 
-	"Gujarati", "Punjabi", "Marathi", "Swahili", "Zulu", "Afrikaans", "Amharic", "Yoruba",
-	"Hausa", "Igbo", "Catalan", "Basque", "Galician", "Welsh", "Irish", "Scottish Gaelic",
-	"Maltese", "Icelandic", "Esperanto"
-}
-
-akdo:addDropdown(Main, "Language", "", languages, 4, function(toggled, language)
-	if not toggled then
-		print("Selected language:", language)
+		print("Off")
 	end
 end)
 
