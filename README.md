@@ -8,9 +8,15 @@
 - **Interactive Sliders and Toggles**: Modify game elements like speed, jump power, and FOV in real-time with responsive controls.
 - **Customizable Dropdown Menus**: Easily implement interactive dropdowns with user-defined options.
 
+## Load the library
+
+```lua
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/akdo3/akdo-Library/refs/heads/main/Main.lua"))()
+```
+
 ### Setting Up the Frame
 
-Start by creating a frame to hold all your UI components.
+Start by creating a frame.
 
 ```lua
 local Frame = akdo.createFrame("akdo")
@@ -23,8 +29,8 @@ Organize your controls by adding multiple tabs to the frame.
 ```lua
 local Main = akdo:addTab(Frame, "Main")
 ```
-Frame = Parent of the tab
-Main = Name of tab must be in ""
+Frame = Parent of the tab.
+Main = Name of tab must be in "".
 
 Adding Controls
 Add interactive controls like sliders, dropdowns, and toggles to the tabs.
@@ -37,14 +43,14 @@ akdo:addSlider(Main, "Speed", "Adjust the player's speed", 0, 500, function(valu
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
 end)
 ```
-Main = Which Tab the slider will be
-Speed = Name of the Slider must be in ""
-Adjust the player's speed = This is the Info must be in ""
-0 = Min Slider Value
-500 = Max Slider Value
+Main = Which Tab the slider will be.
+Speed = Name of the Slider must be in "".
+Adjust the player's speed = This is the Info, Must be in "", If you dont need it make only this "".
+0 = Min Slider Value.
+500 = Max Slider Value.
 
 Dropdowns
-Create dropdowns to allow users to select from multiple options.
+Create dropdowns to allow users to Chosse from multiple options.
 
 ```lua
 local options = {
@@ -52,21 +58,21 @@ local options = {
     "Option 2",
     "Option 3",
 }
-akdo:addDropdown(Main, "Select option", "Select the option you wont", options, 2, function(val)
-    print("Selected Value:", val)
+akdo:addDropdown(Main, "Chosse option", "Chosse the option you wont", options, 2, function(option)
+    print("Selected option:", option)
 end)
 ```
-Main = Which Tab the slider will be
-Select option = Name of the Slider must be in ""
-Select the option you wont = This is the Info must be in ""
-0 = Min Slider Value
-500 = Max Slider Value
+Main = Which Tab the slider will be.
+Select option = Name of the Dropdown, Must be in "".
+Select the option you want = This is the Info, Must be in "", If you dont need it make only this "".
+0 = Min Slider Value.
+500 = Max Slider Value.
 
-Toggles
-Add toggles to enable or disable features like space flight mode.
+Toggle
+Add toggle to enable or disable features.
 
 ```lua
-akdo:addToggle(Player, "name", "Info", function(value)
+akdo:addToggle(Main, "Fly", "You Will Fly", function(value)
     if value then
 
     else
@@ -74,6 +80,9 @@ akdo:addToggle(Player, "name", "Info", function(value)
     end
 end)
 ```
+Main = Which Tab the slider will be.
+Fly = Name of the Toggle, Must be in "".
+You Will Fly = This is the Info, Must be in "", If you dont need it make only this "".
 
 Contribution
 We encourage contributions to improve the akdo UI Library! If you have any suggestions, bug reports, or feature requests, feel free to submit a pull request or open an issue.
