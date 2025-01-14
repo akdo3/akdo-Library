@@ -1,6 +1,6 @@
 # akdo UI Library for Roblox
 
-**akdo UI Library** is a versatile and easy-to-use UI framework that empowers Roblox developers to create advanced and dynamic user interfaces. With features like tabs, sliders, dropdowns, toggles, and multilingual support, it simplifies UI management and enhances the user experience.
+**akdo UI Library** is a versatile and easy-to-use UI framework that empowers Roblox developers to create advanced and dynamic user interfaces. With features like tabs, sliders, dropdowns, and toggles, it simplifies UI management and enhances the user experience.
 
 ## Features
 
@@ -15,7 +15,7 @@ Start by creating a frame to hold all your UI components.
 ```lua
 local Frame = akdo.createFrame("akdo")
 ```
-Title = akdo
+akdo = Title
 
 Adding Tabs
 Organize your controls by adding multiple tabs to the frame.
@@ -23,6 +23,8 @@ Organize your controls by adding multiple tabs to the frame.
 ```lua
 local Main = akdo:addTab(Frame, "Main")
 ```
+Frame = Parent of the tab
+Main = Name of tab
 
 Adding Controls
 Add interactive controls like sliders, dropdowns, and toggles to the tabs.
@@ -31,10 +33,15 @@ Sliders
 Use sliders to modify player attributes such as speed.
 
 ```lua
-akdo:addSliderAndTextBox(Player, "Speed", "Adjust the player's speed", "", 0, 500, function(value)
-    Humanoid.WalkSpeed = value
-end, false, false, true)
+akdo:addSlider(Player, "Speed", "Adjust the player's speed", 0, 500, function(value)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+end)
 ```
+Player = Which Tab the slider will be
+Speed = Name of the Slider
+Adjust the player's speed = This is the Info
+0 = Min Slider Value
+500 = Max Slider Value
 
 Dropdowns
 Create dropdowns to allow users to select from multiple options.
