@@ -726,51 +726,37 @@ function akdo:createFrame(titleText)
 			DropdownImageButton.Image = "http://www.roblox.com/asset/?id=6031090994"
 			DropdownImageButton.ImageColor3 = Setting.Properties.TextColor
 
-			DropdownList.Parent = parent
+			DropdownList.Parent = parent or tabContent
 			DropdownList.BackgroundColor3 = Setting.Properties.BackgroundColor
 			DropdownList.Position = UDim2.new(0, 0, 1, 0)
 			DropdownList.Size = UDim2.new(0.95, 0,0, 0)
 			DropdownList.ScrollingDirection = Enum.ScrollingDirection.Y
 			DropdownList.Visible = false
-			DropdownList.ScrollBarThickness = 4
+			DropdownList.ScrollBarThickness = 3
 			addCorner(DropdownList, Setting.ElementCorner)
 
 			UIGridLayout.Parent = DropdownList
-			if itemsPerRow then
-				UIGridLayout.CellSize = UDim2.new(1 / itemsPerRow, -10, 0, 30)
-			else
-				UIGridLayout.CellSize = UDim2.new(1 , -10, 0, 30)
-			end
+			UIGridLayout.CellSize = UDim2.new(1 / itemsPerRow, -10, 0, 30)
 			UIGridLayout.CellPadding = UDim2.new(0, 5, 0, 5)
 			UIGridLayout.FillDirection = Enum.FillDirection.Horizontal
 
-			if items then
-				for _, item in pairs(items) do
-					local ItemButton = Instance.new("TextButton")
-					ItemButton.Parent = DropdownList
-					ItemButton.BackgroundColor3 = Setting.Properties.ButtonColor
-					ItemButton.Text = item
-					ItemButton.Size = UDim2.new(1, 0, 0, 30)
-					ItemButton.TextColor3 = Setting.Properties.TextColor
-					ItemButton.TextScaled = true
-					ItemButton.MouseButton1Click:Connect(function()
-						DropdownButton.Text = name..": "..item
-						TweenService:Create(DropdownImageButton, Setting.TweenInfo, {Rotation = DropdownImageButton.Rotation - 90}):Play()
-						TweenService:Create(DropdownList, Setting.TweenInfo, {Size = UDim2.new(0.95, 0, 0, 0)}):Play()
-						wait(0.2)
-						DropdownList.Visible = false
-						callback(item)
-					end)
-					addCorner(ItemButton, Setting.ElementCorner)
-				end
-			else
-				local TextLabel = Instance.new("TextLabel")
-				TextLabel.Parent = DropdownList
-				TextLabel.BackgroundColor3 = Setting.Properties.ButtonColor
-				TextLabel.Text = "Nothing has been add"
-				TextLabel.Size = UDim2.new(1, 0, 0, 30)
-				TextLabel.TextColor3 = Setting.Properties.TextColor
-				TextLabel.TextScaled = true
+			for _, item in pairs(items) do
+				local ItemButton = Instance.new("TextButton")
+				ItemButton.Parent = DropdownList
+				ItemButton.BackgroundColor3 = Setting.Properties.ButtonColor
+				ItemButton.Text = item
+				ItemButton.Size = UDim2.new(1, 0, 0, 30)
+				ItemButton.TextColor3 = Setting.Properties.TextColor
+				ItemButton.TextScaled = true
+				ItemButton.MouseButton1Click:Connect(function()
+					DropdownButton.Text = name..": "..item
+					TweenService:Create(DropdownImageButton, Setting.TweenInfo, {Rotation = DropdownImageButton.Rotation - 90}):Play()
+					TweenService:Create(DropdownList, Setting.TweenInfo, {Size = UDim2.new(0.95, 0, 0, 0)}):Play()
+					wait(0.2)
+					DropdownList.Visible = false
+					callback(item)
+				end)
+				addCorner(ItemButton, Setting.ElementCorner)
 			end
 
 			DropdownImageButton.MouseButton1Click:Connect(function() 
@@ -780,16 +766,7 @@ function akdo:createFrame(titleText)
 					wait(0.2)
 					DropdownList.Visible = false
 				else
-					local numRows
-					if items then
-						if itemsPerRow then
-							numRows = math.ceil(#items / itemsPerRow)
-						else
-							numRows = math.ceil(#items / 1)
-						end
-					else
-						numRows = math.ceil(1 / 1)
-					end
+					local numRows = math.ceil(#items / itemsPerRow)
 					local itemHeight = 35
 					local newHeight = numRows * itemHeight
 					local maxHeight = 100
@@ -808,16 +785,7 @@ function akdo:createFrame(titleText)
 					wait(0.2)
 					DropdownList.Visible = false
 				else
-					local numRows
-					if items then
-						if itemsPerRow then
-							numRows = math.ceil(#items / itemsPerRow)
-						else
-							numRows = math.ceil(#items / 1)
-						end
-					else
-						numRows = math.ceil(1 / 1)
-					end
+					local numRows = math.ceil(#items / itemsPerRow)
 					local itemHeight = 35
 					local newHeight = numRows * itemHeight
 					local maxHeight = 100
@@ -1248,7 +1216,7 @@ function akdo:createFrame(titleText)
 			end
 		end
 
-		function EI:addSliderAndTextBox(name, Info, PlaceholderText, Min, Max, callback, parent, stat, onlyLetters, onlyNumbers)
+		function EI:addSliderAndTextBox(name, Info, PlaceholderText, Min, Max, callback, stat, onlyLetters, onlyNumbers, parent)
 			local callback = callback or function() end
 
 			local STFrame = Instance.new("Frame")
@@ -1310,16 +1278,11 @@ function akdo:createFrame(titleText)
 			SliderValue.TextScaled = true
 			addStroke(SliderValue, 1.5, Setting.Properties.Background_Border_Color)
 
-			local Value
 			local function UpdateSlider(mouseX)
 				local sliderPosX = Trigger.AbsolutePosition.X
 				local sliderSizeX = Trigger.AbsoluteSize.X
 				local output = math.clamp((mouseX - sliderPosX) / sliderSizeX, 0, 1)
-				
-				local MaxV = Max or 500
-				local MinV = Min or 0
-				
-				Value = output * (MaxV - MinV) + MinV
+				local Value = output * (Max - Min) + Min
 
 				local tween = game.TweenService:Create(FillSlider, Setting.TweenInfo, {Size = UDim2.new(output, 0, 1, 0)})
 				tween:Play()
@@ -1329,28 +1292,20 @@ function akdo:createFrame(titleText)
 			end
 
 			local isDragging = false
-
-			local function startDrag(input)
+			Trigger.MouseButton1Down:Connect(function()
 				isDragging = true
-				UpdateSlider(input.Position.X)
-			end
-
-			local function stopDrag(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-					isDragging = false
-				end
-			end
-
-			Trigger.MouseButton1Down:Connect(startDrag)
-			Trigger.TouchTap:Connect(startDrag)
-
-			UserInputService.InputChanged:Connect(function(input)
-				if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-					UpdateSlider(input.Position.X)
+				while isDragging do
+					local mouse = UserInputService:GetMouseLocation().X
+					UpdateSlider(mouse)
+					wait()
 				end
 			end)
 
-			UserInputService.InputEnded:Connect(stopDrag)
+			UserInputService.InputEnded:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.MouseButton1 then
+					isDragging = false
+				end
+			end)
 
 			if stat then
 				TextBox:GetPropertyChangedSignal("Text"):Connect(function()
@@ -1359,7 +1314,7 @@ function akdo:createFrame(titleText)
 					elseif onlyNumbers and TextBox.Text:match("%D") then
 						TextBox.Text = ""
 					else
-						callback(Value, TextBox.Text)
+						callback(TextBox.Text)
 					end
 				end)
 			else
@@ -1369,7 +1324,7 @@ function akdo:createFrame(titleText)
 					elseif onlyNumbers and TextBox.Text:match("%D") then
 						TextBox.Text = ""
 					else
-						callback(Value, TextBox.Text)
+						callback(TextBox.Text)
 					end
 				end)
 			end
@@ -1604,4 +1559,5 @@ function akdo:createFrame(titleText)
 
 	return Tabs
 end
+
 return akdo
