@@ -1742,6 +1742,5 @@ function akdo.Creatakdo()
 
 		return row
 	end
-
-	return akdo
 end
+return akdo
