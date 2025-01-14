@@ -6,16 +6,16 @@ akdo.Setting = {
 	Properties = {
 		Background_Border_Color = Color3.fromRGB(0, 0, 0)	,
 		BackgroundColor 		= Color3.fromRGB(20, 20, 20),
-		TextColor 			= Color3.fromRGB(0, 255, 0) ,
+		TextColor 				= Color3.fromRGB(0, 255, 0) ,
 		ButtonColor 			= Color3.fromRGB(10, 10, 10),
-		ButtonSize			= UDim2.new(0.95, 0, 0, 30)	,
+		ButtonSize				= UDim2.new(0.95, 0, 0, 30)	,
 	},
-	TweenInfo 	= TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-	Padding 	= 10,
+	TweenInfo 		= TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+	Padding 		= 10,
 	ElementCorner 	= UDim.new(0.2, 0),
 	Image 	= {
-		ImageSize  	= UDim2.new(0.1, 0, 1, 0),
-		InfoImagePOS 	= UDim2.new(0.9, 0,0, 0) ,
+		ImageSize  	 = UDim2.new(0.1, 0, 1, 0),
+		InfoImagePOS = UDim2.new(0.9, 0,0, 0) ,
 	},
 	TextSize = {
 		Text = UDim2.new(1, 0, 1, 0),
@@ -32,13 +32,13 @@ akdo.Setting = {
 	}
 }
 
-function akdo:addCorner(instance, radius1)
+function akdo.addCorner(instance, radius1)
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = radius1
 	corner.Parent = instance
 end
 
-function akdo:addStroke(instance, Thickness, color, StrockType)
+function akdo.addStroke(instance, Thickness, color, StrockType)
 	local Stroke = Instance.new("UIStroke")
 	Stroke.Color = color
 	Stroke.Thickness = Thickness
@@ -56,7 +56,7 @@ function akdo.Creatakdo()
 		frame.Size = UDim2.new(0.5, 0, 0.5, 0)
 		frame.BackgroundColor3 = akdo.Setting.Properties.Background_Border_Color
 		frame.Parent = screenGui
-		akdo:addCorner(frame, UDim.new(0.03, 0))
+		akdo.addCorner(frame, UDim.new(0.03, 0))
 
 		local DropShadowHolder = Instance.new("Frame")
 		DropShadowHolder.Parent = frame
@@ -119,7 +119,7 @@ function akdo.Creatakdo()
 		header.BackgroundColor3 = akdo.Setting.Properties.BackgroundColor
 		header.Parent = frame
 
-		akdo:addCorner(header, UDim.new(0.3, 0))
+		akdo.addCorner(header, UDim.new(0.3, 0))
 
 
 		local UICornerOverlayE = Instance.new("Frame")
@@ -153,8 +153,8 @@ function akdo.Creatakdo()
 			confirmationFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 			confirmationFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 			confirmationFrame.Parent = frame
-			akdo:addCorner(confirmationFrame, UDim.new(0, 8))
-			akdo:addStroke(confirmationFrame, 1, akdo.Setting.Properties.TextColor)
+			akdo.addCorner(confirmationFrame, UDim.new(0, 8))
+			akdo.addStroke(confirmationFrame, 1, akdo.Setting.Properties.TextColor)
 
 			local confirmLabel = Instance.new("TextLabel")
 			confirmLabel.Size = UDim2.new(0.998036623, 0, 0.391914189, 0)
@@ -172,8 +172,8 @@ function akdo.Creatakdo()
 			confirmButton.TextColor3 = akdo.Setting.Properties.TextColor
 			confirmButton.TextScaled = true
 			confirmButton.Parent = confirmationFrame
-			akdo:addCorner(confirmButton, UDim.new(0.09, 0))
-			akdo:addStroke(confirmButton, 2, akdo.Setting.Properties.Background_Border_Color)
+			akdo.addCorner(confirmButton, UDim.new(0.09, 0))
+			akdo.addStroke(confirmButton, 2, akdo.Setting.Properties.Background_Border_Color)
 			confirmButton.MouseButton1Click:Connect(function()
 				frame.Parent:Destroy()
 			end)
@@ -186,8 +186,8 @@ function akdo.Creatakdo()
 			cancelButton.TextColor3 = akdo.Setting.Properties.TextColor
 			cancelButton.TextScaled = true
 			cancelButton.Parent = confirmationFrame
-			akdo:addCorner(cancelButton, UDim.new(0.09, 0))
-			akdo:addStroke(cancelButton, 2, akdo.Setting.Properties.Background_Border_Color)
+			akdo.addCorner(cancelButton, UDim.new(0.09, 0))
+			akdo.addStroke(cancelButton, 2, akdo.Setting.Properties.Background_Border_Color)
 			cancelButton.MouseButton1Click:Connect(function()
 				confirmationFrame:Destroy()
 			end)
@@ -226,8 +226,8 @@ function akdo.Creatakdo()
 				MinimizedButton.TextColor3 = akdo.Setting.Properties.TextColor
 				MinimizedButton.TextScaled = true
 				MinimizedButton.Parent = screenGui
-				akdo:addCorner(MinimizedButton, UDim.new(0.18, 0))
-				akdo:addStroke(MinimizedButton, 1, akdo.Setting.Properties.TextColor, Enum.ApplyStrokeMode.Border)
+				akdo.addCorner(MinimizedButton, UDim.new(0.18, 0))
+				akdo.addStroke(MinimizedButton, 1, akdo.Setting.Properties.TextColor, Enum.ApplyStrokeMode.Border)
 
 				local dragging
 				local dragInput
@@ -339,7 +339,7 @@ function akdo.Creatakdo()
 		tabContainer.VerticalScrollBarPosition = Enum.VerticalScrollBarPosition.Left
 		tabContainer.CanvasSize = UDim2.new(0, 0, 0, 100)
 		tabContainer.Parent = frame
-		akdo:addCorner(tabContainer, UDim.new(0, 8))
+		akdo.addCorner(tabContainer, UDim.new(0, 8))
 
 		local tabLayout = Instance.new("UIListLayout")
 		tabLayout.Parent = tabContainer
@@ -362,7 +362,7 @@ function akdo.Creatakdo()
 		tabContentContainer.Position = UDim2.new(0.288, 0, 0.177, 0)
 		tabContentContainer.BackgroundColor3 = akdo.Setting.Properties.Background_Border_Color
 		tabContentContainer.Parent = frame
-		akdo:addCorner(tabContentContainer, UDim.new(0, 8))
+		akdo.addCorner(tabContentContainer, UDim.new(0, 8))
 
 		local tabContentScroll = Instance.new("ScrollingFrame")
 		tabContentScroll.Size = UDim2.new(1, 0, 1, 0)
@@ -372,14 +372,14 @@ function akdo.Creatakdo()
 		tabContentScroll.ScrollingDirection = Enum.ScrollingDirection.Y
 		tabContentScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 		tabContentScroll.Parent = tabContentContainer
-		akdo:addCorner(tabContentScroll, UDim.new(0, 8))
+		akdo.addCorner(tabContentScroll, UDim.new(0, 8))
 
 		local contentLayout = Instance.new("UIListLayout")
 		contentLayout.Parent = tabContentScroll
 		contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 		contentLayout.Padding = UDim.new(0, 5)
 
-		function akdo:addTab(parent, name)
+		function akdo.addTab(parent, name)
 			local tabButton = Instance.new("TextButton")
 			tabButton.Size = UDim2.new(1, 0, 0, 40)
 			tabButton.Text = name or "akdo"
@@ -387,7 +387,7 @@ function akdo.Creatakdo()
 			tabButton.TextColor3 = akdo.Setting.Properties.TextColor
 			tabButton.TextScaled = true
 			tabButton.Parent = tabContainer
-			akdo:addCorner(tabButton, akdo.Setting.ElementCorner)
+			akdo.addCorner(tabButton, akdo.Setting.ElementCorner)
 
 			local tabContent = Instance.new("Frame")
 			tabContent.Size = UDim2.new(1, 0, 1, 0)
@@ -395,7 +395,7 @@ function akdo.Creatakdo()
 			tabContent.BackgroundColor3 = akdo.Setting.Properties.Background_Border_Color
 			tabContent.Visible = false
 			tabContent.Parent = tabContentScroll
-			akdo:addCorner(tabContent, UDim.new(0, 8))
+			akdo.addCorner(tabContent, UDim.new(0, 8))
 
 			local contentLayout = Instance.new("UIListLayout")
 			contentLayout.Parent = tabContent
@@ -436,8 +436,8 @@ function akdo.Creatakdo()
 		InfoFrame.Size = UDim2.new(0.7133, 0, 0, 0)
 		InfoFrame.Visible = false
 		InfoFrame.ZIndex = 2
-		akdo:addCorner(InfoFrame, akdo.Setting.ElementCorner)
-		akdo:addStroke(InfoFrame, 1, akdo.Setting.Properties.TextColor)
+		akdo.addCorner(InfoFrame, akdo.Setting.ElementCorner)
+		akdo.addStroke(InfoFrame, 1, akdo.Setting.Properties.TextColor)
 
 		local TextInfo = Instance.new("TextLabel")
 		TextInfo.Parent = InfoFrame
@@ -464,13 +464,13 @@ function akdo.Creatakdo()
 			InfoFrame.Visible = false
 		end)
 
-		function akdo:addButton(parent, name, Info, callback)
+		function akdo.addButton(parent, name, Info, callback)
 			local callback = callback or function() end
 			local ButtonFrame = Instance.new("Frame")
 			ButtonFrame.Parent = parent
 			ButtonFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
 			ButtonFrame.Size = akdo.Setting.Properties.ButtonSize
-			akdo:addCorner(ButtonFrame, akdo.Setting.ElementCorner)
+			akdo.addCorner(ButtonFrame, akdo.Setting.ElementCorner)
 
 			local Button = Instance.new("TextButton")
 			Button.BackgroundTransparency = 1
@@ -504,7 +504,7 @@ function akdo.Creatakdo()
 			return ButtonFrame
 		end
 
-		function akdo:addToggle(parent, name, Info, callback)
+		function akdo.addToggle(parent, name, Info, callback)
 			local callback = callback or function() end
 			local ToggleFrame = Instance.new("Frame")
 			local TextButton = Instance.new("TextButton")
@@ -514,7 +514,7 @@ function akdo.Creatakdo()
 			ToggleFrame.Parent = parent
 			ToggleFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
 			ToggleFrame.Size = akdo.Setting.Properties.ButtonSize
-			akdo:addCorner(ToggleFrame, akdo.Setting.ElementCorner)
+			akdo.addCorner(ToggleFrame, akdo.Setting.ElementCorner)
 
 			TextButton.Parent = ToggleFrame
 			TextButton.BackgroundTransparency = 1
@@ -589,7 +589,7 @@ function akdo.Creatakdo()
 			return ToggleFrame
 		end
 
-		function akdo:addDropdown(parent, name, Info, items, itemsPerRow, callback)
+		function akdo.addDropdown(parent, name, Info, items, itemsPerRow, callback)
 			callback = callback or function() end
 
 			local DropdownFrame = Instance.new("Frame")
@@ -601,7 +601,7 @@ function akdo.Creatakdo()
 			DropdownFrame.Parent = parent
 			DropdownFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
 			DropdownFrame.Size = akdo.Setting.Properties.ButtonSize
-			akdo:addCorner(DropdownFrame, akdo.Setting.ElementCorner)
+			akdo.addCorner(DropdownFrame, akdo.Setting.ElementCorner)
 
 			DropdownButton.Parent = DropdownFrame
 			DropdownButton.BackgroundTransparency = 1
@@ -625,7 +625,7 @@ function akdo.Creatakdo()
 			DropdownList.ScrollingDirection = Enum.ScrollingDirection.Y
 			DropdownList.Visible = false
 			DropdownList.ScrollBarThickness = 4
-			akdo:addCorner(DropdownList, akdo.Setting.ElementCorner)
+			akdo.addCorner(DropdownList, akdo.Setting.ElementCorner)
 
 			UIGridLayout.Parent = DropdownList
 			UIGridLayout.CellSize = UDim2.new(1 / itemsPerRow, -10, 0, 30)
@@ -648,7 +648,7 @@ function akdo.Creatakdo()
 					DropdownList.Visible = false
 					callback(item)
 				end)
-				akdo:addCorner(ItemButton, akdo.Setting.ElementCorner)
+				akdo.addCorner(ItemButton, akdo.Setting.ElementCorner)
 			end
 
 			DropdownImageButton.MouseButton1Click:Connect(function() 
@@ -711,7 +711,7 @@ function akdo.Creatakdo()
 			end
 		end
 
-		function akdo:addSlider(parent, name, Info, Min, Max, callback)
+		function akdo.addSlider(parent, name, Info, Min, Max, callback)
 			callback = callback or function() end
 
 			local SliderFrame = Instance.new("Frame")
@@ -725,19 +725,19 @@ function akdo.Creatakdo()
 			SliderFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
 			SliderFrame.Size = akdo.Setting.Properties.ButtonSize
 			SliderFrame.ClipsDescendants = true
-			akdo:addCorner(SliderFrame, akdo.Setting.ElementCorner)
+			akdo.addCorner(SliderFrame, akdo.Setting.ElementCorner)
 
 			CanvasGroup.Parent = SliderFrame
 			CanvasGroup.BackgroundColor3 = akdo.Setting.Properties.BackgroundColor
 			CanvasGroup.Position = UDim2.new(0.317, 0,0.267, 0)
 			CanvasGroup.Size = UDim2.new(0.642, 0,0.4519, 0)
-			akdo:addCorner(CanvasGroup, UDim.new(0.5, 0))
-			akdo:addStroke(CanvasGroup, 1, akdo.Setting.Properties.Background_Border_Color)
+			akdo.addCorner(CanvasGroup, UDim.new(0.5, 0))
+			akdo.addStroke(CanvasGroup, 1, akdo.Setting.Properties.Background_Border_Color)
 
 			FillSlider.Parent = CanvasGroup
 			FillSlider.BackgroundColor3 = akdo.Setting.Properties.TextColor
 			FillSlider.Size = UDim2.new(0, 0,1, 0)
-			akdo:addCorner(FillSlider, UDim.new(0.5, 0))
+			akdo.addCorner(FillSlider, UDim.new(0.5, 0))
 
 			Trigger.Parent = CanvasGroup
 			Trigger.BackgroundTransparency = 1
@@ -751,7 +751,7 @@ function akdo.Creatakdo()
 			SliderValue.Text = "0"
 			SliderValue.TextColor3 = akdo.Setting.Properties.TextColor
 			SliderValue.TextScaled = true
-			akdo:addStroke(SliderValue, 1.5, akdo.Setting.Properties.Background_Border_Color)
+			akdo.addStroke(SliderValue, 1.5, akdo.Setting.Properties.Background_Border_Color)
 
 			SliderText.Name = "text"
 			SliderText.BackgroundTransparency = 1
@@ -820,7 +820,7 @@ function akdo.Creatakdo()
 			return SliderFrame
 		end
 
-		function akdo:addTextBox(parent, name, Info, placeholderText, callback, stat, onlyNumbers, onlyLetters)
+		function akdo.addTextBox(parent, name, Info, placeholderText, callback, stat, onlyNumbers, onlyLetters)
 			local callback = callback or function() end
 			local TextBoxFrame = Instance.new("Frame")
 			local TextBox = Instance.new("TextBox")
@@ -829,7 +829,7 @@ function akdo.Creatakdo()
 			TextBoxFrame.Parent = parent
 			TextBoxFrame.BackgroundColor3 = Color3.fromRGB(10,10,10)
 			TextBoxFrame.Size = akdo.Setting.Properties.ButtonSize
-			akdo:addCorner(TextBoxFrame, akdo.Setting.ElementCorner)
+			akdo.addCorner(TextBoxFrame, akdo.Setting.ElementCorner)
 
 			TextBox.Parent = TextBoxFrame
 			TextBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -839,7 +839,7 @@ function akdo.Creatakdo()
 			TextBox.PlaceholderText = placeholderText or ""
 			TextBox.TextColor3 = akdo.Setting.Properties.TextColor
 			TextBox.TextScaled = true
-			akdo:addCorner(TextBox, UDim.new(0.15,0))
+			akdo.addCorner(TextBox, UDim.new(0.15,0))
 
 			Text.Parent = TextBoxFrame
 			Text.BackgroundTransparency = 1
@@ -896,7 +896,7 @@ function akdo.Creatakdo()
 			return TextBoxFrame
 		end
 
-		--[[function akdo:addToggleAndTextBox(parent, name, Info, callback)
+		--[[function akdo.addToggleAndTextBox(parent, name, Info, callback)
 			local callback = callback or function() end
 			local toggleFrame = Instance.new("Frame")
 			local TextButton = Instance.new("TextButton")
@@ -905,7 +905,7 @@ function akdo.Creatakdo()
 			toggleFrame.Parent = parent
 			toggleFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
 			toggleFrame.Size = akdo.Setting.Properties.ButtonSize
-			akdo:addCorner(toggleFrame, akdo.Setting.ElementCorner)
+			akdo.addCorner(toggleFrame, akdo.Setting.ElementCorner)
 
 			TextButton.Parent = toggleFrame
 			TextButton.BackgroundTransparency = 1
@@ -971,7 +971,7 @@ function akdo.Creatakdo()
 		end
 		]]
 
-		function akdo:addDropdownAndToggle(parent, name, items, itemsPerRow, callback)
+		function akdo.addDropdownAndToggle(parent, name, items, itemsPerRow, callback)
 			callback = callback or function() end
 
 			local DTFrame = Instance.new("Frame")
@@ -984,7 +984,7 @@ function akdo.Creatakdo()
 			DTFrame.Parent = parent
 			DTFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
 			DTFrame.Size = akdo.Setting.Properties.ButtonSize
-			akdo:addCorner(DTFrame, akdo.Setting.ElementCorner)
+			akdo.addCorner(DTFrame, akdo.Setting.ElementCorner)
 
 			DropdownButton.Parent = DTFrame
 			DropdownButton.BackgroundTransparency = 1
@@ -1017,7 +1017,7 @@ function akdo.Creatakdo()
 			DropdownList.Visible = false
 			DropdownList.ScrollBarThickness = 4
 			DropdownList.ScrollingDirection = Enum.ScrollingDirection.Y
-			akdo:addCorner(DropdownList, akdo.Setting.ElementCorner)
+			akdo.addCorner(DropdownList, akdo.Setting.ElementCorner)
 
 			UIGridLayout.Parent = DropdownList
 			UIGridLayout.CellSize = UDim2.new(1 / itemsPerRow, -10, 0, 30)
@@ -1094,13 +1094,13 @@ function akdo.Creatakdo()
 					Item = item
 					callback(toggled, item)
 				end)
-				akdo:addCorner(ItemButton, akdo.Setting.ElementCorner)
+				akdo.addCorner(ItemButton, akdo.Setting.ElementCorner)
 			end
 
 			return DTFrame
 		end
 
-		--[[ function akdo:addDropdownWithButton(parent, name, items, itemsPerRow, callback)
+		--[[ function akdo.addDropdownWithButton(parent, name, items, itemsPerRow, callback)
 			callback = callback or function() end
 
 			local DropdownFrame = Instance.new("Frame")
@@ -1112,7 +1112,7 @@ function akdo.Creatakdo()
 			DropdownFrame.Parent = parent
 			DropdownFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
 			DropdownFrame.Size = akdo.Setting.Properties.ButtonSize
-			akdo:addCorner(DropdownFrame, akdo.Setting.ElementCorner)
+			akdo.addCorner(DropdownFrame, akdo.Setting.ElementCorner)
 
 			DropdownButton.Parent = DropdownFrame
 			DropdownButton.BackgroundTransparency = 1
@@ -1136,7 +1136,7 @@ function akdo.Creatakdo()
 			DropdownList.ClipsDescendants = true
 			DropdownList.Visible = false
 			DropdownList.ScrollBarThickness = 4
-			akdo:addCorner(DropdownList, akdo.Setting.ElementCorner)
+			akdo.addCorner(DropdownList, akdo.Setting.ElementCorner)
 
 			UIGridLayout.Parent = DropdownList
 			UIGridLayout.CellSize = UDim2.new(1 / itemsPerRow, -10, 0, 30)
@@ -1158,7 +1158,7 @@ function akdo.Creatakdo()
 					DropdownList.Visible = false
 					callback(item)
 				end)
-				akdo:addCorner(ItemButton, akdo.Setting.ElementCorner)
+				akdo.addCorner(ItemButton, akdo.Setting.ElementCorner)
 			end
 
 			DropdownShowButton.MouseButton1Click:Connect(function()
@@ -1178,7 +1178,7 @@ function akdo.Creatakdo()
 			end)
 		end ]]
 
-		function akdo:addSliderAndTextBox(parent, name, Info, PlaceholderText, Min, Max, callback, stat, onlyLetters, onlyNumbers)
+		function akdo.addSliderAndTextBox(parent, name, Info, PlaceholderText, Min, Max, callback, stat, onlyLetters, onlyNumbers)
 			local callback = callback or function() end
 
 			local STFrame = Instance.new("Frame")
@@ -1192,7 +1192,7 @@ function akdo.Creatakdo()
 			STFrame.Parent = parent
 			STFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
 			STFrame.Size = akdo.Setting.Properties.ButtonSize
-			akdo:addCorner(STFrame, akdo.Setting.ElementCorner)
+			akdo.addCorner(STFrame, akdo.Setting.ElementCorner)
 
 			TextBox.Parent = STFrame
 			TextBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -1202,7 +1202,7 @@ function akdo.Creatakdo()
 			TextBox.PlaceholderText = PlaceholderText or ""
 			TextBox.TextColor3 = akdo.Setting.Properties.TextColor
 			TextBox.TextScaled = true
-			akdo:addCorner(TextBox, UDim.new(0.15, 0))
+			akdo.addCorner(TextBox, UDim.new(0.15, 0))
 
 			Text.Name = "text"
 			Text.Parent = STFrame
@@ -1218,13 +1218,13 @@ function akdo.Creatakdo()
 			CanvasGroup.BackgroundColor3 = akdo.Setting.Properties.BackgroundColor
 			CanvasGroup.Position = UDim2.new(0.315, 0, 0.26, 0)
 			CanvasGroup.Size = UDim2.new(0.375, 0, 0.45, 0)
-			akdo:addCorner(CanvasGroup, UDim.new(0.5, 0))
-			akdo:addStroke(CanvasGroup, 1, akdo.Setting.Properties.Background_Border_Color)
+			akdo.addCorner(CanvasGroup, UDim.new(0.5, 0))
+			akdo.addStroke(CanvasGroup, 1, akdo.Setting.Properties.Background_Border_Color)
 
 			FillSlider.Parent = CanvasGroup
 			FillSlider.BackgroundColor3 = akdo.Setting.Properties.TextColor
 			FillSlider.Size = UDim2.new(0, 0, 1, 0)
-			akdo:addCorner(FillSlider, UDim.new(0.5, 0))
+			akdo.addCorner(FillSlider, UDim.new(0.5, 0))
 
 			Trigger.Name = "trig"
 			Trigger.Parent = CanvasGroup
@@ -1238,7 +1238,7 @@ function akdo.Creatakdo()
 			SliderValue.Text = "0"
 			SliderValue.TextColor3 = akdo.Setting.Properties.TextColor
 			SliderValue.TextScaled = true
-			akdo:addStroke(SliderValue, 1.5, akdo.Setting.Properties.Background_Border_Color)
+			akdo.addStroke(SliderValue, 1.5, akdo.Setting.Properties.Background_Border_Color)
 
 			local Value
 			local function UpdateSlider(mouseX)
@@ -1319,7 +1319,7 @@ function akdo.Creatakdo()
 		end
 
 
-		function akdo:updateButton(parent, name, Info, callback)
+		function akdo.updateButton(parent, name, Info, callback)
 			local callback = callback or function() end
 			local Button = parent:FindFirstChild("TextButton")
 			local image = parent:FindFirstChild("Image")
@@ -1354,7 +1354,7 @@ function akdo.Creatakdo()
 			end
 		end
 
-		function akdo:updateToggle(parent, name, Info, callback)
+		function akdo.updateToggle(parent, name, Info, callback)
 			local callback = callback or function() end
 			local TextButton = parent:FindFirstChild("TextButton")
 			local toggleimage = parent:FindFirstChild("imageButton")
@@ -1415,7 +1415,7 @@ function akdo.Creatakdo()
 			end
 		end
 
-		function akdo:updateDropdown(parent, name, items, itemsPerRow, callback)
+		function akdo.updateDropdown(parent, name, items, itemsPerRow, callback)
 			local callback = callback or function() end
 			local DropdownButton = parent:FindFirstChild("TextButton")
 			local DropdownList = parent:FindFirstChild("ScrollingFrame")
@@ -1461,11 +1461,11 @@ function akdo.Creatakdo()
 					Item = item
 					callback(item)
 				end)
-				akdo:addCorner(ItemButton, akdo.Setting.ElementCorner)
+				akdo.addCorner(ItemButton, akdo.Setting.ElementCorner)
 			end
 		end
 
-		function akdo:updateSlider(parent, name, Info, min, max, callback)
+		function akdo.updateSlider(parent, name, Info, min, max, callback)
 			local callback = callback or function() end
 			local textLabel = parent:FindFirstChild("text")
 			local CanvasGroup = parent:FindFirstChild("CanvasGroup")
@@ -1537,7 +1537,7 @@ function akdo.Creatakdo()
 			end)
 		end
 
-		function akdo:updateSliderAndTextBox(parent, name, Info, placeholderText, Min, Max, callback)
+		function akdo.updateSliderAndTextBox(parent, name, Info, placeholderText, Min, Max, callback)
 			local callback = callback or function() end
 			local TextBox = parent:FindFirstChild("TextBox")
 			local TextLabel = parent:FindFirstChild("TextLabel")
@@ -1609,7 +1609,7 @@ function akdo.Creatakdo()
 			end)
 		end
 
-		function akdo:updateDropdownAndToggle(parent, name, items, itemsPerRow, callback)
+		function akdo.updateDropdownAndToggle(parent, name, items, itemsPerRow, callback)
 			local callback = callback or function() end
 			local DropdownButton = parent:FindFirstChild("TextButton")
 			local DropdownList = parent:FindFirstChild("ScrollingFrame")
@@ -1669,13 +1669,13 @@ function akdo.Creatakdo()
 					Item = item
 					callback(toggled, item)
 				end)
-				akdo:addCorner(ItemButton, akdo.Setting.ElementCorner)
+				akdo.addCorner(ItemButton, akdo.Setting.ElementCorner)
 			end
 		end
 
 		return frame
 	end
-	function akdo:addLabel(parent, text)
+	function akdo.addLabel(parent, text)
 		local label = Instance.new("TextLabel")
 		label.Size = akdo.Setting.Properties.ButtonSize
 		label.Text = text or "akdo"
@@ -1685,7 +1685,7 @@ function akdo.Creatakdo()
 		label.Parent = parent
 	end
 
-	function akdo:addSection(parent, text)
+	function akdo.addSection(parent, text)
 		local Section = Instance.new("TextLabel")
 		Section.Size = akdo.Setting.Properties.ButtonSize
 		Section.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -1693,11 +1693,11 @@ function akdo.Creatakdo()
 		Section.TextColor3 = akdo.Setting.Properties.TextColor
 		Section.TextScaled = true
 		Section.Parent = parent
-		akdo:addCorner(Section, akdo.Setting.ElementCorner)
+		akdo.addCorner(Section, akdo.Setting.ElementCorner)
 		return Section
 	end
 
-	function akdo:addRow(parent, framePerRow, lines)
+	function akdo.addRow(parent, framePerRow, lines)
 		local row = Instance.new("Frame")
 		row.Name = "RFrame"
 		row.Size = UDim2.new(0.95, 0, 0, 30)
