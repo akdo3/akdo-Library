@@ -6,16 +6,16 @@ akdo.Setting = {
 	Properties = {
 		Background_Border_Color = Color3.fromRGB(0, 0, 0)	,
 		BackgroundColor 		= Color3.fromRGB(20, 20, 20),
-		TextColor 				= Color3.fromRGB(0, 255, 0) ,
+		TextColor 			= Color3.fromRGB(0, 255, 0) ,
 		ButtonColor 			= Color3.fromRGB(10, 10, 10),
-		ButtonSize				= UDim2.new(0.95, 0, 0, 30)	,
+		ButtonSize			= UDim2.new(0.95, 0, 0, 30)	,
 	},
-	TweenInfo 		= TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-	Padding 		= 10,
+	TweenInfo 	= TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+	Padding 	= 10,
 	ElementCorner 	= UDim.new(0.2, 0),
 	Image 	= {
-		ImageSize  	 = UDim2.new(0.1, 0, 1, 0),
-		InfoImagePOS = UDim2.new(0.9, 0,0, 0) ,
+		ImageSize  	= UDim2.new(0.1, 0, 1, 0),
+		InfoImagePOS 	= UDim2.new(0.9, 0,0, 0) ,
 	},
 	TextSize = {
 		Text = UDim2.new(1, 0, 1, 0),
