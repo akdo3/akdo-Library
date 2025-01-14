@@ -24,7 +24,7 @@ Organize your controls by adding multiple tabs to the frame.
 local Main = akdo:addTab(Frame, "Main")
 ```
 Frame = Parent of the tab
-Main = Name of tab
+Main = Name of tab must be in ""
 
 Adding Controls
 Add interactive controls like sliders, dropdowns, and toggles to the tabs.
@@ -33,13 +33,13 @@ Sliders
 Use sliders to modify player attributes such as speed.
 
 ```lua
-akdo:addSlider(Player, "Speed", "Adjust the player's speed", 0, 500, function(value)
+akdo:addSlider(Main, "Speed", "Adjust the player's speed", 0, 500, function(value)
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
 end)
 ```
-Player = Which Tab the slider will be
-Speed = Name of the Slider
-Adjust the player's speed = This is the Info
+Main = Which Tab the slider will be
+Speed = Name of the Slider must be in ""
+Adjust the player's speed = This is the Info must be in ""
 0 = Min Slider Value
 500 = Max Slider Value
 
@@ -47,10 +47,21 @@ Dropdowns
 Create dropdowns to allow users to select from multiple options.
 
 ```lua
-akdo:addDropdown(Main, "Device Type", "Select your device type", {"Mobile", "PC"}, 2, function(val)
-    print("Selected device type:", val)
+local options = {
+    "Option 1",
+    "Option 2",
+    "Option 3",
+}
+akdo:addDropdown(Main, "Select option", "Select the option you wont", options, 2, function(val)
+    print("Selected Value:", val)
 end)
 ```
+Main = Which Tab the slider will be
+Select option = Name of the Slider must be in ""
+Select the option you wont = This is the Info must be in ""
+0 = Min Slider Value
+500 = Max Slider Value
+
 Toggles
 Add toggles to enable or disable features like space flight mode.
 
