@@ -14,7 +14,7 @@ local parent = -- (Reference to your parent container)
 local framePerRow = 3 -- Number of frames per row
 local lines = 2 -- Number of lines,If you wont you can remove this line 
 
-'' local row = akdo:addRow(parent, 4, 2) ''
+''' local row = akdo:addRow(parent, 4, 2) '''
 framePerRow: Number of frames per row (optional).
 lines: Number of lines for the grid (optional).
 Adding a Toggle
