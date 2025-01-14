@@ -10,12 +10,6 @@
 - **Multilingual Support**: Offer your users a global experience by providing multilingual UI options.
 - **Device-Specific Features**: Customize the UI based on the user's platform (Mobile or PC) for optimal performance.
 
-## Installation
-
-1. Clone or download the repository to your local machine.
-2. Import the `akdo` library files into your Roblox project.
-3. Integrate the library into your game by following the usage instructions below.
-
 ## Usage
 
 ### Setting Up the UI Frame
@@ -27,7 +21,7 @@ local Frame = akdo.createFrame("akdo")
 Adding Tabs
 Organize your controls by adding multiple tabs to the frame.
 
-lua
+```lua
 Copy code
 local Main = akdo:addTab(Frame, "Main")
 local Player = akdo:addTab(Frame, "Player")
