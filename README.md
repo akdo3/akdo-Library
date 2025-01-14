@@ -74,9 +74,9 @@ Add toggle to enable or disable features.
 ```lua
 akdo:addToggle(Main, "Fly", "You Will Fly", function(value)
     if value then
-
+        print("On")
     else
-
+        print("Off")
     end
 end)
 ```
@@ -84,14 +84,8 @@ Main = Which Tab the slider will be.
 Fly = Name of the Toggle, Must be in "".
 You Will Fly = This is the Info, Must be in "", If you dont need it make only this "".
 
-Contribution
-We encourage contributions to improve the akdo UI Library! If you have any suggestions, bug reports, or feature requests, feel free to submit a pull request or open an issue.
-
-License
-This project is licensed under the MIT License. See the LICENSE file for more details.
-
-markdown
-Copy code
+Suggestions
+We encourage suggestions to improve akdo Library! If you have any suggestions, error reports or feature requests, feel free to send them to this Discor server [].
 
 ### Key Improvements:
 1. **Clearer Structure**: I've broken down the sections more clearly, improving readability.
