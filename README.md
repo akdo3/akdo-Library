@@ -19,7 +19,7 @@ local Frame = akdo.createFrame("akdo")
 
 `akdo` = Title of the frame.
 
-### Adding Tabs
+### Adding Tab
 Organize your controls by adding multiple tabs to the frame.
 
 ```lua
@@ -32,7 +32,7 @@ local Main = akdo:addTab(Frame, "Main")
 ## Adding Controls
 Add interactive controls like buttons, sliders, dropdowns, and toggles to the tabs.
 
-### Buttons
+### Button
 ```lua
 akdo:addButton(Main, "Speed", "Change your speed", function()
     print("Clicked")
@@ -43,7 +43,7 @@ end)
 `Speed` = Name of the button.
 `Change your speed` = Info about the button.
 
-### Sliders
+### Slider
 Use sliders to modify player attributes such as speed.
 
 ```lua
@@ -58,7 +58,7 @@ end)
 `0` = Min Slider Value.
 `500` = Max Slider Value.
 
-### Dropdowns
+### Dropdown
 Create dropdowns to allow users to choose from multiple options.
 
 ```lua
@@ -77,7 +77,7 @@ end)
 `Choose` the option you want = Info.
 `options` = The list of options available in the dropdown.
 
-### Toggles
+### Toggle
 Add toggles to enable or disable features.
 
 ```lua
