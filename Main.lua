@@ -119,15 +119,7 @@ function akdo:createFrame(titleText)
 	header.Size = UDim2.new(1, 0, 0.1237, 0)
 	header.BackgroundColor3 = Setting.Properties.BackgroundColor
 	header.Parent = frame
-
 	addCorner(header, UDim.new(0.3, 0))
-
-
-	local UICornerOverlayE = Instance.new("Frame")
-	UICornerOverlayE.BackgroundColor3 = Setting.Properties.BackgroundColor
-	UICornerOverlayE.Position = UDim2.new(0, 0, 0.5, 0)
-	UICornerOverlayE.Size = UDim2.new(1, 0, 0.5, 0)
-	UICornerOverlayE.Parent = header
 
 	local title = Instance.new("TextLabel")
 	title.Position = UDim2.new(0.015, 0,0, 0)
@@ -217,6 +209,7 @@ function akdo:createFrame(titleText)
 			local tween = TweenService:Create(frame, Setting.TweenInfo, {Size = UDim2.new(0.05, 0,0.05, 0), Position = UDim2.new(0.5, 0, 0.5, 0)})
 			tween:Play()
 			tween.Completed:Wait()
+			frame.Visible = false
 
 			local MinimizedButton = Instance.new("TextButton")
 			MinimizedButton.Text = titleText or "akdo"
@@ -289,6 +282,7 @@ function akdo:createFrame(titleText)
 
 			MinimizedButton.MouseButton1Click:Connect(function()
 				MinimizedButton:Destroy()
+				frame.Visible = true
 				local goalRestore = {Size = originalSize, Position = originalPosition}
 				local tweenRestoreAnim = TweenService:Create(frame, Setting.TweenInfo, goalRestore)
 				tweenRestoreAnim:Play()
@@ -1593,6 +1587,72 @@ function akdo:createFrame(titleText)
 				addCorner(ItemButton, Setting.ElementCorner)
 			end
 		end	]]
+		
+		function EI:addLabel(text, parent)
+			local label = Instance.new("TextLabel")
+			label.Size = akdo.Setting.Properties.ButtonSize
+			label.Text = text or "Label"
+			label.TextColor3 = akdo.Setting.Properties.TextColor
+			label.TextScaled = true
+			label.BackgroundTransparency = 1
+			label.Parent = parent or tabContent
+		end
+
+		function EI:addSection(text, parent)
+			local Section = Instance.new("TextLabel")
+			Section.Size = akdo.Setting.Properties.ButtonSize
+			Section.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+			Section.Text = text or "Section"
+			Section.TextColor3 = akdo.Setting.Properties.TextColor
+			Section.TextScaled = true
+			Section.Parent = parent or tabContent
+			akdo.addCorner(Section, akdo.Setting.ElementCorner)
+		end
+
+		function EI:addRow(framePerRow, lines, parent)
+			local row = Instance.new("Frame")
+			row.Name = "RFrame"
+			row.Size = UDim2.new(0.95, 0, 0, 30)
+			row.BackgroundTransparency = 1
+			row.Parent = parent or tabContent
+
+			local GridLayout = Instance.new("UIGridLayout")
+			GridLayout.CellPadding = UDim2.new(0.02, 0, 0.02, 0)
+			GridLayout.FillDirection = Enum.FillDirection.Horizontal
+			GridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+			GridLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+			GridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+			GridLayout.Parent = row
+
+			local function update()
+				local buttonCount = 0
+				for _, child in ipairs(row:GetChildren()) do
+					if child:IsA("Frame") or child:IsA("TextButton") or child:IsA("ImageButton") then
+						buttonCount = buttonCount + 1
+					end
+				end
+
+				local actualFramePerRow = framePerRow and math.min(buttonCount, framePerRow) or buttonCount
+				local totalPaddingScale = (actualFramePerRow - 1) * GridLayout.CellPadding.X.Scale
+				local availableWidthScale = 1 - totalPaddingScale
+				local cellWidthScale = availableWidthScale / actualFramePerRow
+
+				local rowHeight = 1
+				if lines and lines > 0 then
+					rowHeight = 1 / lines
+				else
+					local rowsNeeded = math.ceil(buttonCount / (framePerRow or buttonCount))
+					rowHeight = 1 / rowsNeeded
+				end
+
+				GridLayout.CellSize = UDim2.new(cellWidthScale, 0, rowHeight, 0)
+			end
+
+			row.ChildAdded:Connect(update)
+			row.ChildRemoved:Connect(update)
+			update()
+		end
+		
 		return EI
 	end
 
