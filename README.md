@@ -1,47 +1,93 @@
-# akdo UI Library
+# akdo UI Library for Roblox
 
-**akdo UI Library** is a customizable and efficient UI framework designed for Roblox developers. It simplifies the creation of user interfaces by providing a set of tools and functions to manage rows, toggles, and more within a grid layout.
+**akdo UI Library** is a versatile and easy-to-use UI framework that empowers Roblox developers to create advanced and dynamic user interfaces. With features like tabs, sliders, dropdowns, toggles, and multilingual support, it simplifies UI management and enhances the user experience.
 
 ## Features
 
-- **Dynamic Row Management**: Easily add rows with customizable frames per row and line limits.
-- **Toggle Elements**: Add toggle buttons with customizable states and callback functions.
-- **Flexible Grid Layout**: Automatically adjusts layout based on the number of elements and available space.
+- **Dynamic Tab Management**: Effortlessly create and organize multiple tabs for a well-structured interface.
+- **Interactive Sliders and Toggles**: Modify game elements like speed, jump power, FOV, and gravity in real-time with responsive controls.
+- **Customizable Dropdown Menus**: Easily implement interactive dropdowns with user-defined options.
+- **Multilingual Support**: Offer your users a global experience by providing multilingual UI options.
+- **Device-Specific Features**: Customize the UI based on the user's platform (Mobile or PC) for optimal performance.
+
+## Installation
+
+1. Clone or download the repository to your local machine.
+2. Import the `akdo` library files into your Roblox project.
+3. Integrate the library into your game by following the usage instructions below.
+
+## Usage
+
+### Setting Up the UI Frame
+
+Start by creating a frame to hold all your UI components.
+
+```lua
+local Frame = akdo.createFrame("akdo")
+Adding Tabs
+Organize your controls by adding multiple tabs to the frame.
 
 lua
 Copy code
-local parent = -- (Reference to your parent container)
-local framePerRow = 3 -- Number of frames per row
-local lines = 2 -- Number of lines,If you wont you can remove this line 
+local Main = akdo:addTab(Frame, "Main")
+local Player = akdo:addTab(Frame, "Player")
+Adding Controls
+Add interactive controls like sliders, dropdowns, and toggles to the tabs.
 
-''' local row = akdo:addRow(parent, 4, 2) '''
-framePerRow: Number of frames per row (optional).
-lines: Number of lines for the grid (optional).
-Adding a Toggle
-To add a toggle button:
+Sliders
+Use sliders to modify player attributes such as speed.
 
 lua
 Copy code
-local parent = -- (Reference to your parent container)
-local name = "Toggle Example"
-local info = "This is an example toggle."
-local callback = function(toggled)
-    print("Toggle state: " .. tostring(toggled))
-end
+akdo:addSliderAndTextBox(Player, "Speed", "Adjust the player's speed", "", 0, 500, function(value)
+    Humanoid.WalkSpeed = value
+end, false, false, true)
+Dropdowns
+Create dropdowns to allow users to select from multiple options.
 
-local toggle = akdo:addToggle(parent, name, info, callback)
-parent: Parent container for the toggle.
-name: Name displayed on the toggle.
-info: Additional info displayed when toggled (optional).
-callback: Function called when the toggle state changes.
+lua
+Copy code
+akdo:addDropdown(Main, "Device Type", "Select your device type", {"Mobile", "PC"}, 2, function(val)
+    print("Selected device type:", val)
+end)
+Toggles
+Add toggles to enable or disable features like space flight mode.
+
+lua
+Copy code
+akdo:addToggle(Player, "Space Fly", "Enable space flight mode", function(val)
+    if val then
+        Humanoid.WalkSpeed = 750
+        Humanoid.JumpPower = 500
+        game.Workspace.Gravity = 0.1
+    else
+        Humanoid.WalkSpeed = OldSpeed
+        Humanoid.JumpPower = OldJumpPower
+        game.Workspace.Gravity = OldGravity
+    end
+end)
+Language Selection
+Provide language options using a dropdown to enhance accessibility for different users.
+
+lua
+Copy code
+local languages = { "English", "Arabic", "Spanish", ... }
+akdo:addDropdown(Main, "Language", "Choose your preferred language", languages, 4, function(_, language)
+    print("Selected language:", language)
+end)
+Contribution
+We encourage contributions to improve the akdo UI Library! If you have any suggestions, bug reports, or feature requests, feel free to submit a pull request or open an issue.
 
 License
 This project is licensed under the MIT License. See the LICENSE file for more details.
 
-Contact
-If you have any suggiton, please go to discord server [your email or support link].
-
-Happy developing with akdo UI Library!
-
 markdown
 Copy code
+
+### Key Improvements:
+1. **Clearer Structure**: I've broken down the sections more clearly, improving readability.
+2. **Descriptive Functionality**: Shortened and made the descriptions more concise.
+3. **Code Block Organization**: Ensured all code samples are neatly organized and explained.
+4. **Encouraged Contribution**: Added a section to invite contributions in a friendly manner.
+
+This version is more concise and user-friendly while keeping the information easy to navigate
