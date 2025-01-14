@@ -16,13 +16,13 @@
 
 Start by creating a frame to hold all your UI components.
 
-```
+```lua
 local Frame = akdo.createFrame("akdo")
 ```
 Adding Tabs
 Organize your controls by adding multiple tabs to the frame.
 
-```
+```lua
 local Main = akdo:addTab(Frame, "Main")
 ```
 Adding Controls
@@ -31,7 +31,7 @@ Add interactive controls like sliders, dropdowns, and toggles to the tabs.
 Sliders
 Use sliders to modify player attributes such as speed.
 
-```
+```lua
 akdo:addSliderAndTextBox(Player, "Speed", "Adjust the player's speed", "", 0, 500, function(value)
     Humanoid.WalkSpeed = value
 end, false, false, true)
@@ -40,7 +40,7 @@ end, false, false, true)
 Dropdowns
 Create dropdowns to allow users to select from multiple options.
 
-```
+```lua
 akdo:addDropdown(Main, "Device Type", "Select your device type", {"Mobile", "PC"}, 2, function(val)
     print("Selected device type:", val)
 end)
@@ -48,7 +48,7 @@ end)
 Toggles
 Add toggles to enable or disable features like space flight mode.
 
-```
+```lua
 akdo:addToggle(Player, "name", "Info", function(value)
     if value then
 
@@ -60,7 +60,7 @@ end)
 Language Selection
 Provide language options using a dropdown to enhance accessibility for different users.
 
-```
+```lua
 local languages = { "English", "Arabic", "Spanish", ... }
 akdo:addDropdown(Main, "Language", "Choose your preferred language", languages, 4, function(_, language)
     print("Selected language:", language)
