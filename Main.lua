@@ -1606,7 +1606,7 @@ function akdo:createFrame(titleText)
 			Section.TextColor3 = Setting.Properties.TextColor
 			Section.TextScaled = true
 			Section.Parent = parent or tabContent
-			akdo.addCorner(Section, Setting.ElementCorner)
+			addCorner(Section, Setting.ElementCorner)
 		end
 
 		function EI:addRow(framePerRow, lines, parent)
