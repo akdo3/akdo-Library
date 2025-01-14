@@ -919,24 +919,24 @@ function akdo:createFrame(titleText)
 
 			CanvasGroup.Parent = SliderFrame
 			CanvasGroup.BackgroundColor3 = Setting.Properties.BackgroundColor
-			CanvasGroup.Position = UDim2.new(0.317, 0,0.267, 0)
-			CanvasGroup.Size = UDim2.new(0.561, 0,0.452, 0)
+			CanvasGroup.Position = UDim2.new(0.317, 0, 0.267, 0)
+			CanvasGroup.Size = UDim2.new(0.561, 0, 0.452, 0)
 			addCorner(CanvasGroup, UDim.new(0.5, 0))
 			addStroke(CanvasGroup, 1, Setting.Properties.Background_Border_Color)
 
 			FillSlider.Parent = CanvasGroup
 			FillSlider.BackgroundColor3 = Setting.Properties.TextColor
-			FillSlider.Size = UDim2.new(0, 0,1, 0)
+			FillSlider.Size = UDim2.new(0, 0, 1, 0)
 			addCorner(FillSlider, UDim.new(0.5, 0))
 
 			Trigger.Parent = CanvasGroup
 			Trigger.BackgroundTransparency = 1
-			Trigger.Size = UDim2.new(1, 0,1, 0)
+			Trigger.Size = UDim2.new(1, 0, 1, 0)
 			Trigger.TextTransparency = 1
 
 			SliderValue.Parent = CanvasGroup
 			SliderValue.BackgroundTransparency = 1
-			SliderValue.Position = UDim2.new(0, 0,0.06, 0)
+			SliderValue.Position = UDim2.new(0, 0, 0.06, 0)
 			SliderValue.Size = UDim2.new(1, 0, 1, 0)
 			SliderValue.Text = "0"
 			SliderValue.TextColor3 = Setting.Properties.TextColor
@@ -945,7 +945,7 @@ function akdo:createFrame(titleText)
 
 			SliderText.BackgroundTransparency = 1
 			SliderText.Parent = SliderFrame
-			SliderText.Size = UDim2.new(0.293, 0,1, 0)
+			SliderText.Size = UDim2.new(0.293, 0, 1, 0)
 			SliderText.Text = name or "Slider"
 			SliderText.TextColor3 = Setting.Properties.TextColor
 			SliderText.TextScaled = true
@@ -962,25 +962,24 @@ function akdo:createFrame(titleText)
 			if Info then
 				if Info == "" then
 					SliderText.Size = UDim2.new(0.3, 0, 1, 0)
-					CanvasGroup.Size = UDim2.new(0.642, 0,0.4519, 0)
+					CanvasGroup.Size = UDim2.new(0.642, 0, 0.4519, 0)
 					Image:Destroy()
 				else
 					Image.MouseButton1Click:Connect(function()
 						TextInfo.Text = Info
-						if InfoFrame.Size.Y ~= {0.148, 0} then
+						if InfoFrame.Size.Y ~= UDim2.new(0, 0, 0.148, 0) then
 							InfoFrame.Visible = true
-							local tweenSize = TweenService:Create(InfoFrame, Setting.TweenInfo, {Size = UDim2.new(0.7133, 0,0.148, 0)})
+							local tweenSize = TweenService:Create(InfoFrame, Setting.TweenInfo, {Size = UDim2.new(0.7133, 0, 0.148, 0)})
 							tweenSize:Play()
 						end
 					end)
 				end
 			else
 				SliderText.Size = UDim2.new(0.3, 0, 1, 0)
-				CanvasGroup.Size = UDim2.new(0.642, 0,0.4519, 0)
+				CanvasGroup.Size = UDim2.new(0.642, 0, 0.4519, 0)
 				Image:Destroy()
 			end
 
-			local Value
 			local function UpdateSlider(mouseX)
 				local sliderPosX = Trigger.AbsolutePosition.X
 				local sliderSizeX = Trigger.AbsoluteSize.X
@@ -991,7 +990,7 @@ function akdo:createFrame(titleText)
 
 				local Value = output * (MaxV - MinV) + MinV
 
-				local tween = game.TweenService:Create(FillSlider, Setting.TweenInfo, {Size = UDim2.new(output, 0, 1, 0)})
+				local tween = TweenService:Create(FillSlider, Setting.TweenInfo, {Size = UDim2.new(output, 0, 1, 0)})
 				tween:Play()
 
 				SliderValue.Text = tostring(math.floor(Value))
@@ -1000,89 +999,28 @@ function akdo:createFrame(titleText)
 
 			local isDragging = false
 
-			Trigger.MouseButton1Down:Connect(function ()
+			local function startDrag(input)
 				isDragging = true
+				UpdateSlider(input.Position.X)
+			end
 
-				while isDragging do
-					local mouse = UserInputService:GetMouseLocation().X
-					UpdateSlider(mouse)
-
-					wait()
-				end
-			end)
-
-			UserInputService.InputEnded:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			local function stopDrag(input)
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 					isDragging = false
 				end
-			end)
-			
-			function SF:updateSlider(name, Info, min, max, callback, parent)
-				local callback = callback or function() end
-
-				if name and name ~= "" then
-					SliderText.Text = name or SliderText.Text
-				end
-
-				if Info and Info ~= "" then
-					if Image then
-						Image.MouseButton1Click:Connect(function()
-							TextInfo.Text = Info
-						end)
-					else
-						CanvasGroup.Size = UDim2.new(0.561, 0,0.452, 0)
-						SliderText.Size = UDim2.new(0.293, 0,1, 0)
-
-						local image = Instance.new("ImageButton")
-						image.Parent = parent
-						image.BackgroundTransparency = 1
-						image.Position = Setting.Image.InfoImagePOS
-						image.Size = Setting.Image.ImageSize
-						image.Image = "http://www.roblox.com/asset/?id=6026568210"
-						image.ImageColor3 = Setting.Properties.TextColor
-						image.MouseButton1Click:Connect(function()
-							TextInfo.Text = Info
-							if InfoFrame.Size.Y ~= {0.148, 0} then
-								InfoFrame.Visible = true
-								local tweenSize = TweenService:Create(InfoFrame, Setting.TweenInfo, {Size = UDim2.new(0.7133, 0, 0.148, 0)})
-								tweenSize:Play()
-							end
-						end)
-					end
-				end
-
-				local function updateSliderValue(mouseX)
-					local sliderPosX = CanvasGroup.AbsolutePosition.X
-					local sliderSizeX = CanvasGroup.AbsoluteSize.X
-					local output = math.clamp((mouseX - sliderPosX) / sliderSizeX, 0, 1)
-
-					local value = output * (max - min) + min
-					local tween = TweenService:Create(FillSlider, Setting.TweenInfo, {Size = UDim2.new(output, 0, 1, 0)})
-					tween:Play()
-
-					SliderValue.Text = tostring(math.floor(value))
-					if callback then
-						callback(value)
-					end
-				end
-
-				local isDragging = false
-				local trigger = parent:FindFirstChild("CanvasGroup"):FindFirstChildOfClass("TextButton")
-				trigger.MouseButton1Down:Connect(function()
-					isDragging = true
-					while isDragging do
-						local mouseX = UserInputService:GetMouseLocation().X
-						updateSliderValue(mouseX)
-						wait()
-					end
-				end)
-
-				UserInputService.InputEnded:Connect(function(input)
-					if input.UserInputType == Enum.UserInputType.MouseButton1 then
-						isDragging = false
-					end
-				end)
 			end
+
+			Trigger.MouseButton1Down:Connect(startDrag)
+			Trigger.TouchTap:Connect(startDrag)
+
+			UserInputService.InputChanged:Connect(function(input)
+				if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+					UpdateSlider(input.Position.X)
+				end
+			end)
+
+			UserInputService.InputEnded:Connect(stopDrag)
+
 			return SF
 		end
 
@@ -1391,20 +1329,28 @@ function akdo:createFrame(titleText)
 			end
 
 			local isDragging = false
-			Trigger.MouseButton1Down:Connect(function()
+
+			local function startDrag(input)
 				isDragging = true
-				while isDragging do
-					local mouse = UserInputService:GetMouseLocation().X
-					UpdateSlider(mouse)
-					wait()
+				UpdateSlider(input.Position.X)
+			end
+
+			local function stopDrag(input)
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+					isDragging = false
+				end
+			end
+
+			Trigger.MouseButton1Down:Connect(startDrag)
+			Trigger.TouchTap:Connect(startDrag)
+
+			UserInputService.InputChanged:Connect(function(input)
+				if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+					UpdateSlider(input.Position.X)
 				end
 			end)
 
-			UserInputService.InputEnded:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 then
-					isDragging = false
-				end
-			end)
+			UserInputService.InputEnded:Connect(stopDrag)
 
 			if stat then
 				TextBox:GetPropertyChangedSignal("Text"):Connect(function()
