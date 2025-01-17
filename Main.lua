@@ -436,7 +436,7 @@ function akdo:createFrame(titleText)
 	function Tabs:addTab(name)
 		local tabButton = Instance.new("TextButton")
 		tabButton.Size = UDim2.new(0.8, 0, 0, 35)
-		tabButton.Text = name or "akdo"
+		tabButton.Text = name or "Tab"
 		tabButton.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
 		tabButton.TextColor3 = akdo.Setting.Properties.TextColor
 		tabButton.TextScaled = true
@@ -456,39 +456,34 @@ function akdo:createFrame(titleText)
 		contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 		contentLayout.Padding = UDim.new(0, 5)
 
-		local function updateTabContentCanvasSize()
-			local contentHeight = contentLayout.AbsoluteContentSize.Y
-			tabContentScroll.CanvasSize = UDim2.new(0, 0, 0, contentHeight + 10)
-		end
-
-		contentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateTabContentCanvasSize)
-		updateTabContentCanvasSize()
-
 		tabs[#tabs + 1] = tabContent
 		tabsButtons[#tabsButtons + 1] = tabButton
 
-		local originalSize = tabButton.Size
-		local enlargedSize = UDim2.new(originalSize.X.Scale + 0.1, originalSize.X.Offset, originalSize.Y.Scale , originalSize.Y.Offset)
-
 		tabButton.MouseEnter:Connect(function()
-			tabButton:TweenSize(enlargedSize, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true)
-		end)
-		
-		tabButton.MouseLeave:Connect(function()
-			tabButton:TweenSize(originalSize, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true)
+			local tween = TweenService:Create(tabButton, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0.95, 0, 0, 35)})
+			tween:Play()
 		end)
 
+		tabButton.MouseLeave:Connect(function()
+			local tween = TweenService:Create(tabButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(0.8, 0, 0, 35)})
+			tween:Play()
+		end)
 
 		tabButton.MouseButton1Click:Connect(function()
+			local tween = TweenService:Create(tabButton, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(1, 0, 0, 38)})
+			tween:Play()
 			for _, tab in pairs(tabs) do
 				tab.Visible = false
 			end
 			for _, tabsButton in pairs(tabsButtons) do
 				tabsButton.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
 			end
-			tabContentScroll.CanvasSize = UDim2.new(1, 0, 0, #tabContent:GetChildren() * 30)
+			tabContentScroll.CanvasSize = UDim2.new(1, 0, 0, (#tabContent:GetChildren() * 35) - (2 * 35) + 10)
 			tabButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 			tabContent.Visible = true
+			tween.Completed:Wait()
+			local tween = TweenService:Create(tabButton, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0.95, 0, 0, 35)})
+			tween:Play()
 		end)
 
 		local EI = {}
