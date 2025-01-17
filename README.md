@@ -115,9 +115,16 @@ local TextBox = akdo:addTextBox(name, Info, placeholderText, callback, parent, s
 ```lua
 local DropdownAndToggle = akdo:addDropdownAndToggle(name, items, itemsPerRow, callback, parent)
 ```
-#### addSliderAndTextBox
+#### SliderAndTextBox
 ```lua
 local SliderAndTextBox = addSliderAndTextBox(name, Info, PlaceholderText, Min, Max, callback, parent, stat, onlyLetters, onlyNumbers)
+```
+#### FrameStyle
+```lua
+Frame:FrameStyle(1)
+```
+```lua
+Frame:FrameStyle(2)
 ```
 
 ## Example
