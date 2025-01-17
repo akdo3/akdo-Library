@@ -410,8 +410,8 @@ function akdo:createFrame(titleText)
 	updateTabContainerCanvasSize()
 
 	local tabContentContainer = Instance.new("Frame")
-	tabContentContainer.Size = UDim2.new(0.689, 0, 0.785, 0)
-	tabContentContainer.Position = UDim2.new(0.288, 0, 0.177, 0)
+	tabContentContainer.Size = UDim2.new(0.76, 0, 0.809, 0)
+	tabContentContainer.Position = UDim2.new(0.217, 0, 0.153, 0)
 	tabContentContainer.BackgroundColor3 = akdo.Setting.Properties.Background_Border_Color
 	tabContentContainer.Parent = Frame
 	addCorner(tabContentContainer, UDim.new(0, 8))
@@ -449,8 +449,8 @@ function akdo:createFrame(titleText)
 			buttonMinimize.Size = UDim2.new(0.05, 0,1.767, 0)
 			buttonMinimize.Parent = Header
 
-			tabContentContainer.Size = UDim2.new(0.689, 0, 0.785, 0)
-			tabContentContainer.Position = UDim2.new(0.288, 0, 0.177, 0)
+			tabContentContainer.Size = UDim2.new(0.76, 0, 0.809, 0)
+			tabContentContainer.Position = UDim2.new(0.217, 0, 0.153, 0)
 		elseif option == "Two" or option == 2 then
 			local HeaderUICorner = Header:FindFirstChild("UICorner")
 			Header.Size = UDim2.new(0.215, 0, 0.97, 0)
@@ -1616,5 +1616,13 @@ function akdo:createFrame(titleText)
 
 	return TabsAndStyles
 end
+
+local fram = akdo:createFrame()
+local tab = fram:addTab()
+local tab = fram:addTab()
+local tab = fram:addTab()
+local button = tab:addButton()
+local button = tab:addButton()
+local button = tab:addButton()
 
 return akdo
