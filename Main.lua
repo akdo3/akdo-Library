@@ -1,39 +1,39 @@
 local akdo = {}
+akdo.Setting = {
+	Properties = {
+		Background_Border_Color = Color3.fromRGB(0, 0, 0)	,
+		BackgroundColor 		= Color3.fromRGB(10, 10, 18),
+		TextColor 				= Color3.fromRGB(0, 255, 0) ,
+		ButtonColor 			= Color3.fromRGB(10, 10, 18),
+		ButtonSize				= UDim2.new(0.95, 0, 0, 30)	,
+	},
+	TweenInfo 		= TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+	Padding 		= 10,
+	ElementCorner 	= UDim.new(0.2, 0),
+	Image 	= {
+		ImageSize  	 = UDim2.new(0.1, 0, 1, 0),
+		InfoImagePOS = UDim2.new(0.9, 0,0, 0) ,
+	},
+	TextSize = {
+		Text = UDim2.new(1, 0, 1, 0),
+		Text1 = UDim2.new(0.9, 0, 1, 0),
+		Text2 = UDim2.new(0.8, 0, 1, 0),
+		Text3 = UDim2.new(0.7, 0, 1, 0),
+	},
+	Toggle = {
+		Stare = "",
+		Circl = "",
+		Normal = "",
+		Square = "",
+	},
+	Slider = {
+
+	},
+}
 
 function akdo:createFrame(titleText)
 	local UserInputService = game:GetService("UserInputService")
 	local TweenService = game:GetService("TweenService")
-
-	akdo.Setting = {
-		Properties = {
-			Background_Border_Color = Color3.fromRGB(0, 0, 0)	,
-			BackgroundColor 		= Color3.fromRGB(20, 20, 20),
-			TextColor 				= Color3.fromRGB(0, 255, 0) ,
-			ButtonColor 			= Color3.fromRGB(10, 10, 10),
-			ButtonSize				= UDim2.new(0.95, 0, 0, 30)	,
-		},
-		TweenInfo 		= TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-		Padding 		= 10,
-		ElementCorner 	= UDim.new(0.2, 0),
-		Image 	= {
-			ImageSize  	 = UDim2.new(0.1, 0, 1, 0),
-			InfoImagePOS = UDim2.new(0.9, 0,0, 0) ,
-		},
-		TextSize = {
-			Text = UDim2.new(1, 0, 1, 0),
-			Text1 = UDim2.new(0.9, 0, 1, 0),
-			Text2 = UDim2.new(0.8, 0, 1, 0),
-			Text3 = UDim2.new(0.7, 0, 1, 0),
-		},
-		Toggle = {
-			Stare = "",
-			Circl = "",
-			Normal = "",
-		},
-		Slider = {
-
-		}
-	}
 
 	local function addCorner(instance, radius1)
 		local corner = Instance.new("UICorner")
@@ -49,18 +49,18 @@ function akdo:createFrame(titleText)
 		Stroke.ApplyStrokeMode = StrockType or Enum.ApplyStrokeMode.Contextual
 	end
 
-	local screenGui = Instance.new("ScreenGui")
-	screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	local ScreenGui = Instance.new("ScreenGui")
+	ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
-	local frame = Instance.new("Frame")
-	frame.Position = UDim2.new(0.25, 0, 0.25, 0)
-	frame.Size = UDim2.new(0.5, 0, 0.5, 0)
-	frame.BackgroundColor3 = akdo.Setting.Properties.Background_Border_Color
-	frame.Parent = screenGui
-	addCorner(frame, UDim.new(0.03, 0))
+	local Frame = Instance.new("Frame")
+	Frame.Position = UDim2.new(0.25, 0, 0.25, 0)
+	Frame.Size = UDim2.new(0.5, 0, 0.5, 0)
+	Frame.BackgroundColor3 = akdo.Setting.Properties.Background_Border_Color
+	Frame.Parent = ScreenGui
+	addCorner(Frame, UDim.new(0.03, 0))
 
 	local DropShadowHolder = Instance.new("Frame")
-	DropShadowHolder.Parent = frame
+	DropShadowHolder.Parent = Frame
 	DropShadowHolder.BackgroundTransparency = 1
 	DropShadowHolder.Size = UDim2.new(1, 0, 1, 0)
 	DropShadowHolder.ZIndex = 0
@@ -86,14 +86,14 @@ function akdo:createFrame(titleText)
 
 	local function update(input)
 		local delta = input.Position - dragStart
-		frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 	end
 
-	frame.InputBegan:Connect(function(input)
+	Frame.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = true
 			dragStart = input.Position
-			startPos = frame.Position
+			startPos = Frame.Position
 
 			input.Changed:Connect(function()
 				if input.UserInputState == Enum.UserInputState.End then
@@ -103,7 +103,7 @@ function akdo:createFrame(titleText)
 		end
 	end)
 
-	frame.InputChanged:Connect(function(input)
+	Frame.InputChanged:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
 			dragInput = input
 		end
@@ -115,55 +115,54 @@ function akdo:createFrame(titleText)
 		end
 	end)
 
-	local header = Instance.new("Frame")
-	header.Size = UDim2.new(1, 0, 0.1237, 0)
-	header.BackgroundColor3 = akdo.Setting.Properties.BackgroundColor
-	header.Parent = frame
-	addCorner(header, UDim.new(0.3, 0))
+	local Header = Instance.new("Frame")
+	Header.Size = UDim2.new(1, 0, 0.125, 0)
+	Header.BackgroundColor3 = akdo.Setting.Properties.BackgroundColor
+	Header.Parent = Frame
+	addCorner(Header, UDim.new(0.3, 0))
 
 	local title = Instance.new("TextLabel")
-	title.Position = UDim2.new(0.015, 0,0, 0)
 	title.Size = UDim2.new(0.727, 0,1, 0)
 	title.Text = titleText or "akdo"
 	title.TextColor3 = akdo.Setting.Properties.TextColor
 	title.TextScaled = true
 	title.TextXAlignment = Enum.TextXAlignment.Left
 	title.BackgroundTransparency = 1
-	title.Parent = header
+	title.Parent = Header
 
-	local originalSize = frame.Size
-	local originalPosition = frame.Position
-	local contentContainer = frame:FindFirstChild("TabContentContainer")
+	local originalSize = Frame.Size
+	local originalPosition = Frame.Position
+	local contentContainer = Frame:FindFirstChild("TabContentContainer")
 	local minimizeState = false
 	local akdoLabel = nil
 
 	local smallButton
 	local minimizeState = false
-	local originalSize = frame.Size
-	local originalPosition = frame.Position
+	local originalSize = Frame.Size
+	local originalPosition = Frame.Position
 
 	local buttonMaximize = Instance.new("TextButton")
-	buttonMaximize.Position = UDim2.new(0.834061146, 0, 0, 0)
-	buttonMaximize.Size = UDim2.new(0.0786026195, 0, 1, 0)
+	buttonMaximize.Position = UDim2.new(0.8340, 0, 0, 0)
+	buttonMaximize.Size = UDim2.new(0.07860, 0, 1, 0)
 	buttonMaximize.Text = "□"
 	buttonMaximize.BackgroundTransparency = 1
 	buttonMaximize.TextColor3 = Color3.fromRGB(255, 255, 255)
 	buttonMaximize.TextScaled = true
-	buttonMaximize.Parent = header
+	buttonMaximize.Parent = Header
 	local isMaximized = false
 	buttonMaximize.MouseButton1Click:Connect(function()
 		local maxSize = UDim2.new(1, 0, 1, 0)
 		local maxPosition = UDim2.new(0, 0, 0, 0)
 
 		if isMaximized then
-			local tweenSize = TweenService:Create(frame, akdo.Setting.TweenInfo, {Size = originalSize, Position = originalPosition})
+			local tweenSize = TweenService:Create(Frame, akdo.Setting.TweenInfo, {Size = originalSize, Position = originalPosition})
 			tweenSize:Play()
 
 			tweenSize.Completed:Connect(function()
 				isMaximized = false
 			end)
 		else
-			local tweenSize = TweenService:Create(frame, akdo.Setting.TweenInfo, {Size = maxSize, Position = maxPosition})
+			local tweenSize = TweenService:Create(Frame, akdo.Setting.TweenInfo, {Size = maxSize, Position = maxPosition})
 			tweenSize:Play()
 
 			tweenSize.Completed:Connect(function()
@@ -179,14 +178,14 @@ function akdo:createFrame(titleText)
 	buttonClose.BackgroundTransparency = 1
 	buttonClose.TextColor3 = Color3.fromRGB(255, 0, 0)
 	buttonClose.TextScaled = true
-	buttonClose.Parent = header
+	buttonClose.Parent = Header
 	buttonClose.MouseButton1Click:Connect(function()
 		local confirmationFrame = Instance.new("Frame")
 		confirmationFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 		confirmationFrame.Size = UDim2.new(0.5, 0, 0.5, 0)
 		confirmationFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 		confirmationFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-		confirmationFrame.Parent = frame
+		confirmationFrame.Parent = Frame
 		addCorner(confirmationFrame, UDim.new(0, 8))
 		addStroke(confirmationFrame, 1, akdo.Setting.Properties.TextColor)
 
@@ -211,22 +210,22 @@ function akdo:createFrame(titleText)
 		confirmButton.MouseButton1Click:Connect(function()
 			if isMaximized then
 				local tween = TweenService:Create(confirmationFrame ,TweenInfo.new(1.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out) , {Size = UDim2.new(0, 0, 0, 0)})
-				local tween2 = TweenService:Create(frame ,TweenInfo.new(2.8, Enum.EasingStyle.Back, Enum.EasingDirection.Out) , {Position = UDim2.new(0.25, 0, 1.25, 0), Size = UDim2.new(0.5, 0, 0.5, 0)})
+				local tween2 = TweenService:Create(Frame ,TweenInfo.new(2.8, Enum.EasingStyle.Back, Enum.EasingDirection.Out) , {Position = UDim2.new(0.25, 0, 1.25, 0), Size = UDim2.new(0.5, 0, 0.5, 0)})
 				tween:Play()
 				tween.Completed:Wait()
 				confirmationFrame:Destroy()
 				tween2:Play()
 				tween2.Completed:Wait()
-				screenGui:Destroy()
+				ScreenGui:Destroy()
 			else
 				local tween = TweenService:Create(confirmationFrame ,TweenInfo.new(1.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out) , {Size = UDim2.new(0, 0, 0, 0)})
-				local tween2 = TweenService:Create(frame ,TweenInfo.new(2.8, Enum.EasingStyle.Back, Enum.EasingDirection.Out) , {Position = UDim2.new(0.25, 0, 1.25, 0)})
+				local tween2 = TweenService:Create(Frame ,TweenInfo.new(2.8, Enum.EasingStyle.Back, Enum.EasingDirection.Out) , {Position = UDim2.new(0.25, 0, 1.25, 0)})
 				tween:Play()
 				tween.Completed:Wait()
 				confirmationFrame:Destroy()
 				tween2:Play()
 				tween2.Completed:Wait()
-				screenGui:Destroy()
+				ScreenGui:Destroy()
 			end
 		end)
 
@@ -255,13 +254,13 @@ function akdo:createFrame(titleText)
 	buttonMinimize.TextColor3 = Color3.fromRGB(255, 255, 255)
 	buttonMinimize.BackgroundTransparency = 1
 	buttonMinimize.TextScaled = true
-	buttonMinimize.Parent = header
+	buttonMinimize.Parent = Header
 	buttonMinimize.MouseButton1Click:Connect(function()
 		if not minimizeState then
-			local tween = TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0.05, 0,0.05, 0), Position = UDim2.new(0.5, 0, 0.5, 0)})
+			local tween = TweenService:Create(Frame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0.05, 0,0.05, 0), Position = UDim2.new(0.5, 0, 0.5, 0)})
 			tween:Play()
 			tween.Completed:Wait()
-			frame.Visible = false
+			Frame.Visible = false
 
 			local MinimizedButton = Instance.new("TextButton")
 			MinimizedButton.Text = titleText or "akdo"
@@ -271,7 +270,7 @@ function akdo:createFrame(titleText)
 			MinimizedButton.BorderColor3 = akdo.Setting.Properties.TextColor
 			MinimizedButton.TextColor3 = akdo.Setting.Properties.TextColor
 			MinimizedButton.TextScaled = true
-			MinimizedButton.Parent = screenGui
+			MinimizedButton.Parent = ScreenGui
 			addCorner(MinimizedButton, UDim.new(0.18, 0))
 			addStroke(MinimizedButton, 1, akdo.Setting.Properties.TextColor, Enum.ApplyStrokeMode.Border)
 
@@ -334,9 +333,9 @@ function akdo:createFrame(titleText)
 
 			MinimizedButton.MouseButton1Click:Connect(function()
 				MinimizedButton:Destroy()
-				frame.Visible = true
+				Frame.Visible = true
 				local goalRestore = {Size = originalSize, Position = originalPosition}
-				local tweenRestoreAnim = TweenService:Create(frame, akdo.Setting.TweenInfo, goalRestore)
+				local tweenRestoreAnim = TweenService:Create(Frame, akdo.Setting.TweenInfo, goalRestore)
 				tweenRestoreAnim:Play()
 				tweenRestoreAnim.Completed:Wait()
 
@@ -348,7 +347,7 @@ function akdo:createFrame(titleText)
 	end)
 
 	local InfoFrame = Instance.new("Frame")
-	InfoFrame.Parent = frame
+	InfoFrame.Parent = Frame
 	InfoFrame.AnchorPoint = Vector2.new(0, 1)
 	InfoFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
 	InfoFrame.Position = UDim2.new(0.2639, 0, 1, 0)
@@ -385,13 +384,13 @@ function akdo:createFrame(titleText)
 
 	local tabContainer = Instance.new("ScrollingFrame")
 	tabContainer.Size = UDim2.new(0.2, 0, 0.815, 0)
-	tabContainer.Position = UDim2.new(0.015, 0, 0.153, 0)
-	tabContainer.BackgroundColor3 = akdo.Setting.Properties.Background_Border_Color
+	tabContainer.Position = UDim2.new(0, 0, 0.153, 0)
+	tabContainer.BackgroundTransparency = 1
 	tabContainer.ScrollBarThickness = 2
 
 	tabContainer.VerticalScrollBarPosition = Enum.VerticalScrollBarPosition.Left
 	tabContainer.CanvasSize = UDim2.new(0, 0, 0, 100)
-	tabContainer.Parent = frame
+	tabContainer.Parent = Frame
 	addCorner(tabContainer, UDim.new(0, 8))
 
 	local tabLayout = Instance.new("UIListLayout")
@@ -414,7 +413,7 @@ function akdo:createFrame(titleText)
 	tabContentContainer.Size = UDim2.new(0.689, 0, 0.785, 0)
 	tabContentContainer.Position = UDim2.new(0.288, 0, 0.177, 0)
 	tabContentContainer.BackgroundColor3 = akdo.Setting.Properties.Background_Border_Color
-	tabContentContainer.Parent = frame
+	tabContentContainer.Parent = Frame
 	addCorner(tabContentContainer, UDim.new(0, 8))
 
 	local tabContentScroll = Instance.new("ScrollingFrame")
@@ -432,12 +431,54 @@ function akdo:createFrame(titleText)
 	contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 	contentLayout.Padding = UDim.new(0, 5)
 
-	local Tabs = {}
-	function Tabs:addTab(name)
+	local TabsAndStyles = {}
+	function TabsAndStyles:FrameStyle(option)
+		if option == "One" or option == 1 then
+			Header.Size = UDim2.new(1, 0, 0.125, 0)
+			title.Size = UDim2.new(0.727, 0,1, 0)
+
+			buttonMaximize.Position = UDim2.new(0.8340, 0, 0, 0)
+			buttonMaximize.Size = UDim2.new(0.07860, 0, 1, 0)
+			buttonMaximize.Parent = Header
+
+			buttonClose.Size = UDim2.new(0.1, 0, 1, 0)
+			buttonClose.Position = UDim2.new(0.9, 0, 0, 0)
+			buttonClose.Parent = Header
+
+			buttonMinimize.Position = UDim2.new(0.77, 0,-1.08, 0)
+			buttonMinimize.Size = UDim2.new(0.05, 0,1.767, 0)
+			buttonMinimize.Parent = Header
+
+			tabContentContainer.Size = UDim2.new(0.689, 0, 0.785, 0)
+			tabContentContainer.Position = UDim2.new(0.288, 0, 0.177, 0)
+		elseif option == "Two" or option == 2 then
+			local HeaderUICorner = Header:FindFirstChild("UICorner")
+			Header.Size = UDim2.new(0.215, 0, 0.97, 0)
+			HeaderUICorner.CornerRadius = UDim.new(0.05, 0)
+			title.Size = UDim2.new(1, 0, 0.13, 0)
+
+			buttonMaximize.Position = UDim2.new(0.868, 0, 0, 0)
+			buttonMaximize.Size = UDim2.new(0.064, 0, 0.123, 0)
+			buttonMaximize.Parent = Frame
+
+			buttonClose.Size = UDim2.new(0.064, 0, 0.123, 0)
+			buttonClose.Position = UDim2.new(0.934, 0, 0, 0)
+			buttonClose.Parent = Frame
+
+			buttonMinimize.Position = UDim2.new(0.8, 0,-0.131, 0)
+			buttonMinimize.Size = UDim2.new(0.056, 0, 0.217, 0)
+			buttonMinimize.Parent = Frame
+
+			tabContentContainer.Size = UDim2.new(0.742, 0, 0.836, 0)
+			tabContentContainer.Position = UDim2.new(0.235, 0, 0.126, 0)
+		end
+	end
+
+	function TabsAndStyles:addTab(name)
 		local tabButton = Instance.new("TextButton")
 		tabButton.Size = UDim2.new(0.8, 0, 0, 35)
 		tabButton.Text = name or "Tab"
-		tabButton.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
+		tabButton.BackgroundTransparency = 1
 		tabButton.TextColor3 = akdo.Setting.Properties.TextColor
 		tabButton.TextScaled = true
 		tabButton.Parent =  tabContainer
@@ -1526,7 +1567,7 @@ function akdo:createFrame(titleText)
 			addCorner(Section, akdo.Setting.ElementCorner)
 		end
 
-		function EI:addRow(framePerRow, lines, parent)
+		function EI:addRow(FramePerRow, lines, parent)
 			local row = Instance.new("Frame")
 			row.Name = "RFrame"
 			row.Size = UDim2.new(0.95, 0, 0, 30)
@@ -1549,7 +1590,7 @@ function akdo:createFrame(titleText)
 					end
 				end
 
-				local actualFramePerRow = framePerRow and math.min(buttonCount, framePerRow) or buttonCount
+				local actualFramePerRow = FramePerRow and math.min(buttonCount, FramePerRow) or buttonCount
 				local totalPaddingScale = (actualFramePerRow - 1) * GridLayout.CellPadding.X.Scale
 				local availableWidthScale = 1 - totalPaddingScale
 				local cellWidthScale = availableWidthScale / actualFramePerRow
@@ -1558,7 +1599,7 @@ function akdo:createFrame(titleText)
 				if lines and lines > 0 then
 					rowHeight = 1 / lines
 				else
-					local rowsNeeded = math.ceil(buttonCount / (framePerRow or buttonCount))
+					local rowsNeeded = math.ceil(buttonCount / (FramePerRow or buttonCount))
 					rowHeight = 1 / rowsNeeded
 				end
 
@@ -1573,7 +1614,7 @@ function akdo:createFrame(titleText)
 		return EI
 	end
 
-	return Tabs
+	return TabsAndStyles
 end
 
 return akdo
