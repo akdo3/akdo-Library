@@ -27,6 +27,7 @@ local Main = Frame:addTab("Main")
 ```
 
 `Frame` = Parent of the tab.
+
 `Main` = Name of the tab.
 
 ## Adding Controls
@@ -40,7 +41,9 @@ end)
 ```
 
 `Main` = Tab where the button will be.
+
 `Speed` = Name of the button.
+
 `Change your speed` = Info about the button.
 
 ### Slider
@@ -53,9 +56,13 @@ end)
 ```
 
 `Main` = Tab where the slider will be.
+
 `Speed` = Name of the slider.
+
 `Adjust the player's speed` = Info.
+
 `0` = Min Slider Value.
+
 `500` = Max Slider Value.
 
 ### Dropdown
@@ -73,8 +80,11 @@ end)
 ```
 
 `Main` = Tab where the dropdown will be.
+
 `Choose` option = Name of the dropdown.
+
 `Choose` the option you want = Info.
+
 `options` = The list of options available in the dropdown.
 
 ### Toggle
@@ -91,8 +101,11 @@ end)
 ```
 
 `Main` = Tab where the toggle will be.
+
 `Fly` = Name of the toggle.
+
 `You Will Fly` = Info about the toggle.
+
 ## Function
 #### addButton
 ```lua
@@ -256,8 +269,11 @@ We encourage suggestions to improve akdo Library! If you have any suggestions, e
 
 Key Improvements:
 Clearer Structure: Sections are organized for better readability.
+
 Descriptive Functionality: Shortened and made descriptions more concise.
+
 Code Block Organization: All code samples are neatly organized and explained.
+
 Encouraged Contribution: Added a section to invite contributions in a friendly manner.
 This version is more concise and user-friendly while keeping the information easy to navigate.
 
