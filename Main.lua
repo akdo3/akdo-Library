@@ -1617,12 +1617,4 @@ function akdo:createFrame(titleText)
 	return TabsAndStyles
 end
 
-local fram = akdo:createFrame()
-local tab = fram:addTab()
-local tab = fram:addTab()
-local tab = fram:addTab()
-local button = tab:addButton()
-local button = tab:addButton()
-local button = tab:addButton()
-
 return akdo
