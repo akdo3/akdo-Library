@@ -50,7 +50,7 @@ end)
 Use sliders to modify player attributes such as speed.
 
 ```lua
-local Slider = Main:addSlider("Speed", "Adjust the player's speed", 0, 500, function(value)
+local Slider = Main:addSlider("Speed", "Adjust the player's speed", 16, 0, 500, function(value)
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
 end)
 ```
@@ -60,6 +60,8 @@ end)
 `Speed` = Name of the slider.
 
 `Adjust the player's speed` = Info.
+
+`16` = Start Number.
 
 `0` = Min Slider Value.
 
@@ -111,20 +113,21 @@ end)
 ```lua
 local TextBox = akdo:addTextBox(name, Info, placeholderText, callback, parent, stat, onlyNumbers, onlyLetters)
 ```
+
 #### DropdownAndToggle
 ```lua
 local DropdownAndToggle = akdo:addDropdownAndToggle(name, items, itemsPerRow, callback, parent)
 ```
-#### SliderAndTextBox
-```lua
-local SliderAndTextBox = addSliderAndTextBox(name, Info, PlaceholderText, Min, Max, callback, parent, stat, onlyLetters, onlyNumbers)
-```
-#### FrameStyle
+
+#### FrameStyles
 ```lua
 Frame:FrameStyle(1)
 ```
 ```lua
 Frame:FrameStyle(2)
+```
+```lua
+Frame:FrameStyle(3)
 ```
 
 ## Example
@@ -139,7 +142,7 @@ local button = Main:addButton("Button", "Info, tutorial", function()
     print("Button Clicked")
 end)
 
-local SliderAndTextBox = Main:addSliderAndTextBox("Speed", "", "", 0, 500, function(value,value2) 
+local SliderAndTextBox = Main:addSlider("Speed", "", 16, 0, 500, function(value,value2) 
     Humanoid.WalkSpeed = value2
 end, false, false, true)
 
@@ -204,7 +207,7 @@ local Button = Main:addButton("Button", "Info, tutorial", function()
 
 end)
 
-local Slider = Main:addSlider("Speed", "", "", 0, 500, function(value,value2)
+local Slider = Main:addSlider("Speed", "", 16, 0, 500, function(value,value2)
 
 end)
 
@@ -217,7 +220,7 @@ local DropdownAndToggle = Main:addDropdownAndToggle("", table, 1, function(val1,
 	if val1 then
 		if val2 == "" then
 
-		elseif val2 == "egg 2" then
+		elseif val2 == "" then
 
 		end
 	else
