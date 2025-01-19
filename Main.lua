@@ -1,11 +1,13 @@
 local akdo = {}
 akdo.Setting = {
 	Properties = {
+		Transparency				= 0.1					,
+		ButtonSize				= UDim2.new(0.95, 0, 0, 30)	,
 		Background_Border_Color = Color3.fromRGB(0, 0, 0)	,
 		BackgroundColor 		= Color3.fromRGB(10, 10, 18),
 		TextColor 				= Color3.fromRGB(0, 255, 0) ,
 		ButtonColor 			= Color3.fromRGB(10, 10, 18),
-		ButtonSize				= UDim2.new(0.95, 0, 0, 30)	,
+		BorderColor 			= Color3.fromRGB(0, 255, 0) ,
 	},
 	TweenInfo 		= TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
 	Padding 		= 10,
@@ -56,6 +58,7 @@ function akdo:createFrame(titleText)
 	Frame.Position = UDim2.new(0.25, 0, 0.25, 0)
 	Frame.Size = UDim2.new(0.5, 0, 0.5, 0)
 	Frame.BackgroundColor3 = akdo.Setting.Properties.Background_Border_Color
+	Frame.BackgroundTransparency = akdo.Setting.Properties.Transparency
 	Frame.Parent = ScreenGui
 	addCorner(Frame, UDim.new(0.03, 0))
 
@@ -118,6 +121,7 @@ function akdo:createFrame(titleText)
 	local Header = Instance.new("Frame")
 	Header.Size = UDim2.new(1, 0, 0.125, 0)
 	Header.BackgroundColor3 = akdo.Setting.Properties.BackgroundColor
+	Header.BackgroundTransparency = akdo.Setting.Properties.Transparency
 	Header.Parent = Frame
 	addCorner(Header, UDim.new(0.3, 0))
 
@@ -386,7 +390,7 @@ function akdo:createFrame(titleText)
 	tabContainer.Size = UDim2.new(0.2, 0, 0.815, 0)
 	tabContainer.Position = UDim2.new(0, 0, 0.153, 0)
 	tabContainer.BackgroundTransparency = 1
-	tabContainer.ScrollBarThickness = 2
+	tabContainer.ScrollBarThickness = 3
 
 	tabContainer.VerticalScrollBarPosition = Enum.VerticalScrollBarPosition.Left
 	tabContainer.CanvasSize = UDim2.new(0, 0, 0, 100)
@@ -413,6 +417,7 @@ function akdo:createFrame(titleText)
 	tabContentContainer.Size = UDim2.new(0.76, 0, 0.809, 0)
 	tabContentContainer.Position = UDim2.new(0.217, 0, 0.153, 0)
 	tabContentContainer.BackgroundColor3 = akdo.Setting.Properties.Background_Border_Color
+	tabContentContainer.BackgroundTransparency = 1
 	tabContentContainer.Parent = Frame
 	addCorner(tabContentContainer, UDim.new(0, 8))
 
@@ -420,6 +425,7 @@ function akdo:createFrame(titleText)
 	tabContentScroll.Size = UDim2.new(1, 0, 1, 0)
 	tabContentScroll.Position = UDim2.new(0, 0, 0, 0)
 	tabContentScroll.BackgroundColor3 = akdo.Setting.Properties.Background_Border_Color
+	tabContentScroll.BackgroundTransparency = 1
 	tabContentScroll.ScrollBarThickness = 4
 	tabContentScroll.ScrollingDirection = Enum.ScrollingDirection.Y
 	tabContentScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -429,6 +435,7 @@ function akdo:createFrame(titleText)
 	local contentLayout = Instance.new("UIListLayout")
 	contentLayout.Parent = tabContentScroll
 	contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	tabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	contentLayout.Padding = UDim.new(0, 5)
 
 	local TabsAndStyles = {}
@@ -448,9 +455,6 @@ function akdo:createFrame(titleText)
 			buttonMinimize.Position = UDim2.new(0.77, 0,-1.08, 0)
 			buttonMinimize.Size = UDim2.new(0.05, 0,1.767, 0)
 			buttonMinimize.Parent = Header
-
-			tabContentContainer.Size = UDim2.new(0.76, 0, 0.809, 0)
-			tabContentContainer.Position = UDim2.new(0.217, 0, 0.153, 0)
 		elseif option == "Two" or option == 2 then
 			local HeaderUICorner = Header:FindFirstChild("UICorner")
 			Header.Size = UDim2.new(0.215, 0, 0.97, 0)
@@ -468,10 +472,35 @@ function akdo:createFrame(titleText)
 			buttonMinimize.Position = UDim2.new(0.8, 0,-0.131, 0)
 			buttonMinimize.Size = UDim2.new(0.056, 0, 0.217, 0)
 			buttonMinimize.Parent = Frame
-
-			tabContentContainer.Size = UDim2.new(0.742, 0, 0.836, 0)
-			tabContentContainer.Position = UDim2.new(0.235, 0, 0.126, 0)
+		elseif option == "There" or option == 3 then
+			Header.BackgroundTransparency = 1
 		end
+		--[[
+			local PopInfoFrame = Instance.new("Frame")
+			local PopInfoText = Instance.new("TextLabel")
+			local UIStroke_1 = Instance.new("UIStroke")
+			local ZgrafaFrame = Instance.new("Frame")
+
+			PopInfoFrame.Parent = ScreenGui
+			PopInfoFrame.BackgroundColor3 = akdo.Setting.Properties.Background_Border_Color
+			PopInfoFrame.Position = UDim2.new(0.15, 0,0.9, 0)
+			PopInfoFrame.Size = UDim2.new(0.15, 0,0.05, 0)
+			addCorner(PopInfoFrame, akdo.Setting.ElementCorner)
+			addStroke(PopInfoFrame, 1, akdo.Setting.Properties.BorderColor)
+
+			PopInfoText.Parent = PopInfoFrame
+			PopInfoText.BackgroundTransparency = 1
+			PopInfoText.Position = UDim2.new(0.065, 0,0, 0)
+			PopInfoText.Size = UDim2.new(0.935, 0,1, 0)
+			PopInfoText.Text = "Info"
+			PopInfoText.TextColor3 = Color3.fromRGB(0,255,0)
+			PopInfoText.TextScaled = true
+			PopInfoText.TextXAlignment = Enum.TextXAlignment.Left
+
+			ZgrafaFrame.Parent = PopInfoFrame
+			ZgrafaFrame.BackgroundColor3 = Color3.fromRGB(0,255,0)
+			ZgrafaFrame.Size = UDim2.new(0.02, 0,1, 0) 
+			]]
 	end
 
 	function TabsAndStyles:addTab(name)
@@ -488,6 +517,7 @@ function akdo:createFrame(titleText)
 		tabContent.Size = UDim2.new(1, 0, 1, 0)
 		tabContent.Position = UDim2.new(0, 0, 0, 0)
 		tabContent.BackgroundColor3 = akdo.Setting.Properties.Background_Border_Color
+		tabContent.BackgroundTransparency = 1
 		tabContent.Visible = false
 		tabContent.Parent = tabContentScroll
 		addCorner(tabContent, UDim.new(0, 8))
@@ -540,6 +570,7 @@ function akdo:createFrame(titleText)
 
 			local Button = Instance.new("TextButton")
 			Button.BackgroundTransparency = 1
+			Button.Position = UDim2.new(0.015, 0, -0.027, 0)
 			Button.Size = akdo.Setting.TextSize.Text1
 			Button.Text = name or "Button"
 			Button.TextColor3 = akdo.Setting.Properties.TextColor
@@ -938,128 +969,133 @@ function akdo:createFrame(titleText)
 			end
 		end
 
-		function EI:addSlider(name, Info, Min, Max, callback, parent)
-			local SF = {}
-			callback = callback or function() end
+		function EI:addSlider(name, Info, BeginValue, Min, Max, callback, GetMode, parent, TextBoxDisable)
+			local callback = callback or function() end
 
-			local SliderFrame = Instance.new("Frame")
-			local SliderText = Instance.new("TextLabel")
+			local STFrame = Instance.new("Frame")
+			local TextBox = Instance.new("TextBox")
+			local Text = Instance.new("TextLabel")
 			local CanvasGroup = Instance.new("CanvasGroup")
 			local FillSlider = Instance.new("Frame")
 			local Trigger = Instance.new("TextButton")
-			local SliderValue = Instance.new("TextLabel")
 
-			SliderFrame.Parent = parent or tabContent
-			SliderFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
-			SliderFrame.Size = akdo.Setting.Properties.ButtonSize
-			SliderFrame.ClipsDescendants = true
-			addCorner(SliderFrame, akdo.Setting.ElementCorner)
+			STFrame.Parent = parent or tabContent
+			STFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
+			STFrame.Size = akdo.Setting.Properties.ButtonSize
+			addCorner(STFrame, akdo.Setting.ElementCorner)
 
-			CanvasGroup.Parent = SliderFrame
+			TextBox.Parent = STFrame
+			TextBox.BackgroundTransparency = 1
+			TextBox.Position = UDim2.new(0.435, 0, 0, 0)
+			TextBox.Size = UDim2.new(0.125, 0, 1, 0)
+			TextBox.PlaceholderColor3 = akdo.Setting.Properties.TextColor
+			TextBox.Text = math.floor(BeginValue) or "0"
+			TextBox.TextColor3 = akdo.Setting.Properties.TextColor
+			TextBox.TextScaled = true
+			addCorner(TextBox, UDim.new(0.15, 0))
+
+			Text.Name = "text"
+			Text.Parent = STFrame
+			Text.BackgroundTransparency = 1
+			Text.Size = UDim2.new(0.266, 0, 1, 0)
+			Text.Font = Enum.Font.SourceSans
+			Text.Text = name or "ST"
+			Text.TextColor3 = akdo.Setting.Properties.TextColor
+			Text.TextScaled = true
+			Text.TextXAlignment = Enum.TextXAlignment.Left
+
+			CanvasGroup.Parent = STFrame
 			CanvasGroup.BackgroundColor3 = akdo.Setting.Properties.BackgroundColor
-			CanvasGroup.Position = UDim2.new(0.317, 0, 0.267, 0)
-			CanvasGroup.Size = UDim2.new(0.561, 0, 0.452, 0)
+			CanvasGroup.Position = UDim2.new(0.58, 0, 0.25, 0)
+			CanvasGroup.Size = UDim2.new(0.4, 0, 0.45, 0)
 			addCorner(CanvasGroup, UDim.new(0.5, 0))
 			addStroke(CanvasGroup, 1, akdo.Setting.Properties.Background_Border_Color)
 
 			FillSlider.Parent = CanvasGroup
 			FillSlider.BackgroundColor3 = akdo.Setting.Properties.TextColor
-			FillSlider.Size = UDim2.new(0, 0, 1, 0)
+			FillSlider.Size = UDim2.new((BeginValue - Min) / (Max - Min), 0, 1, 0)
 			addCorner(FillSlider, UDim.new(0.5, 0))
 
+			Trigger.Name = "trig"
 			Trigger.Parent = CanvasGroup
 			Trigger.BackgroundTransparency = 1
 			Trigger.Size = UDim2.new(1, 0, 1, 0)
 			Trigger.TextTransparency = 1
 
-			SliderValue.Parent = CanvasGroup
-			SliderValue.BackgroundTransparency = 1
-			SliderValue.Position = UDim2.new(0, 0, 0.06, 0)
-			SliderValue.Size = UDim2.new(1, 0, 1, 0)
-			SliderValue.Text = "0"
-			SliderValue.TextColor3 = akdo.Setting.Properties.TextColor
-			SliderValue.TextScaled = true
-			addStroke(SliderValue, 1.5, akdo.Setting.Properties.Background_Border_Color)
-
-			SliderText.BackgroundTransparency = 1
-			SliderText.Parent = SliderFrame
-			SliderText.Size = UDim2.new(0.293, 0, 1, 0)
-			SliderText.Text = name or "Slider"
-			SliderText.TextColor3 = akdo.Setting.Properties.TextColor
-			SliderText.TextScaled = true
-			SliderText.TextXAlignment = Enum.TextXAlignment.Left
-
-			local Image = Instance.new("ImageButton")
-			Image.Parent = SliderFrame
-			Image.BackgroundTransparency = 1
-			Image.Position = akdo.Setting.Image.InfoImagePOS
-			Image.Size = akdo.Setting.Image.ImageSize
-			Image.Image = "http://www.roblox.com/asset/?id=6026568210"
-			Image.ImageColor3 = akdo.Setting.Properties.TextColor
-
-			if Info then
-				if Info == "" then
-					SliderText.Size = UDim2.new(0.3, 0, 1, 0)
-					CanvasGroup.Size = UDim2.new(0.642, 0, 0.4519, 0)
-					Image:Destroy()
+			local function UpdateSlider(num)
+				local output
+				if num then
+					output = math.clamp((num - Min) / (Max - Min), 0, 1)
 				else
-					Image.MouseButton1Click:Connect(function()
-						TextInfo.Text = Info
-						if InfoFrame.Size.Y ~= UDim2.new(0, 0, 0.148, 0) then
-							InfoFrame.Visible = true
-							local tweenSize = TweenService:Create(InfoFrame, akdo.Setting.TweenInfo, {Size = UDim2.new(0.7133, 0, 0.148, 0)})
-							tweenSize:Play()
-						end
-					end)
+					local sliderPosX = Trigger.AbsolutePosition.X
+					local sliderSizeX = Trigger.AbsoluteSize.X
+					output = math.clamp((UserInputService:GetMouseLocation().X - sliderPosX) / sliderSizeX, 0, 1)
 				end
-			else
-				SliderText.Size = UDim2.new(0.3, 0, 1, 0)
-				CanvasGroup.Size = UDim2.new(0.642, 0, 0.4519, 0)
-				Image:Destroy()
-			end
+				local Value = output * (Max - Min) + Min
 
-			local function UpdateSlider(mouseX)
-				local sliderPosX = Trigger.AbsolutePosition.X
-				local sliderSizeX = Trigger.AbsoluteSize.X
-				local output = math.clamp((mouseX - sliderPosX) / sliderSizeX, 0, 1)
-
-				local MaxV = Max or 500
-				local MinV = Min or 0
-
-				local Value = output * (MaxV - MinV) + MinV
-
-				local tween = TweenService:Create(FillSlider, akdo.Setting.TweenInfo, {Size = UDim2.new(output, 0, 1, 0)})
+				local tween = game.TweenService:Create(FillSlider, akdo.Setting.TweenInfo, {Size = UDim2.new(output, 0, 1, 0)})
 				tween:Play()
-
-				SliderValue.Text = tostring(math.floor(Value))
+				TextBox.Text = tostring(math.floor(Value))
 				callback(Value)
 			end
 
 			local isDragging = false
-
-			local function startDrag(input)
+			Trigger.MouseButton1Down:Connect(function()
 				isDragging = true
-				UpdateSlider(input.Position.X)
-			end
-
-			local function stopDrag(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-					isDragging = false
-				end
-			end
-
-			Trigger.MouseButton1Down:Connect(startDrag)
-			Trigger.TouchTap:Connect(startDrag)
-
-			UserInputService.InputChanged:Connect(function(input)
-				if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-					UpdateSlider(input.Position.X)
+				while isDragging do
+					UpdateSlider()
+					wait()
 				end
 			end)
 
-			UserInputService.InputEnded:Connect(stopDrag)
+			UserInputService.InputEnded:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.MouseButton1 then
+					isDragging = false
+				end
+			end)
 
-			return SF
+			if GetMode then
+				TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+					TextBox.Text = TextBox.Text:gsub("%D", "")
+					local numValue = tonumber(TextBox.Text)
+					numValue = math.clamp(numValue, Min, Max)
+					TextBox.Text = tostring(numValue)
+					UpdateSlider(numValue)
+					callback(TextBox.Text)
+				end)
+			else
+				TextBox.FocusLost:Connect(function()
+					TextBox.Text = TextBox.Text:gsub("%D", "")
+					local numValue = tonumber(TextBox.Text)
+					numValue = math.clamp(numValue, Min, Max)
+					TextBox.Text = tostring(numValue)
+					UpdateSlider(numValue)
+					callback(TextBox.Text)
+				end)
+			end
+
+			if Info and Info ~= "" then
+				CanvasGroup.Size = UDim2.new(0.335, 0,0.45, 0)
+				TextBox.Position = UDim2.new(0.665, 0,0, 0)
+				TextBox.Size = UDim2.new(0.211, 0,1, 0)
+				Text.Size = UDim2.new(0.584, 0,1, 0)
+
+				local Image = Instance.new("ImageButton")
+				Image.Parent = STFrame
+				Image.BackgroundTransparency = 1
+				Image.Position = akdo.Setting.Image.InfoImagePOS
+				Image.Size = akdo.Setting.Image.ImageSize
+				Image.Image = "http://www.roblox.com/asset/?id=6026568210"
+				Image.ImageColor3 = akdo.Setting.Properties.TextColor
+				Image.MouseButton1Click:Connect(function()
+					TextInfo.Text = Info
+					if InfoFrame.Size.Y ~= {0.148, 0} then
+						InfoFrame.Visible = true
+						local tweenSize = TweenService:Create(InfoFrame, akdo.Setting.TweenInfo, {Size = UDim2.new(0.7133, 0,0.148, 0)})
+						tweenSize:Play()
+					end
+				end)
+			end
 		end
 
 		function EI:addTextBox(name, Info, placeholderText, callback, parent, stat, onlyNumbers, onlyLetters)
@@ -1273,143 +1309,6 @@ function akdo:createFrame(titleText)
 			return DTFrame
 		end
 
-		function EI:addSliderAndTextBox(name, Info, PlaceholderText, Min, Max, callback, stat, onlyLetters, onlyNumbers, parent)
-			local callback = callback or function() end
-
-			local STFrame = Instance.new("Frame")
-			local TextBox = Instance.new("TextBox")
-			local Text = Instance.new("TextLabel")
-			local CanvasGroup = Instance.new("CanvasGroup")
-			local FillSlider = Instance.new("Frame")
-			local Trigger = Instance.new("TextButton")
-			local SliderValue = Instance.new("TextLabel")
-
-			STFrame.Parent = parent or tabContent
-			STFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
-			STFrame.Size = akdo.Setting.Properties.ButtonSize
-			addCorner(STFrame, akdo.Setting.ElementCorner)
-
-			TextBox.Parent = STFrame
-			TextBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-			TextBox.Position = UDim2.new(0.715, 0, 0, 0)
-			TextBox.Size = UDim2.new(0.285, 0, 1, 0)
-			TextBox.PlaceholderColor3 = akdo.Setting.Properties.TextColor
-			TextBox.PlaceholderText = PlaceholderText or ""
-			TextBox.TextColor3 = akdo.Setting.Properties.TextColor
-			TextBox.TextScaled = true
-			addCorner(TextBox, UDim.new(0.15, 0))
-
-			Text.Name = "text"
-			Text.Parent = STFrame
-			Text.BackgroundTransparency = 1
-			Text.Size = UDim2.new(0.266, 0, 1, 0)
-			Text.Font = Enum.Font.SourceSans
-			Text.Text = name or "ST"
-			Text.TextColor3 = akdo.Setting.Properties.TextColor
-			Text.TextScaled = true
-			Text.TextXAlignment = Enum.TextXAlignment.Left
-
-			CanvasGroup.Parent = STFrame
-			CanvasGroup.BackgroundColor3 = akdo.Setting.Properties.BackgroundColor
-			CanvasGroup.Position = UDim2.new(0.315, 0, 0.26, 0)
-			CanvasGroup.Size = UDim2.new(0.375, 0, 0.45, 0)
-			addCorner(CanvasGroup, UDim.new(0.5, 0))
-			addStroke(CanvasGroup, 1, akdo.Setting.Properties.Background_Border_Color)
-
-			FillSlider.Parent = CanvasGroup
-			FillSlider.BackgroundColor3 = akdo.Setting.Properties.TextColor
-			FillSlider.Size = UDim2.new(0, 0, 1, 0)
-			addCorner(FillSlider, UDim.new(0.5, 0))
-
-			Trigger.Name = "trig"
-			Trigger.Parent = CanvasGroup
-			Trigger.BackgroundTransparency = 1
-			Trigger.Size = UDim2.new(1, 0, 1, 0)
-			Trigger.TextTransparency = 1
-
-			SliderValue.Parent = CanvasGroup
-			SliderValue.BackgroundTransparency = 1
-			SliderValue.Size = UDim2.new(1, 0, 1, 0)
-			SliderValue.Text = "0"
-			SliderValue.TextColor3 = akdo.Setting.Properties.TextColor
-			SliderValue.TextScaled = true
-			addStroke(SliderValue, 1.5, akdo.Setting.Properties.Background_Border_Color)
-
-			local function UpdateSlider(mouseX)
-				local sliderPosX = Trigger.AbsolutePosition.X
-				local sliderSizeX = Trigger.AbsoluteSize.X
-				local output = math.clamp((mouseX - sliderPosX) / sliderSizeX, 0, 1)
-				local Value = output * (Max - Min) + Min
-
-				local tween = game.TweenService:Create(FillSlider, akdo.Setting.TweenInfo, {Size = UDim2.new(output, 0, 1, 0)})
-				tween:Play()
-
-				SliderValue.Text = tostring(math.floor(Value))
-				callback(Value)
-			end
-
-			local isDragging = false
-			Trigger.MouseButton1Down:Connect(function()
-				isDragging = true
-				while isDragging do
-					local mouse = UserInputService:GetMouseLocation().X
-					UpdateSlider(mouse)
-					wait()
-				end
-			end)
-
-			UserInputService.InputEnded:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 then
-					isDragging = false
-				end
-			end)
-
-			if stat then
-				TextBox:GetPropertyChangedSignal("Text"):Connect(function()
-					if onlyLetters and TextBox.Text:match("%d") then
-						TextBox.Text = ""
-					elseif onlyNumbers and TextBox.Text:match("%D") then
-						TextBox.Text = ""
-					else
-						callback(TextBox.Text)
-					end
-				end)
-			else
-				TextBox.FocusLost:Connect(function()
-					if onlyLetters and TextBox.Text:match("%d") then
-						TextBox.Text = ""
-					elseif onlyNumbers and TextBox.Text:match("%D") then
-						TextBox.Text = ""
-					else
-						callback(TextBox.Text)
-					end
-				end)
-			end
-
-			if Info and Info ~= "" then
-				CanvasGroup.Size = UDim2.new(0.335, 0,0.45, 0)
-				TextBox.Position = UDim2.new(0.665, 0,0, 0)
-				TextBox.Size = UDim2.new(0.211, 0,1, 0)
-				Text.Size = UDim2.new(0.584, 0,1, 0)
-
-				local Image = Instance.new("ImageButton")
-				Image.Parent = STFrame
-				Image.BackgroundTransparency = 1
-				Image.Position = akdo.Setting.Image.InfoImagePOS
-				Image.Size = akdo.Setting.Image.ImageSize
-				Image.Image = "http://www.roblox.com/asset/?id=6026568210"
-				Image.ImageColor3 = akdo.Setting.Properties.TextColor
-				Image.MouseButton1Click:Connect(function()
-					TextInfo.Text = Info
-					if InfoFrame.Size.Y ~= {0.148, 0} then
-						InfoFrame.Visible = true
-						local tweenSize = TweenService:Create(InfoFrame, akdo.Setting.TweenInfo, {Size = UDim2.new(0.7133, 0,0.148, 0)})
-						tweenSize:Play()
-					end
-				end)
-			end
-		end
-
 --[[	function akdo:updateSliderAndTextBox(parent, name, Info, placeholderText, Min, Max, callback)
 			local callback = callback or function() end
 			local TextBox = parent:FindFirstChild("TextBox")
@@ -1559,7 +1458,7 @@ function akdo:createFrame(titleText)
 		function EI:addSection(text, parent)
 			local Section = Instance.new("TextLabel")
 			Section.Size = akdo.Setting.Properties.ButtonSize
-			Section.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+			Section.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
 			Section.Text = text or "Section"
 			Section.TextColor3 = akdo.Setting.Properties.TextColor
 			Section.TextScaled = true
