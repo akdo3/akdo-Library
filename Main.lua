@@ -53,6 +53,7 @@ function akdo:createFrame(titleText)
 
 	local ScreenGui = Instance.new("ScreenGui")
 	ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	ScreenGui.ResetOnSpawn = false
 
 	local Frame = Instance.new("Frame")
 	Frame.Position = UDim2.new(0.25, 0, 0.25, 0)
