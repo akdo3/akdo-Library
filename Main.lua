@@ -672,31 +672,6 @@ function akdo:createFrame(titleText)
 			toggleButton.Image = "http://www.roblox.com/asset/?id=6031068433"
 			toggleButton.ImageColor3 = akdo.Setting.Properties.TextColor
 
-			local function adjustToggleSize()
-				local row = ToggleFrame.Parent
-				if row and row:IsA("Frame") and row.Name == "RFrame" then
-					local childCount = 0
-					for _, child in ipairs(row:GetChildren()) do
-						if child:IsA("Frame") then
-							childCount = childCount + 1
-						end
-					end
-
-					if childCount > 0 then
-						local additionalSize = 0.1 * childCount
-						toggleButton.Size = UDim2.new(0 + additionalSize, 0, 1, 0)
-						toggleButton.Position = UDim2.new(1 - additionalSize, 0, 0, 0)
-						TextButton.Size = UDim2.new(1 - additionalSize, 0, 1, 0)
-					end
-				end
-			end
-
-			if parent and parent ~= tabContent and parent.Name == "RFrame" then
-				parent.ChildAdded:Connect(adjustToggleSize)
-				parent.ChildRemoved:Connect(adjustToggleSize)
-			end
-			adjustToggleSize()
-
 			local toggled = false
 			local function toggleState()
 				toggled = not toggled
@@ -1508,6 +1483,7 @@ function akdo:createFrame(titleText)
 			row.ChildAdded:Connect(update)
 			row.ChildRemoved:Connect(update)
 			update()
+			return row
 		end
 
 		return EI
