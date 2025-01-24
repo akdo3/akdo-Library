@@ -116,7 +116,7 @@ local TextBox = akdo:addTextBox(name, Info, placeholderText, callback, parent, s
 
 #### DropdownAndToggle
 ```lua
-local DropdownAndToggle = akdo:addDropdownAndToggle(name, items, itemsPerRow, callback, parent)
+local DropdownAndToggle = akdo:addDT(name, items, itemsPerRow, callback, parent)
 ```
 
 #### FrameStyles
