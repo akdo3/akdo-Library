@@ -33,7 +33,7 @@ akdo.Setting = {
 	},
 }
 
-function akdo:createFrame(titleText)
+function akdo:createFrame(titletext)
 	local UserInputService = game:GetService("UserInputService")
 	local TweenService = game:GetService("TweenService")
 
@@ -127,7 +127,7 @@ function akdo:createFrame(titleText)
 
 	local title = Instance.new("TextLabel")
 	title.Size = UDim2.new(0.727, 0,1, 0)
-	title.Text = titleText or "akdo"
+	title.Text = titletext or "akdo"
 	title.TextColor3 = akdo.Setting.Properties.TextColor
 	title.TextScaled = true
 	title.TextXAlignment = Enum.TextXAlignment.Left
@@ -267,7 +267,7 @@ function akdo:createFrame(titleText)
 			Frame.Visible = false
 
 			local MinimizedButton = Instance.new("TextButton")
-			MinimizedButton.Text = titleText or "akdo"
+			MinimizedButton.Text = titletext or "akdo"
 			MinimizedButton.Size = UDim2.new(0.05, 0,0.05, 0)
 			MinimizedButton.Position = UDim2.new(0.5, 0, 0.5, 0)
 			MinimizedButton.BackgroundColor3 = akdo.Setting.Properties.Background_Border_Color
@@ -527,7 +527,7 @@ function akdo:createFrame(titleText)
 		tabsButtons[#tabsButtons + 1] = tabButton
 
 		tabButton.MouseEnter:Connect(function()
-			local tween = TweenService:Create(tabButton, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0.95, 0, 0, 35)})
+			local tween = TweenService:Create(tabButton, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0.95, 0, 0, 38)})
 			tween:Play()
 		end)
 
@@ -537,7 +537,7 @@ function akdo:createFrame(titleText)
 		end)
 
 		tabButton.MouseButton1Click:Connect(function()
-			local tween = TweenService:Create(tabButton, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(1, 0, 0, 38)})
+			local tween = TweenService:Create(tabButton, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(1, 0, 0, 40)})
 			tween:Play()
 			for _, tab in pairs(tabs) do
 				tab.Visible = false
@@ -2693,22 +2693,26 @@ function akdo:createFrame(titleText)
 			return DF
 		end
 
-		function EI:addSlider(name, Info, BeginValue, Min, Max, callback, GetMode, TextBoxDisable)
+		local UserInputService = game:GetService("UserInputService")
+		local TweenService = game:GetService("TweenService")
+
+		function EI:addSlider(name, Info, BeginValue, Min, Max, callback, GetMode, parent, TextBoxDisable)
 			local callback = callback or function() end
 
-			local SliderTFrame = Instance.new("Frame")
+			local STFrame = Instance.new("Frame")
 			local TextBox = Instance.new("TextBox")
 			local Text = Instance.new("TextLabel")
 			local CanvasGroup = Instance.new("CanvasGroup")
 			local FillSlider = Instance.new("Frame")
 			local Trigger = Instance.new("TextButton")
 
-			SliderTFrame.Parent = tabContent
-			SliderTFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
-			SliderTFrame.Size = akdo.Setting.Properties.ButtonSize
-			addCorner(SliderTFrame, akdo.Setting.ElementCorner)
+			STFrame.Parent = parent or tabContent
+			STFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
+			STFrame.Size = akdo.Setting.Properties.ButtonSize
+			STFrame.ClipsDescendants = true
+			addCorner(STFrame, akdo.Setting.ElementCorner)
 
-			TextBox.Parent = SliderTFrame
+			TextBox.Parent = STFrame
 			TextBox.BackgroundTransparency = 1
 			TextBox.Position = UDim2.new(0.435, 0, 0, 0)
 			TextBox.Size = UDim2.new(0.125, 0, 1, 0)
@@ -2719,7 +2723,7 @@ function akdo:createFrame(titleText)
 			addCorner(TextBox, UDim.new(0.15, 0))
 
 			Text.Name = "text"
-			Text.Parent = SliderTFrame
+			Text.Parent = STFrame
 			Text.BackgroundTransparency = 1
 			Text.Size = UDim2.new(0.266, 0, 1, 0)
 			Text.Font = Enum.Font.SourceSans
@@ -2728,7 +2732,7 @@ function akdo:createFrame(titleText)
 			Text.TextScaled = true
 			Text.TextXAlignment = Enum.TextXAlignment.Left
 
-			CanvasGroup.Parent = SliderTFrame
+			CanvasGroup.Parent = STFrame
 			CanvasGroup.BackgroundColor3 = akdo.Setting.Properties.BackgroundColor
 			CanvasGroup.Position = UDim2.new(0.58, 0, 0.25, 0)
 			CanvasGroup.Size = UDim2.new(0.4, 0, 0.45, 0)
@@ -2757,23 +2761,26 @@ function akdo:createFrame(titleText)
 				end
 				local Value = output * (Max - Min) + Min
 
-				local tween = game.TweenService:Create(FillSlider, akdo.Setting.TweenInfo, {Size = UDim2.new(output, 0, 1, 0)})
+				local tween = TweenService:Create(FillSlider, akdo.Setting.TweenInfo, {Size = UDim2.new(output, 0, 1, 0)})
 				tween:Play()
 				TextBox.Text = tostring(math.floor(Value))
 				callback(Value)
 			end
 
 			local isDragging = false
-			Trigger.MouseButton1Down:Connect(function()
-				isDragging = true
-				while isDragging do
-					UpdateSlider()
-					wait()
+
+			Trigger.InputBegan:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+					isDragging = true
+					while isDragging do
+						UpdateSlider()
+						task.wait()
+					end
 				end
 			end)
 
 			UserInputService.InputEnded:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 					isDragging = false
 				end
 			end)
@@ -2799,13 +2806,13 @@ function akdo:createFrame(titleText)
 			end
 
 			if Info and Info ~= "" then
-				CanvasGroup.Size = UDim2.new(0.335, 0,0.45, 0)
-				TextBox.Position = UDim2.new(0.665, 0,0, 0)
-				TextBox.Size = UDim2.new(0.211, 0,1, 0)
-				Text.Size = UDim2.new(0.584, 0,1, 0)
+				CanvasGroup.Size = UDim2.new(0.335, 0, 0.45, 0)
+				TextBox.Position = UDim2.new(0.665, 0, 0, 0)
+				TextBox.Size = UDim2.new(0.211, 0, 1, 0)
+				Text.Size = UDim2.new(0.584, 0, 1, 0)
 
 				local Image = Instance.new("ImageButton")
-				Image.Parent = SliderTFrame
+				Image.Parent = STFrame
 				Image.BackgroundTransparency = 1
 				Image.Position = akdo.Setting.Image.InfoImagePOS
 				Image.Size = akdo.Setting.Image.ImageSize
@@ -2815,7 +2822,7 @@ function akdo:createFrame(titleText)
 					TextInfo.Text = Info
 					if InfoFrame.Size.Y ~= {0.148, 0} then
 						InfoFrame.Visible = true
-						local tweenSize = TweenService:Create(InfoFrame, akdo.Setting.TweenInfo, {Size = UDim2.new(0.7133, 0,0.148, 0)})
+						local tweenSize = TweenService:Create(InfoFrame, akdo.Setting.TweenInfo, {Size = UDim2.new(0.7133, 0, 0.148, 0)})
 						tweenSize:Play()
 					end
 				end)
