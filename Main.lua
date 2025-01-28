@@ -36,6 +36,7 @@ akdo.Setting = {
 function akdo:createFrame(titletext)
 	local UserInputService = game:GetService("UserInputService")
 	local TweenService = game:GetService("TweenService")
+	local ContextActionService = game:GetService("ContextActionService")
 
 	local function addCorner(instance, radius1)
 		local corner = Instance.new("UICorner")
@@ -88,20 +89,25 @@ function akdo:createFrame(titletext)
 	local dragStart
 	local startPos
 
-	local function update(input)
-		local delta = input.Position - dragStart
-		Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-	end
-
 	Frame.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = true
 			dragStart = input.Position
 			startPos = Frame.Position
 
+			ContextActionService:BindAction(
+				"DisableCameraMovement",
+				function() return Enum.ContextActionResult.Sink end,
+				false,
+				Enum.UserInputType.Touch,
+				Enum.UserInputType.MouseMovement
+			)
+
 			input.Changed:Connect(function()
 				if input.UserInputState == Enum.UserInputState.End then
 					dragging = false
+
+					ContextActionService:UnbindAction("DisableCameraMovement")
 				end
 			end)
 		end
@@ -115,7 +121,13 @@ function akdo:createFrame(titletext)
 
 	UserInputService.InputChanged:Connect(function(input)
 		if input == dragInput and dragging then
-			update(input)
+			local delta = input.Position - dragStart
+			Frame.Position = UDim2.new(
+				startPos.X.Scale,
+				startPos.X.Offset + delta.X,
+				startPos.Y.Scale,
+				startPos.Y.Offset + delta.Y
+			)
 		end
 	end)
 
@@ -283,21 +295,28 @@ function akdo:createFrame(titletext)
 			local dragInput
 			local dragStart
 			local startPos
-
-			local function update(input)
-				local delta = input.Position - dragStart
-				MinimizedButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-			end
+			local isDragged = false
 
 			MinimizedButton.InputBegan:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 					dragging = true
+					isDragged = false
 					dragStart = input.Position
 					startPos = MinimizedButton.Position
+
+					ContextActionService:BindAction(
+						"DisableCameraMovement",
+						function() return Enum.ContextActionResult.Sink end,
+						false,
+						Enum.UserInputType.Touch,
+						Enum.UserInputType.MouseMovement
+					)
 
 					input.Changed:Connect(function()
 						if input.UserInputState == Enum.UserInputState.End then
 							dragging = false
+
+							ContextActionService:UnbindAction("DisableCameraMovement")
 						end
 					end)
 				end
@@ -311,32 +330,22 @@ function akdo:createFrame(titletext)
 
 			UserInputService.InputChanged:Connect(function(input)
 				if input == dragInput and dragging then
-					update(input)
-				end
-			end)
-
-			MinimizedButton.InputBegan:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-					dragging = true
-					dragStart = input.Position
-					startPos = MinimizedButton.Position
-				end
-			end)
-
-			MinimizedButton.InputChanged:Connect(function(input)
-				if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+					isDragged = true
 					local delta = input.Position - dragStart
-					MinimizedButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-				end
-			end)
-
-			MinimizedButton.InputEnded:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-					dragging = false
+					MinimizedButton.Position = UDim2.new(
+						startPos.X.Scale,
+						startPos.X.Offset + delta.X,
+						startPos.Y.Scale,
+						startPos.Y.Offset + delta.Y
+					)
 				end
 			end)
 
 			MinimizedButton.MouseButton1Click:Connect(function()
+				if isDragged then
+					return
+				end
+
 				MinimizedButton:Destroy()
 				Frame.Visible = true
 				local goalRestore = {Size = originalSize, Position = originalPosition}
@@ -348,6 +357,7 @@ function akdo:createFrame(titletext)
 			end)
 
 			minimizeState = true
+
 		end
 	end)
 
@@ -707,7 +717,7 @@ function akdo:createFrame(titletext)
 
 			return EI
 		end
-		
+
 		function EI:addToggle(name, Info, callback)
 			local TF = {}
 			local callback = callback or function() end
@@ -1141,7 +1151,7 @@ function akdo:createFrame(titletext)
 					end
 				end)
 			end
-			
+
 			function US:updateSlider(newname, newInfo, newBeginValue, newMin, newMax, newcallback, newGetMode)
 				local newcallback = newcallback or function() end
 				local BeginValue = BeginValue or 0
@@ -1149,7 +1159,7 @@ function akdo:createFrame(titletext)
 				local Max = Max or 500
 
 				Text.Text = newname or Text.Text
-				
+
 				TextBox.Text = math.floor(newBeginValue) or "0"
 				FillSlider.Size = UDim2.new((newBeginValue - newMin) / (newMax - newMin), 0, 1, 0)
 
@@ -1225,7 +1235,7 @@ function akdo:createFrame(titletext)
 					end)
 				end
 			end
-			
+
 			return US
 		end
 
@@ -1437,7 +1447,7 @@ function akdo:createFrame(titletext)
 			function UDT:updateDT(newname, newItems, newcallback, newItemsPerRow)
 				local newcallback = newcallback or function() end
 				local newItemsPerRow = newItemsPerRow or 1
-				
+
 				DropdownButton.Text = name or DropdownButton.Text
 
 				DropdownButton.MouseButton1Click:Connect(function()
