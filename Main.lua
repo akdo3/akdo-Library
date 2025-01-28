@@ -1289,6 +1289,7 @@ function akdo:createFrame(titletext)
 		end
 
 		function EI:addTextBox(name, Info, placeholderText, callback, stat, onlyNumbers, onlyLetters)
+			local UTB = {}
 			local callback = callback or function() end
 			local TextBoxFrame = Instance.new("Frame")
 			local TextBox = Instance.new("TextBox")
@@ -1340,11 +1341,12 @@ function akdo:createFrame(titletext)
 				end)
 			end
 
+			local Image = Instance.new("ImageButton")
+
 			if Info and Info ~= "" then
 				TextBox.Position = UDim2.new(0.584, 0,0, 0)
 				Text.Size = UDim2.new(0.584, 0,1, 0)
 
-				local Image = Instance.new("ImageButton")
 				Image.Parent = TextBoxFrame
 				Image.BackgroundTransparency = 1
 				Image.Position = akdo.Setting.Image.InfoImagePOS
@@ -1359,7 +1361,49 @@ function akdo:createFrame(titletext)
 						tweenSize:Play()
 					end
 				end)
+			else
+				Image:Destroy()
 			end
+
+			function UTB:updateTextBox(newname, newInfo, newplaceholderText, newcallback, newstat, newonlyNumbers, newonlyLetters)
+				Text.Text = newname or Text.Text
+				TextBox.PlaceholderText = placeholderText or TextBox.PlaceholderText
+				
+				if newInfo and newInfo ~= "" then
+					if Image then
+						Image.MouseButton1Click:Connect(function()
+							TextInfo.Text = newInfo
+							if InfoFrame.Size.Y ~= {0.148, 0} then
+								InfoFrame.Visible = true
+								local tweenSize = TweenService:Create(InfoFrame, akdo.Setting.TweenInfo, {Size = UDim2.new(0.7133, 0,0.148, 0)})
+								tweenSize:Play()
+							end
+						end)
+					else
+						local Image = Instance.new("ImageButton")
+
+						TextBox.Position = UDim2.new(0.584, 0,0, 0)
+						Text.Size = UDim2.new(0.584, 0,1, 0)
+
+						Image.Parent = TextBoxFrame
+						Image.BackgroundTransparency = 1
+						Image.Position = akdo.Setting.Image.InfoImagePOS
+						Image.Size = akdo.Setting.Image.ImageSize
+						Image.Image = "http://www.roblox.com/asset/?id=6026568210"
+						Image.ImageColor3 = akdo.Setting.Properties.TextColor
+						Image.MouseButton1Click:Connect(function()
+							TextInfo.Text = Info
+							if InfoFrame.Size.Y ~= {0.148, 0} then
+								InfoFrame.Visible = true
+								local tweenSize = TweenService:Create(InfoFrame, akdo.Setting.TweenInfo, {Size = UDim2.new(0.7133, 0,0.148, 0)})
+								tweenSize:Play()
+							end
+						end)
+					end
+				end
+			end
+
+			return UTB
 		end
 
 		function EI:addDT(name, items, callback, style, itemsPerRow) --Dropdown and Toggle
