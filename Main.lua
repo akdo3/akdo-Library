@@ -53,6 +53,7 @@ function akdo:createFrame(titletext)
 
 	local ScreenGui = Instance.new("ScreenGui")
 	ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	ScreenGui.ResetOnSpawn = false
 
 	local Frame = Instance.new("Frame")
 	Frame.Position = UDim2.new(0.25, 0, 0.25, 0)
@@ -1534,7 +1535,6 @@ function akdo:createFrame(titletext)
 
 		function EI:addRow(FramePerRow, lines)
 			local row = Instance.new("Frame")
-			row.Name = "RFrame"
 			row.Size = UDim2.new(0.95, 0, 0, 30)
 			row.BackgroundTransparency = 1
 			row.Parent = tabContent
@@ -1550,7 +1550,7 @@ function akdo:createFrame(titletext)
 			local function update()
 				local buttonCount = 0
 				for _, child in ipairs(row:GetChildren()) do
-					if child:IsA("Frame") or child:IsA("TextButton") or child:IsA("ImageButton") then
+					if child:IsA("Frame") then
 						buttonCount = buttonCount + 1
 					end
 				end
@@ -1579,8 +1579,8 @@ function akdo:createFrame(titletext)
 
 			return EI
 		end
-		EI.parent = tabContent
 
+		EI.parent = tabContent
 		return EI
 	end
 	return TabsAndStyles
