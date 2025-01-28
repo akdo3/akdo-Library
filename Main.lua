@@ -600,21 +600,21 @@ function akdo:createFrame(titletext)
 				Button.Size = akdo.Setting.TextSize.Text
 				Image:Destroy()
 			end
-			function BF:updateButton(name, Info, callback)
-				local callback = callback or function() end
+			function BF:updateButton(newname, newInfo, newcallback)
+				local callback = newcallback or function() end
 
-				if name and name ~= "" then
-					Button.Text = name
+				if newname and newname ~= "" then
+					Button.Text = newname
 				end
 
-				if callback and callback ~= "" then
-					Button.MouseButton1Click:Connect(callback)
+				if newcallback and newcallback ~= "" then
+					Button.MouseButton1Click:Connect(newcallback)
 				end
 
-				if Info and Info ~= "" then
+				if newInfo and newInfo ~= "" then
 					if Image then
 						Image.MouseButton1Click:Connect(function()
-							TextInfo.Text = Info
+							TextInfo.Text = newInfo
 						end)
 					else
 						local Image = Instance.new("ImageButton")
@@ -624,7 +624,7 @@ function akdo:createFrame(titletext)
 						Image.Image = "http://www.roblox.com/asset/?id=6026568210"
 						Image.ImageColor3 = akdo.Setting.Properties.TextColor
 						Image.MouseButton1Click:Connect(function()
-							TextInfo.Text = Info
+							TextInfo.Text = newInfo
 							if InfoFrame.Size.Y ~= {0.148, 0} then
 								InfoFrame.Visible = true
 								local tweenSize = TweenService:Create(InfoFrame, akdo.Setting.TweenInfo, {Size = UDim2.new(0.7133, 0,0.148, 0)})
@@ -638,8 +638,6 @@ function akdo:createFrame(titletext)
 		end
 
 		function EI:addFrameButton(name, Info)
-			local FBE = {}
-
 			local ButtonContent = Instance.new("Frame")
 			ButtonContent.Size = UDim2.new(1, 0, 1, 0)
 			ButtonContent.Position = UDim2.new(0, 0, 0, 0)
@@ -708,7 +706,6 @@ function akdo:createFrame(titletext)
 
 			return EI
 		end
-		EI.parent = tabContent
 		
 		function EI:addToggle(name, Info, callback)
 			local TF = {}
@@ -1007,8 +1004,12 @@ function akdo:createFrame(titletext)
 			return DF
 		end
 
-		function EI:addSlider(name, Info, BeginValue, Min, Max, callback, GetMode, TextBoxDisable)
+		function EI:addSlider(name, Info, BeginValue, Min, Max, callback, GetMode)
+			local US = {}
 			local callback = callback or function() end
+			local BeginValue = BeginValue or 0
+			local Min = Min or 0
+			local Max = Max or 500
 
 			local STFrame = Instance.new("Frame")
 			local TextBox = Instance.new("TextBox")
@@ -1038,7 +1039,7 @@ function akdo:createFrame(titletext)
 			Text.BackgroundTransparency = 1
 			Text.Size = UDim2.new(0.266, 0, 1, 0)
 			Text.Font = Enum.Font.SourceSans
-			Text.Text = name or "ST"
+			Text.Text = name or "Slider"
 			Text.TextColor3 = akdo.Setting.Properties.TextColor
 			Text.TextScaled = true
 			Text.TextXAlignment = Enum.TextXAlignment.Left
@@ -1061,7 +1062,7 @@ function akdo:createFrame(titletext)
 			Trigger.Size = UDim2.new(1, 0, 1, 0)
 			Trigger.TextTransparency = 1
 
-			local function UpdateSlider(num)
+			local function UpdateSliderIn(num)
 				local output
 				if num then
 					output = math.clamp((num - Min) / (Max - Min), 0, 1)
@@ -1084,7 +1085,7 @@ function akdo:createFrame(titletext)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 					isDragging = true
 					while isDragging do
-						UpdateSlider()
+						UpdateSliderIn()
 						task.wait()
 					end
 				end
@@ -1102,7 +1103,7 @@ function akdo:createFrame(titletext)
 					local numValue = tonumber(TextBox.Text)
 					numValue = math.clamp(numValue, Min, Max)
 					TextBox.Text = tostring(numValue)
-					UpdateSlider(numValue)
+					UpdateSliderIn(numValue)
 					callback(TextBox.Text)
 				end)
 			else
@@ -1111,7 +1112,7 @@ function akdo:createFrame(titletext)
 					local numValue = tonumber(TextBox.Text)
 					numValue = math.clamp(numValue, Min, Max)
 					TextBox.Text = tostring(numValue)
-					UpdateSlider(numValue)
+					UpdateSliderIn(numValue)
 					callback(TextBox.Text)
 				end)
 			end
@@ -1138,6 +1139,92 @@ function akdo:createFrame(titletext)
 					end
 				end)
 			end
+			
+			function US:updateSlider(newname, newInfo, newBeginValue, newMin, newMax, newcallback, newGetMode)
+				local newcallback = newcallback or function() end
+				local BeginValue = BeginValue or 0
+				local Min = Min or 0
+				local Max = Max or 500
+
+				Text.Text = newname or Text.Text
+				
+				TextBox.Text = math.floor(newBeginValue) or "0"
+				FillSlider.Size = UDim2.new((newBeginValue - newMin) / (newMax - newMin), 0, 1, 0)
+
+				local function UpdateSliderInIn(num)
+					local output
+					if num then
+						output = math.clamp((num - Min) / (Max - Min), 0, 1)
+					else
+						local sliderPosX = Trigger.AbsolutePosition.X
+						local sliderSizeX = Trigger.AbsoluteSize.X
+						output = math.clamp((UserInputService:GetMouseLocation().X - sliderPosX) / sliderSizeX, 0, 1)
+					end
+					local Value = output * (Max - Min) + Min
+
+					local tween = TweenService:Create(FillSlider, akdo.Setting.TweenInfo, {Size = UDim2.new(output, 0, 1, 0)})
+					tween:Play()
+					TextBox.Text = tostring(math.floor(Value))
+					newcallback(Value)
+				end
+
+				local isDragging = false
+
+				Trigger.InputBegan:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						isDragging = true
+						while isDragging do
+							UpdateSliderInIn()
+							task.wait()
+						end
+					end
+				end)
+
+				if newGetMode then
+					TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+						TextBox.Text = TextBox.Text:gsub("%D", "")
+						local numValue = tonumber(TextBox.Text)
+						numValue = math.clamp(numValue, Min, Max)
+						TextBox.Text = tostring(numValue)
+						UpdateSliderInIn(numValue)
+						newcallback(TextBox.Text)
+					end)
+				else
+					TextBox.FocusLost:Connect(function()
+						TextBox.Text = TextBox.Text:gsub("%D", "")
+						local numValue = tonumber(TextBox.Text)
+						numValue = math.clamp(numValue, Min, Max)
+						TextBox.Text = tostring(numValue)
+						UpdateSliderInIn(numValue)
+						newcallback(TextBox.Text)
+					end)
+				end
+
+				if newInfo and newInfo ~= "" then
+					CanvasGroup.Size = UDim2.new(0.335, 0, 0.45, 0)
+					TextBox.Position = UDim2.new(0.665, 0, 0, 0)
+					TextBox.Size = UDim2.new(0.211, 0, 1, 0)
+					Text.Size = UDim2.new(0.584, 0, 1, 0)
+
+					local Image = Instance.new("ImageButton")
+					Image.Parent = STFrame
+					Image.BackgroundTransparency = 1
+					Image.Position = akdo.Setting.Image.InfoImagePOS
+					Image.Size = akdo.Setting.Image.ImageSize
+					Image.Image = "http://www.roblox.com/asset/?id=6026568210"
+					Image.ImageColor3 = akdo.Setting.Properties.TextColor
+					Image.MouseButton1Click:Connect(function()
+						TextInfo.Text = Info
+						if InfoFrame.Size.Y ~= {0.148, 0} then
+							InfoFrame.Visible = true
+							local tweenSize = TweenService:Create(InfoFrame, akdo.Setting.TweenInfo, {Size = UDim2.new(0.7133, 0, 0.148, 0)})
+							tweenSize:Play()
+						end
+					end)
+				end
+			end
+			
+			return US
 		end
 
 		function EI:addTextBox(name, Info, placeholderText, callback, stat, onlyNumbers, onlyLetters)
@@ -1214,8 +1301,10 @@ function akdo:createFrame(titletext)
 			end
 		end
 
-		function EI:addDT(name, items, itemsPerRow, callback) --Dropdown and Toggle
-			callback = callback or function() end
+		function EI:addDT(name, items, callback, itemsPerRow) --Dropdown and Toggle
+			local UDT = {}
+			local callback = callback or function() end
+			local itemsPerRow = itemsPerRow or 1
 
 			local DTFrame = Instance.new("Frame")
 			local DropdownButton = Instance.new("TextButton")
@@ -1343,144 +1432,76 @@ function akdo:createFrame(titletext)
 				addCorner(ItemButton, akdo.Setting.ElementCorner)
 			end
 
-			return DTFrame
-		end
+			function UDT:updateDT(newname, newItems, newcallback, newItemsPerRow)
+				local newcallback = newcallback or function() end
+				local newItemsPerRow = newItemsPerRow or 1
+				
+				DropdownButton.Text = name or DropdownButton.Text
 
---[[	function akdo:updateSliderAndTextBox(parent, name, Info, placeholderText, Min, Max, callback)
-			local callback = callback or function() end
-			local TextBox = parent:FindFirstChild("TextBox")
-			local TextLabel = parent:FindFirstChild("TextLabel")
-			local image = parent:FindFirstChild("ImageButton")
-			local Trigger = parent:FindFirstChild("trig")
-			local CanvasGroup = parent:FindFirstChild("CanvasGroup")
-			local FillSlider = CanvasGroup:FindFirstChild("Frame")
-			local SliderValue = CanvasGroup:FindFirstChild("TextLabel")
-
-
-			if name and name ~= "" then
-				TextBox.Text = TextBox or TextBox.Text
-			end
-
-			if placeholderText and placeholderText ~= "" and TextBox then
-				TextBox.PlaceholderText = placeholderText
-			end
-
-			if Info and Info ~= "" then
-				if image then
-					image.MouseButton1Click:Connect(function()
-						TextInfo.Text = Info
-					end)
-				else
-					local Image = Instance.new("ImageButton")
-					Image.Parent = parent
-					Image.BackgroundTransparency = 1
-					Image.Position = akdo.Setting.Image.InfoImagePOS
-					Image.Size = akdo.Setting.Image.ImageSize
-					Image.Image = "http://www.roblox.com/asset/?id=6026568210"
-					Image.ImageColor3 = akdo.Setting.Properties.TextColor
-					Image.MouseButton1Click:Connect(function()
-						TextInfo.Text = Info
-						if InfoFrame.Size.Y ~= {0.148, 0} then
-							InfoFrame.Visible = true
-							local tweenSize = TweenService:Create(InfoFrame, akdo.Setting.TweenInfo, {Size = UDim2.new(0.7133, 0,0.148, 0)})
-							tweenSize:Play()
-						end
-					end)
-				end
-			end
-
-			local Value
-			local function UpdateSlider(mouseX)
-				local sliderPosX = Trigger.AbsolutePosition.X
-				local sliderSizeX = Trigger.AbsoluteSize.X
-				local output = math.clamp((mouseX - sliderPosX) / sliderSizeX, 0, 1)
-
-				local Value = output * (Max - Min) + Min
-
-				local tween = game.TweenService:Create(FillSlider, akdo.Setting.TweenInfo, {Size = UDim2.new(output, 0, 1, 0)})
-				tween:Play()
-
-				SliderValue.Text = tostring(math.floor(Value))
-				callback(Value)
-			end
-
-			local isDragging = false
-
-			Trigger.MouseButton1Down:Connect(function ()
-				isDragging = true
-
-				while isDragging do
-					local mouse = UserInputService:GetMouseLocation().X
-					UpdateSlider(mouse)
-
-					wait()
-				end
-			end)
-		end
-
-		function akdo:updateDropdownAndToggle(parent, name, items, itemsPerRow, callback)
-			local callback = callback or function() end
-			local DropdownButton = parent:FindFirstChild("TextButton")
-			local DropdownList = parent:FindFirstChild("ScrollingFrame")
-			local DropdownImage = parent:FindFirstChild("DImageButton")
-			local ToggleButton = parent:FindFirstChild("ImageButton")
-
-			DropdownButton.Text = name or DropdownButton.Text
-
-			DropdownButton.MouseButton1Click:Connect(function()
-				if DropdownList.Visible then
-					TweenService:Create(DropdownImage, akdo.Setting.TweenInfo, {Rotation = DropdownImage.Rotation - 90}):Play()
-					TweenService:Create(DropdownList, akdo.Setting.TweenInfo, {Size = UDim2.new(0.95, 0, 0, 0)}):Play()
-					wait(0.2)
-					DropdownList.Visible = false
-				else
-					local numRows = math.ceil(#items / itemsPerRow)
-					local itemHeight = 35
-					local newHeight = numRows * itemHeight
-					local maxHeight = 100
-					local finalHeight = math.min(newHeight, maxHeight)
-					DropdownList.CanvasSize = UDim2.new(1, 0, 0, newHeight)
-					DropdownList.Visible = true
-					TweenService:Create(DropdownImage, akdo.Setting.TweenInfo, {Rotation = DropdownImage.Rotation + 90}):Play()
-					TweenService:Create(DropdownList, akdo.Setting.TweenInfo, {Size = UDim2.new(0.95, 0, 0, finalHeight)}):Play()
-				end
-			end)
-
-			local Item
-			local toggled = false
-			ToggleButton.MouseButton1Click:Connect(function() 
-				if toggled then
-					toggled = not toggled
-					ToggleButton.Image = "http://www.roblox.com/asset/?id=6031068433"
-					callback(toggled, Item)
-				else
-					toggled = not toggled
-					ToggleButton.Image = "http://www.roblox.com/asset/?id=6031068426"
-					callback(toggled, Item)
-				end
-			end)
-
-			for _, item in pairs(items) do
-				local ItemButton = Instance.new("TextButton")
-				ItemButton.Parent = DropdownList
-				ItemButton.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
-				ItemButton.Text = item
-				ItemButton.Size = UDim2.new(1, 0, 0, 30)
-				ItemButton.TextColor3 = akdo.Setting.Properties.TextColor
-				ItemButton.TextScaled = true
-
-				ItemButton.MouseButton1Click:Connect(function()
-					DropdownButton.Text = name..": "..item
-					TweenService:Create(DropdownImage, akdo.Setting.TweenInfo, {Rotation = DropdownImage.Rotation - 90}):Play()
-					TweenService:Create(DropdownList, akdo.Setting.TweenInfo, {Size = UDim2.new(0.95, 0, 0, 0)}):Play()
-					wait(0.2)
-					DropdownList.Visible = false
-					Item = item
-					callback(toggled, item)
+				DropdownButton.MouseButton1Click:Connect(function()
+					if DropdownList.Visible then
+						TweenService:Create(DropdownImage, akdo.Setting.TweenInfo, {Rotation = DropdownImage.Rotation - 90}):Play()
+						TweenService:Create(DropdownList, akdo.Setting.TweenInfo, {Size = UDim2.new(0.95, 0, 0, 0)}):Play()
+						wait(0.2)
+						DropdownList.Visible = false
+					else
+						local numRows = math.ceil(#newItems / newItemsPerRow)
+						local itemHeight = 35
+						local newHeight = numRows * itemHeight
+						local maxHeight = 100
+						local finalHeight = math.min(newHeight, maxHeight)
+						DropdownList.CanvasSize = UDim2.new(1, 0, 0, newHeight)
+						DropdownList.Visible = true
+						TweenService:Create(DropdownImage, akdo.Setting.TweenInfo, {Rotation = DropdownImage.Rotation + 90}):Play()
+						TweenService:Create(DropdownList, akdo.Setting.TweenInfo, {Size = UDim2.new(0.95, 0, 0, finalHeight)}):Play()
+					end
 				end)
-				addCorner(ItemButton, akdo.Setting.ElementCorner)
+
+				for _, item in pairs(newItems) do
+					local ItemButton = Instance.new("TextButton")
+					ItemButton.Parent = DropdownList
+					ItemButton.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
+					ItemButton.Text = item
+					ItemButton.Size = UDim2.new(1, 0, 0, 30)
+					ItemButton.TextColor3 = akdo.Setting.Properties.TextColor
+					ItemButton.TextScaled = true
+
+					ItemButton.MouseButton1Click:Connect(function()
+						DropdownButton.Text = name..": "..item
+						TweenService:Create(DropdownImage, akdo.Setting.TweenInfo, {Rotation = DropdownImage.Rotation - 90}):Play()
+						TweenService:Create(DropdownList, akdo.Setting.TweenInfo, {Size = UDim2.new(0.95, 0, 0, 0)}):Play()
+						wait(0.2)
+						DropdownList.Visible = false
+						Item = item
+						newcallback(toggled, item)
+					end)
+					addCorner(ItemButton, akdo.Setting.ElementCorner)
+				end
+
+				for _, item in pairs(items) do
+					local ItemButton = Instance.new("TextButton")
+					ItemButton.Parent = DropdownList
+					ItemButton.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
+					ItemButton.Text = item
+					ItemButton.Size = UDim2.new(1, 0, 0, 30)
+					ItemButton.TextColor3 = akdo.Setting.Properties.TextColor
+					ItemButton.TextScaled = true
+
+					ItemButton.MouseButton1Click:Connect(function()
+						DropdownButton.Text = name..": "..item
+						TweenService:Create(DropdownImage, akdo.Setting.TweenInfo, {Rotation = DropdownImage.Rotation - 90}):Play()
+						TweenService:Create(DropdownList, akdo.Setting.TweenInfo, {Size = UDim2.new(0.95, 0, 0, 0)}):Play()
+						wait(0.2)
+						DropdownList.Visible = false
+						Item = item
+						callback(toggled, item)
+					end)
+					addCorner(ItemButton, akdo.Setting.ElementCorner)
+				end
 			end
-		end	]]
+
+			return UDT
+		end
 
 		function EI:addLabel(text)
 			local UL = {}
