@@ -22,12 +22,6 @@ akdo.Setting = {
 		Text2 = UDim2.new(0.8, 0, 1, 0),
 		Text3 = UDim2.new(0.7, 0, 1, 0),
 	},
-	Toggle = {
-		Stare = "",
-		Circl = "",
-		Normal = "",
-		Square = "",
-	},
 	Slider = {
 
 	},
@@ -281,7 +275,7 @@ function akdo:createFrame(titletext)
 
 			local MinimizedButton = Instance.new("TextButton")
 			MinimizedButton.Text = titletext or "akdo"
-			MinimizedButton.Size = UDim2.new(0.05, 0,0.05, 0)
+			MinimizedButton.Size = UDim2.new(0.1, 0,0.1, 0)
 			MinimizedButton.Position = UDim2.new(0.5, 0, 0.5, 0)
 			MinimizedButton.BackgroundColor3 = akdo.Setting.Properties.Background_Border_Color
 			MinimizedButton.BorderColor3 = akdo.Setting.Properties.TextColor
@@ -718,12 +712,11 @@ function akdo:createFrame(titletext)
 			return EI
 		end
 
-		function EI:addToggle(name, Info, callback)
+		function EI:addToggle(name, Info, callback, style)
 			local TF = {}
 			local callback = callback or function() end
 			local ToggleFrame = Instance.new("Frame")
 			local TextButton = Instance.new("TextButton")
-			local toggleButton = Instance.new("ImageButton")
 
 			ToggleFrame.Parent = EI.parent
 			ToggleFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
@@ -738,21 +731,77 @@ function akdo:createFrame(titletext)
 			TextButton.TextScaled = true
 			TextButton.TextXAlignment = Enum.TextXAlignment.Left
 
-			toggleButton.Name = "imageButton"
-			toggleButton.Parent = ToggleFrame
-			toggleButton.BackgroundTransparency = 1
-			toggleButton.Position = UDim2.new(0.8, 0, 0, 0)
-			toggleButton.Size = UDim2.new(0.1, 0, 1, 0)
-			toggleButton.Image = "http://www.roblox.com/asset/?id=6031068433"
-			toggleButton.ImageColor3 = akdo.Setting.Properties.TextColor
+
+			local toggleButton = Instance.new("ImageButton")
+
+			local RoundToggleFrame = Instance.new("Frame")
+			local ToggleTextButton = Instance.new("TextButton")
+			local RoundedBallToggleFrame = Instance.new("Frame")
+
+			if not style or style == 1 then
+				RoundToggleFrame.Parent = ToggleFrame
+				RoundToggleFrame.Position = UDim2.new(0.85, 0, 0.25, 0)
+				RoundToggleFrame.Size = UDim2.new(0.125, 0, 0.5, 0)
+				addCorner(RoundToggleFrame, UDim.new(0, 999))
+
+				ToggleTextButton.Parent = RoundToggleFrame
+				ToggleTextButton.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+				ToggleTextButton.Size = UDim2.new(1, 0, 1, 0)
+				ToggleTextButton.Text = ""
+				addCorner(ToggleTextButton, UDim.new(0, 999))
+
+				RoundedBallToggleFrame.Parent = RoundToggleFrame
+				RoundedBallToggleFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				RoundedBallToggleFrame.Position = UDim2.new(0, 0, 0.07, 0)
+				RoundedBallToggleFrame.Size = UDim2.new(0.4, 0, 0.85, 0)
+				addCorner(RoundedBallToggleFrame, UDim.new(0, 999))
+
+				toggleButton:Destroy()
+			elseif style == 2 then
+				toggleButton.Parent = ToggleFrame
+				toggleButton.BackgroundTransparency = 1
+				toggleButton.Position = UDim2.new(0.8, 0, 0, 0)
+				toggleButton.Size = UDim2.new(0.1, 0, 1, 0)
+				toggleButton.ImageColor3 = akdo.Setting.Properties.TextColor
+				toggleButton.Image = "http://www.roblox.com/asset/?id=6031068433"
+				
+				RoundToggleFrame:Destroy()
+				ToggleTextButton:Destroy()
+				RoundToggleFrame:Destroy()
+			elseif style == 3 then
+				toggleButton.Parent = ToggleFrame
+				toggleButton.BackgroundTransparency = 1
+				toggleButton.Position = UDim2.new(0.8, 0, 0, 0)
+				toggleButton.Size = UDim2.new(0.1, 0, 1, 0)
+				toggleButton.ImageColor3 = akdo.Setting.Properties.TextColor
+				toggleButton.Image = "http://www.roblox.com/asset/?id=6031068428"
+
+				RoundToggleFrame:Destroy()
+				ToggleTextButton:Destroy()
+				RoundToggleFrame:Destroy()
+			end
 
 			local toggled = false
 			local function toggleState()
 				toggled = not toggled
-				toggleButton.Image = toggled and "http://www.roblox.com/asset/?id=6031068426" or "http://www.roblox.com/asset/?id=6031068433"
+				if not style or style == 1 then
+					RoundedBallToggleFrame:TweenPosition(
+						toggled and  UDim2.new(0.6, 0, 0.07, 0) or UDim2.new(0.0, 0, 0.07, 0),
+						Enum.EasingDirection.InOut,
+						Enum.EasingStyle.Quad,
+						0.25,
+						true
+					)
+					TweenService:Create(ToggleTextButton, TweenInfo.new(0.25), {BackgroundColor3 = toggled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(200, 200, 200)}):Play()
+				elseif style == 2 then
+					toggleButton.Image = toggled and "http://www.roblox.com/asset/?id=6031068426" or "http://www.roblox.com/asset/?id=6031068433"
+				elseif style == 3 then
+					toggleButton.Image = toggled and "http://www.roblox.com/asset/?id=6031068423" or "http://www.roblox.com/asset/?id=6031068428"
+				end
 				callback(toggled)
 			end
 
+			ToggleTextButton.MouseButton1Click:Connect(toggleState)
 			TextButton.MouseButton1Click:Connect(toggleState)
 			toggleButton.MouseButton1Click:Connect(toggleState)
 
@@ -1313,7 +1362,7 @@ function akdo:createFrame(titletext)
 			end
 		end
 
-		function EI:addDT(name, items, callback, itemsPerRow) --Dropdown and Toggle
+		function EI:addDT(name, items, callback, style, itemsPerRow) --Dropdown and Toggle
 			local UDT = {}
 			local callback = callback or function() end
 			local itemsPerRow = itemsPerRow or 1
@@ -1321,7 +1370,6 @@ function akdo:createFrame(titletext)
 			local DTFrame = Instance.new("Frame")
 			local DropdownButton = Instance.new("TextButton")
 			local DropdownImage = Instance.new("ImageButton")
-			local toggleButton = Instance.new("ImageButton")
 			local DropdownList = Instance.new("ScrollingFrame")
 			local UIGridLayout = Instance.new("UIGridLayout")
 
@@ -1346,12 +1394,79 @@ function akdo:createFrame(titletext)
 			DropdownImage.Image = "http://www.roblox.com/asset/?id=6031090994"
 			DropdownImage.ImageColor3 = akdo.Setting.Properties.TextColor
 
-			toggleButton.Parent = DTFrame
-			toggleButton.BackgroundTransparency = 1
-			toggleButton.Position = UDim2.new(0.8, 0, 0, 0)
-			toggleButton.Size = UDim2.new(0.1, 0, 1, 0)
-			toggleButton.Image = "http://www.roblox.com/asset/?id=6031068433"
-			toggleButton.ImageColor3 = akdo.Setting.Properties.TextColor 
+
+			local toggleButton = Instance.new("ImageButton")
+
+			local RoundToggleFrame = Instance.new("Frame")
+			local ToggleTextButton = Instance.new("TextButton")
+			local RoundedBallToggleFrame = Instance.new("Frame")
+
+			if not style or style == 1 then
+				RoundToggleFrame.Parent = DTFrame
+				RoundToggleFrame.Position = UDim2.new(0.85, 0, 0.25, 0)
+				RoundToggleFrame.Size = UDim2.new(0.125, 0, 0.5, 0)
+				addCorner(RoundToggleFrame, UDim.new(0, 999))
+
+				ToggleTextButton.Parent = RoundToggleFrame
+				ToggleTextButton.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+				ToggleTextButton.Size = UDim2.new(1, 0, 1, 0)
+				ToggleTextButton.Text = ""
+				addCorner(ToggleTextButton, UDim.new(0, 999))
+
+				RoundedBallToggleFrame.Parent = RoundToggleFrame
+				RoundedBallToggleFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				RoundedBallToggleFrame.Position = UDim2.new(0, 0, 0.07, 0)
+				RoundedBallToggleFrame.Size = UDim2.new(0.4, 0, 0.85, 0)
+				addCorner(RoundedBallToggleFrame, UDim.new(0, 999))
+
+				toggleButton:Destroy()
+			elseif style == 2 then
+				toggleButton.Parent = DTFrame
+				toggleButton.BackgroundTransparency = 1
+				toggleButton.Position = UDim2.new(0.8, 0, 0, 0)
+				toggleButton.Size = UDim2.new(0.1, 0, 1, 0)
+				toggleButton.ImageColor3 = akdo.Setting.Properties.TextColor
+				toggleButton.Image = "http://www.roblox.com/asset/?id=6031068433"
+
+				RoundToggleFrame:Destroy()
+				ToggleTextButton:Destroy()
+				RoundToggleFrame:Destroy()
+			elseif style == 3 then
+				toggleButton.Parent = DTFrame
+				toggleButton.BackgroundTransparency = 1
+				toggleButton.Position = UDim2.new(0.8, 0, 0, 0)
+				toggleButton.Size = UDim2.new(0.1, 0, 1, 0)
+				toggleButton.ImageColor3 = akdo.Setting.Properties.TextColor
+				toggleButton.Image = "http://www.roblox.com/asset/?id=6031068428"
+
+				RoundToggleFrame:Destroy()
+				ToggleTextButton:Destroy()
+				RoundToggleFrame:Destroy()
+			end
+
+			local toggled = false
+			local function toggleState()
+				toggled = not toggled
+				if not style or style == 1 then
+					RoundedBallToggleFrame:TweenPosition(
+						toggled and  UDim2.new(0.6, 0, 0.07, 0) or UDim2.new(0.0, 0, 0.07, 0),
+						Enum.EasingDirection.InOut,
+						Enum.EasingStyle.Quad,
+						0.25,
+						true
+					)
+					TweenService:Create(ToggleTextButton, TweenInfo.new(0.25), {BackgroundColor3 = toggled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(200, 200, 200)}):Play()
+				elseif style == 2 then
+					toggleButton.Image = toggled and "http://www.roblox.com/asset/?id=6031068426" or "http://www.roblox.com/asset/?id=6031068433"
+				elseif style == 3 then
+					toggleButton.Image = toggled and "http://www.roblox.com/asset/?id=6031068423" or "http://www.roblox.com/asset/?id=6031068428"
+				end
+				callback(toggled)
+			end
+
+			ToggleTextButton.MouseButton1Click:Connect(toggleState)
+			DropdownButton.MouseButton1Click:Connect(toggleState)
+			toggleButton.MouseButton1Click:Connect(toggleState)
 
 
 			DropdownList.Parent = DTFrame.Parent
@@ -1586,8 +1701,11 @@ function akdo:createFrame(titletext)
 			update()
 
 			EI.parent = row
-
 			return EI
+		end
+
+		function EI:End()
+			EI.parent = tabContent
 		end
 
 		EI.parent = tabContent
