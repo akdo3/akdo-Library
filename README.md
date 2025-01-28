@@ -76,18 +76,20 @@ local options = {
     "Option 2",
     "Option 3",
 }
-local Dropdown = Main:addDropdown("Choose option", "Choose the option you want", options, 2, function(option)
+local Dropdown = Main:addDropdown("Choose option", "Choose the option you want", options, function(option)
     print("Selected option:", option)
-end)
+end, 2)
 ```
 
 `Main` = Tab where the dropdown will be.
 
-`Choose` option = Name of the dropdown.
+`Choose option` = Name of the dropdown.
 
-`Choose` the option you want = Info.
+`Choose the option you want` = Info.
 
 `options` = The list of options available in the dropdown.
+
+`2` = Items Per Row
 
 ### Toggle
 Add toggles to enable or disable features.
@@ -116,7 +118,7 @@ local TextBox = akdo:addTextBox(name, Info, placeholderText, callback, parent, s
 
 #### DropdownAndToggle
 ```lua
-local DropdownAndToggle = akdo:addDT(name, items, itemsPerRow, callback, parent)
+local DropdownAndToggle = akdo:addDT(name, items, callback, itemsPerRow)
 ```
 
 #### FrameStyles
@@ -149,7 +151,7 @@ end, false, false, true)
 local table = {
     "egg 1", "egg 2", 
 }
-Main:addDropdownAndToggle(Player, "Auto Hatch", table, 1, function(val1, val2)
+Main:addDT(Player, "Auto Hatch", table, 1, function(val1, val2)
     print(val2)
     if val1 then
         if val2 == "egg 1" then
@@ -216,7 +218,7 @@ local table = {
 	"", 
 }
 
-local DropdownAndToggle = Main:addDropdownAndToggle("", table, 1, function(val1, val2)
+local DropdownAndToggle = Main:addDT("", table, function(val1, val2)
 	if val1 then
 		if val2 == "" then
 
@@ -250,13 +252,13 @@ local Button = Main:addButton("Button", "", function(val)
 	print("Clicked")
 end, row)
 
-local Dropdown = Main:addDropdown("Auto Hatch", "", {"egg 1", "egg 2","egg 3"}, 3, function(toggled, egg)
+local Dropdown = Main:addDropdown("Auto Hatch", "", {"egg 1", "egg 2","egg 3"}, function(toggled, egg)
 	if toggled then
 		print("Selected egg:", egg)
 	else
 		print("Off")
 	end
-end)
+end, 3)
 ```
 ## Suggestions
 We encourage suggestions to improve akdo Library! If you have any suggestions, error reports, or feature , feel free to send them to this [Discord](https://discord.gg/xgvddUgwJT) Server.
