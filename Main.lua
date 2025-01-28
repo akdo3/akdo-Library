@@ -834,9 +834,10 @@ function akdo:createFrame(titletext)
 			return TF
 		end
 
-		function EI:addDropdown(name, Info, items, itemsPerRow, callback)
+		function EI:addDropdown(name, Info, items, callback, itemsPerRow)
 			local DF = {}
-			callback = callback or function() end
+			local callback = callback or function() end
+			local itemsPerRow = itemsPerRow or 1
 
 			local DropdownFrame = Instance.new("Frame")
 			local DropdownButton = Instance.new("TextButton")
