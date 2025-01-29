@@ -1203,8 +1203,8 @@ function akdo:createFrame(titletext)
 			function US:updateSlider(newname, newInfo, newBeginValue, newMin, newMax, newcallback, newGetMode)
 				local newcallback = newcallback or function() end
 				local BeginValue = BeginValue or 0
-				local Min = Min or 0
-				local Max = Max or 500
+				local newMin = newMin or 0
+				local newMax = newMax or 500
 
 				Text.Text = newname or Text.Text
 
@@ -1795,8 +1795,8 @@ function akdo:createFrame(titletext)
 			function USB:updateSlider(newname, bewbuttonname, newBeginValue, newMin, newMax, newcallback, newGetMode)
 				local newcallback = newcallback or function() end
 				local BeginValue = BeginValue or 0
-				local Min = Min or 0
-				local Max = Max or 500
+				local newMin = newMin or 0
+				local newMax = newMax or 500
 
 				Text.Text = newname or Text.Text
 
