@@ -1792,6 +1792,69 @@ function akdo:createFrame(titletext)
 				end)
 			end
 
+			function USB:updateSlider(newname, bewbuttonname, newBeginValue, newMin, newMax, newcallback, newGetMode)
+				local newcallback = newcallback or function() end
+				local BeginValue = BeginValue or 0
+				local Min = Min or 0
+				local Max = Max or 500
+
+				Text.Text = newname or Text.Text
+
+				SliderTextButton.Text = buttonname or SliderTextButton.Text
+
+				TextBox.Text = math.floor(newBeginValue) or "0"
+				FillSlider.Size = UDim2.new((newBeginValue - newMin) / (newMax - newMin), 0, 1, 0)
+
+				local function UpdateSliderInIn(num)
+					local output
+					if num then
+						output = math.clamp((num - Min) / (Max - Min), 0, 1)
+					else
+						local sliderPosX = Trigger.AbsolutePosition.X
+						local sliderSizeX = Trigger.AbsoluteSize.X
+						output = math.clamp((UserInputService:GetMouseLocation().X - sliderPosX) / sliderSizeX, 0, 1)
+					end
+					local Value = output * (Max - Min) + Min
+
+					local tween = TweenService:Create(FillSlider, akdo.Setting.TweenInfo, {Size = UDim2.new(output, 0, 1, 0)})
+					tween:Play()
+					TextBox.Text = tostring(math.floor(Value))
+					newcallback(Value)
+				end
+
+				local isDragging = false
+
+				Trigger.InputBegan:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						isDragging = true
+						while isDragging do
+							UpdateSliderInIn()
+							task.wait()
+						end
+					end
+				end)
+
+				if newGetMode then
+					TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+						TextBox.Text = TextBox.Text:gsub("%D", "")
+						local numValue = tonumber(TextBox.Text)
+						numValue = math.clamp(numValue, Min, Max)
+						TextBox.Text = tostring(numValue)
+						UpdateSliderInIn(numValue)
+						newcallback(TextBox.Text)
+					end)
+				else
+					TextBox.FocusLost:Connect(function()
+						TextBox.Text = TextBox.Text:gsub("%D", "")
+						local numValue = tonumber(TextBox.Text)
+						numValue = math.clamp(numValue, Min, Max)
+						TextBox.Text = tostring(numValue)
+						UpdateSliderInIn(numValue)
+						newcallback(TextBox.Text)
+					end)
+				end
+			end
+
 			return USB
 		end
 
