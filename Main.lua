@@ -1095,10 +1095,9 @@ function akdo:createFrame(titletext)
 			TextBox.TextScaled = true
 			addCorner(TextBox, UDim.new(0.15, 0))
 
-			Text.Name = "text"
 			Text.Parent = STFrame
 			Text.BackgroundTransparency = 1
-			Text.Size = UDim2.new(0.266, 0, 1, 0)
+			Text.Size = UDim2.new(0.44, 0, 1, 0)
 			Text.Font = Enum.Font.SourceSans
 			Text.Text = name or "Slider"
 			Text.TextColor3 = akdo.Setting.Properties.TextColor
@@ -1672,6 +1671,128 @@ function akdo:createFrame(titletext)
 			end
 
 			return UDT
+		end
+
+		function EI:addSB(name, buttonname, BeginValue, Min, Max, sliderCallback, buttonCallback, GetMode) -- Slider and Button
+			local USB = {}
+			sliderCallback = sliderCallback or function() end
+			buttonCallback = buttonCallback or function() end
+			BeginValue = BeginValue or 0
+			Min = Min or 0
+			Max = Max or 500
+
+			local STBFrame = Instance.new("Frame")
+			local TextBox = Instance.new("TextBox")
+			local Text = Instance.new("TextLabel")
+			local CanvasGroup = Instance.new("CanvasGroup")
+			local FillSlider = Instance.new("Frame")
+			local Trigger = Instance.new("TextButton")
+			local SliderTextButton = Instance.new("TextButton")
+
+			STBFrame.Parent = EI.parent
+			STBFrame.BackgroundColor3 = akdo.Setting.Properties.ButtonColor
+			STBFrame.Size = akdo.Setting.Properties.ButtonSize
+			STBFrame.ClipsDescendants = true
+			addCorner(STBFrame, akdo.Setting.ElementCorner)
+
+			TextBox.Parent = STBFrame
+			TextBox.BackgroundTransparency = 1
+			TextBox.Position = UDim2.new(0.435, 0, 0, 0)
+			TextBox.Size = UDim2.new(0.125, 0, 1, 0)
+			TextBox.PlaceholderColor3 = akdo.Setting.Properties.TextColor
+			TextBox.Text = math.floor(BeginValue)
+			TextBox.TextColor3 = akdo.Setting.Properties.TextColor
+			TextBox.TextScaled = true
+			addCorner(TextBox, UDim.new(0.15, 0))
+
+			Text.Parent = STBFrame
+			Text.BackgroundTransparency = 1
+			Text.Size = UDim2.new(0.44, 0, 1, 0)
+			Text.Text = name or "Slider"
+			Text.TextColor3 = akdo.Setting.Properties.TextColor
+			Text.TextScaled = true
+			Text.TextXAlignment = Enum.TextXAlignment.Left
+
+			SliderTextButton.Parent = STBFrame
+			SliderTextButton.BackgroundTransparency = 1
+			SliderTextButton.Position = UDim2.new(0.9, 0, 0, 0)
+			SliderTextButton.Size = UDim2.new(0.1, 0, 1, 0)
+			SliderTextButton.Text = buttonname or "Button"
+			SliderTextButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+			SliderTextButton.TextScaled = true
+			SliderTextButton.MouseButton1Click:Connect(buttonCallback)
+
+			CanvasGroup.Parent = STBFrame
+			CanvasGroup.BackgroundColor3 = akdo.Setting.Properties.BackgroundColor
+			CanvasGroup.Position = UDim2.new(0.58, 0, 0.25, 0)
+			CanvasGroup.Size = UDim2.new(0.3, 0, 0.45, 0)
+			addCorner(CanvasGroup, UDim.new(0.5, 0))
+			addStroke(CanvasGroup, 1, akdo.Setting.Properties.Background_Border_Color)
+
+			FillSlider.Parent = CanvasGroup
+			FillSlider.BackgroundColor3 = akdo.Setting.Properties.TextColor
+			FillSlider.Size = UDim2.new((BeginValue - Min) / (Max - Min), 0, 1, 0)
+			addCorner(FillSlider, UDim.new(0.5, 0))
+
+			Trigger.Parent = CanvasGroup
+			Trigger.BackgroundTransparency = 1
+			Trigger.Size = UDim2.new(1, 0, 1, 0)
+			Trigger.TextTransparency = 1
+
+			local function UpdateSlider(num)
+				local output
+				if num then
+					output = math.clamp((num - Min) / (Max - Min), 0, 1)
+				else
+					local sliderPosX = Trigger.AbsolutePosition.X
+					local sliderSizeX = Trigger.AbsoluteSize.X
+					output = math.clamp((UserInputService:GetMouseLocation().X - sliderPosX) / sliderSizeX, 0, 1)
+				end
+				local Value = output * (Max - Min) + Min
+
+				local tween = TweenService:Create(FillSlider, akdo.Setting.TweenInfo, {Size = UDim2.new(output, 0, 1, 0)})
+				tween:Play()
+				TextBox.Text = tostring(math.floor(Value))
+				sliderCallback(Value)
+			end
+
+			local isDragging = false
+
+			Trigger.InputBegan:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+					isDragging = true
+					while isDragging do
+						UpdateSlider()
+						task.wait()
+					end
+				end
+			end)
+
+			UserInputService.InputEnded:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+					isDragging = false
+				end
+			end)
+
+			if GetMode then
+				TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+					TextBox.Text = TextBox.Text:gsub("%D", "")
+					local numValue = tonumber(TextBox.Text) or Min
+					numValue = math.clamp(numValue, Min, Max)
+					TextBox.Text = tostring(numValue)
+					UpdateSlider(numValue)
+				end)
+			else
+				TextBox.FocusLost:Connect(function()
+					TextBox.Text = TextBox.Text:gsub("%D", "")
+					local numValue = tonumber(TextBox.Text) or Min
+					numValue = math.clamp(numValue, Min, Max)
+					TextBox.Text = tostring(numValue)
+					UpdateSlider(numValue)
+				end)
+			end
+
+			return USB
 		end
 
 		function EI:addLabel(text)
