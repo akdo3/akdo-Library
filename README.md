@@ -46,8 +46,39 @@ end)
 
 `Change your speed` = Info about the button.
 
-#### hi
+### Toggle
+Add toggles to enable or disable features.
 
+```lua
+local Main:addToggle("Fly", "You Will Fly", function(value)
+    if value then
+        print("On")
+    else
+        print("Off")
+    end
+end, 1, true)
+```
+
+`Main` = Tab where the toggle will be.
+
+`Fly` = Name of the toggle.
+
+`You Will Fly` = Info about the toggle.
+
+`1` = can add icon insted of the toggle, You can not write it if you want.
+
+`true` = Insted of `1` you can write `false` and make another syle, and You can not write it if you want.
+### Recommended Toggle
+```lua
+local Main:addToggle("Fly", "You Will Fly", function(value)
+    if value then
+        print("On")
+    else
+        print("Off")
+    end
+end)
+```
+ؤشى
 ### Slider
 Use sliders to modify player attributes such as speed.
 
@@ -83,7 +114,7 @@ local Dropdown = Main:addDropdown("Choose option", "Choose the option you want",
 end, 2)
 ```
 
-`Main` = Tab where the dropdown will be.
+`Main` = Tab name, where the dropdown will be.
 
 `Choose option` = Name of the dropdown.
 
@@ -92,25 +123,6 @@ end, 2)
 `options` = The list of options available in the dropdown.
 
 `2` = Items Per Row
-
-### Toggle
-Add toggles to enable or disable features.
-
-```lua
-local Main:addToggle("Fly", "You Will Fly", function(value)
-    if value then
-        print("On")
-    else
-        print("Off")
-    end
-end)
-```
-
-`Main` = Tab where the toggle will be.
-
-`Fly` = Name of the toggle.
-
-`You Will Fly` = Info about the toggle.
 
 ## Function
 #### TextBox
@@ -133,6 +145,50 @@ Frame:FrameStyle(2)
 ```lua
 Frame:FrameStyle(3)
 ```
+
+### Button Actions
+
+#### update name
+ ```lua
+Button:updatename("New Name")
+```
+`Button` = The button name.
+`New Name` = The new name to the button.
+
+#### update info
+ ```lua
+Button:updateinfo("what the button do")
+```
+`Button` = The button name.
+`what the button do` = The new Info to the button.
+
+#### update function
+ ```lua
+Button:updatecallback(function()
+    print("Clicked")
+end)
+```
+`Button` = The button name.
+
+#### Full Update
+ ```lua
+Button:update("New Name", "what the button do",function()
+    print("Clicked")
+end)
+```
+`Button` = The button name.
+`New Name` = The new name to the button.
+`what the button do` = The new Info to the button.
+
+### Toggle Actions
+
+:NewName("newName"): Updates the toggle's label.
+:newInfo("newInfo"): Changes the toggle's descriptive text.
+:newcallback(function): Assigns a new function to be called when the toggle state changes.
+:newIcon("newIcon"): Updates the icon associated with the toggle.
+:newStyle("newStyle"): Alters the visual style, such as the corner roundness.
+:update(newName, newInfo, newCallback, newIcon, newStyle): A full update method to change the name, info, callback, icon, and style in a single call.
+:destroy(): Removes the toggle element and its associated handler from the interface.
 
 ## Example
 ```lua
