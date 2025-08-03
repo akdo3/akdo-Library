@@ -50,7 +50,7 @@ end)
 Add toggles to enable or disable features.
 
 ```lua
-local Main:addToggle("Fly", "You Will Fly", function(value)
+local Toggle = Main:addToggle("Fly", "You Will Fly", function(value)
     if value then
         print("On")
     else
@@ -71,7 +71,7 @@ end, 1, true)
 
 ### Recommended Toggle
 ```lua
-local Main:addToggle("Fly", "You Will Fly", function(value)
+local Toggle = Main:addToggle("Fly", "You Will Fly", function(value)
     if value then
         print("On")
     else
