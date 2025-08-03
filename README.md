@@ -68,6 +68,7 @@ end, 1, true)
 `1` = can add icon insted of the toggle, You can not write it if you want.
 
 `true` = Insted of `1` you can write `false` and make another syle, and You can not write it if you want.
+
 ### Recommended Toggle
 ```lua
 local Main:addToggle("Fly", "You Will Fly", function(value)
@@ -78,7 +79,7 @@ local Main:addToggle("Fly", "You Will Fly", function(value)
     end
 end)
 ```
-ؤشى
+
 ### Slider
 Use sliders to modify player attributes such as speed.
 
