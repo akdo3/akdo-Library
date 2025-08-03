@@ -1385,7 +1385,7 @@ function akdo:createFrame(titletext)
 				TextBoxFrame:Destroy()
 			end
 
-			TextBox.FocusGained:Connect(function()
+			TextBox.Focused:Connect(function()
 				TweenService:Create(Stroke, MOTION_FOCUS, {Transparency = 0.5}):Play()
 				TweenService:Create(FloatingLabel, MOTION_FOCUS, { Position = UDim2.fromOffset(12, 2), Size = UDim2.new(0.5, 0, 0.4, 0), TextTransparency = 0.3 }):Play()
 			end)
@@ -1570,8 +1570,6 @@ function akdo:createFrame(titletext)
 				InfoImage.Image = "http://www.roblox.com/asset/?id=6026568210"
 				InfoImage.ImageColor3 = Theme.TextColor
 				InfoImage.ZIndex = 2
-				ApplyHoverEffects(InfoImage)
-				ApplyPressEffects(InfoImage)
 				InfoImage.MouseButton1Click:Connect(function()
 					TextInfo.Text = Info
 					if InfoFrame.Size.Y.Scale ~= 0.148 then
@@ -2697,5 +2695,5 @@ function akdo:createFrame(titletext)
 	end
 
 	return TabsAndStyles
-end		
+end	
 return akdo
