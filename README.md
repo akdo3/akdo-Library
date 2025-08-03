@@ -181,6 +181,12 @@ end)
 `New Name` = The new name to the button.
 `what the button do` = The new Info to the button.
 
+#### Delete
+ ```lua
+Button:destroy()
+```
+`Button` = The button name.
+
 ### Toggle Actions
 
 :NewName("newName"): Updates the toggle's label.
