@@ -325,5 +325,4 @@ local Dropdown = Main:addDropdown("Auto Hatch", "", {"egg 1", "egg 2","egg 3"}, 
 	end
 end, 3)
 ```
-## Suggestions
 We encourage suggestions to improve akdo Library! If you have any suggestions, error reports, or feature , feel free to send them to this [Discord](https://discord.gg/xgvddUgwJT) Server.
