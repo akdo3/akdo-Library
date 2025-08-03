@@ -129,21 +129,30 @@ name, Info, items, itemsPerRow, callback
 ## Function
 #### TextBox
 ```lua
-local TextBox = akdo:addTextBox("TextBox", "This is TextBox", "Name", callback, parent, stat, onlyNumbers, onlyLetters)
+local TextBox = akdo:addTextBox("TextBox", "This is TextBox", "Name", function(output)
+	print(output)
+end, false, true, false)
 ```
 `akdo` = the tab that the TextBox will be.
+
 `TextBox` = Name display.
+
 `This is TextBox` = Info that will display.
+
 `Name` = The text that will display on the TextBox.
 
+`false` = the text that enterd when the focus end or when any letter changed, You can not write it if you want.
 
+`true` = only numbers can enterd, You can not write it if you want.
+
+`false` = only letters can enterd, You can not write it if you want.
 
 #### DropdownAndToggle
 ```lua
 local DropdownAndToggle = akdo:addDT(name, items, callback, itemsPerRow)
 ```
 
-#### FrameStyles
+#### FrameStyles (Not implement)
 ```lua
 Frame:FrameStyle(1)
 ```
@@ -188,7 +197,7 @@ end)
 `New Name` = The new name to the button.
 `what the button do` = The new Info to the button.
 
-#### Delete
+#### Delete Button
  ```lua
 Button:destroy()
 ```
