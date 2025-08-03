@@ -1368,12 +1368,10 @@ function akdo:createFrame(titletext)
 			TextBox.ZIndex = 2
 
 			local infoHandler = ManageInfoIcon(TextBoxFrame)
-			local onInputCallback = (stat and callback) or function() end
-			local onEnterCallback = (not stat and callback) or function() end
 
 			function TextBoxAPI:setText(text, silent)
 				TextBox.Text = text or ""
-				if not silent then onInputCallback(TextBox.Text) end
+				if not silent then callback(TextBox.Text) end
 				if text == "" then
 					TweenService:Create(FloatingLabel, MOTION_FOCUS, { Position = UDim2.fromOffset(12, 0), Size = UDim2.new(1, -24, 1, 0), TextTransparency = 0 }):Play()
 				else
@@ -1382,8 +1380,6 @@ function akdo:createFrame(titletext)
 			end
 
 			function TextBoxAPI:getText() return TextBox.Text end
-			function TextBoxAPI:onInput(newCallback) onInputCallback = newCallback or function() end end
-			function TextBoxAPI:onEnter(newCallback) onEnterCallback = newCallback or function() end end
 			function TextBoxAPI:destroy()
 				infoHandler:Destroy()
 				TextBoxFrame:Destroy()
@@ -1394,22 +1390,27 @@ function akdo:createFrame(titletext)
 				TweenService:Create(FloatingLabel, MOTION_FOCUS, { Position = UDim2.fromOffset(12, 2), Size = UDim2.new(0.5, 0, 0.4, 0), TextTransparency = 0.3 }):Play()
 			end)
 
-			TextBox.FocusLost:Connect(function(enterPressed)
-				TweenService:Create(Stroke, MOTION_FOCUS, {Transparency = 1}):Play()
-				if TextBox.Text == "" then
-					TweenService:Create(FloatingLabel, MOTION_FOCUS, { Position = UDim2.fromOffset(12, 0), Size = UDim2.new(1, -24, 1, 0), TextTransparency = 0 }):Play()
-				end
-				if enterPressed then onEnterCallback(TextBox.Text) end
-			end)
-
-			TextBox:GetPropertyChangedSignal("Text"):Connect(function()
-				local originalText = TextBox.Text
-				local sanitizedText = originalText
-				if onlyNumbers then sanitizedText = sanitizedText:gsub("%D", "") end
-				if onlyLetters then sanitizedText = sanitizedText:gsub("[^%a%s]", "") end
-				if sanitizedText ~= originalText then TextBox.Text = sanitizedText end
-				onInputCallback(TextBox.Text)
-			end)
+			if stat then
+				TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+					if onlyLetters and TextBox.Text:match("%d") then
+						TextBox.Text = ""
+					elseif onlyNumbers and TextBox.Text:match("%D") then
+						TextBox.Text = ""
+					else
+						callback(TextBox.Text)
+					end
+				end)
+			else
+				TextBox.FocusLost:Connect(function()
+					if onlyLetters and TextBox.Text:match("%d") then
+						TextBox.Text = ""
+					elseif onlyNumbers and TextBox.Text:match("%D") then
+						TextBox.Text = ""
+					else
+						callback(TextBox.Text)
+					end
+				end)
+			end
 
 			local hasInfo = infoHandler:Update(Info, ShowInfo)
 			if hasInfo then
@@ -2696,5 +2697,5 @@ function akdo:createFrame(titletext)
 	end
 
 	return TabsAndStyles
-end
+end		
 return akdo
