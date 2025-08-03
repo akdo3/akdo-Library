@@ -110,9 +110,10 @@ local options = {
     "Option 2",
     "Option 3",
 }
-local Dropdown = Main:addDropdown("Choose option", "Choose the option you want", options, function(option)
+local Dropdown = Main:addDropdown("Choose option", "Choose the option you want", options, 2, function(option)
     print("Selected option:", option)
-end, 2)
+end)
+name, Info, items, itemsPerRow, callback
 ```
 
 `Main` = Tab name, where the dropdown will be.
@@ -128,8 +129,14 @@ end, 2)
 ## Function
 #### TextBox
 ```lua
-local TextBox = akdo:addTextBox(name, Info, placeholderText, callback, parent, stat, onlyNumbers, onlyLetters)
+local TextBox = akdo:addTextBox("TextBox", "This is TextBox", "Name", callback, parent, stat, onlyNumbers, onlyLetters)
 ```
+`akdo` = the tab that the TextBox will be.
+`TextBox` = Name display.
+`This is TextBox` = Info that will display.
+`Name` = The text that will display on the TextBox.
+
+
 
 #### DropdownAndToggle
 ```lua
@@ -325,4 +332,8 @@ local Dropdown = Main:addDropdown("Auto Hatch", "", {"egg 1", "egg 2","egg 3"}, 
 	end
 end, 3)
 ```
+## Tips
+### Remove Info
+You can make the info text empty to remove the info button.
+
 We encourage suggestions to improve akdo Library! If you have any suggestions, error reports, or feature , feel free to send them to this [Discord](https://discord.gg/xgvddUgwJT) Server.
