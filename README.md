@@ -124,7 +124,7 @@ name, Info, items, itemsPerRow, callback
 
 `options` = The list of options available in the dropdown.
 
-`2` = Items Per Row
+`2` = Items Per Row.
 
 ## Function
 #### TextBox
@@ -149,8 +149,36 @@ end, false, true, false)
 
 #### DropdownAndToggle
 ```lua
-local DropdownAndToggle = akdo:addDT(name, items, callback, itemsPerRow)
+local options = {"Super speed", " hero speed", "not Normal speed"}
+
+local DropdownAndToggle = akdo:addDT("DropdownAndToggle", options, 1, function(val1,val2)
+	print(val2)
+	if val1 then
+		if val2 == "Super speed" then
+			Humanoid.WalkSpeed = 120
+		elseif val2 == "hero speed" then
+			Humanoid.WalkSpeed = 75
+		elseif val2 == "not Normal speed" then
+			Humanoid.WalkSpeed = 999
+		end
+	else
+		Humanoid.WalkSpeed = 16
+	end
+end)
 ```
+`DropdownAndToggle` =  Name display.
+`options` =  the items in the Dropdown.
+`1` =   Items Per Row.
+
+
+
+#### Slider and Button (Not implement)
+```lua
+local SliderandButto = akdo:SliderButton("SliderandButto", "This is info", options)
+```
+`SliderandButto` = Name display.
+
+`This is info` = Info.
 
 #### FrameStyles (Not implement)
 ```lua
