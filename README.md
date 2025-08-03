@@ -167,10 +167,10 @@ local DropdownAndToggle = akdo:addDT("DropdownAndToggle", options, 1, function(v
 end)
 ```
 `DropdownAndToggle` =  Name display.
+
 `options` =  the items in the Dropdown.
+
 `1` =   Items Per Row.
-
-
 
 #### Slider and Button (Not implement)
 ```lua
@@ -198,6 +198,7 @@ Frame:FrameStyle(3)
 Button:updatename("New Name")
 ```
 `Button` = The button name.
+
 `New Name` = The new name to the button.
 
 #### update info
@@ -205,6 +206,7 @@ Button:updatename("New Name")
 Button:updateinfo("what the button do")
 ```
 `Button` = The button name.
+
 `what the button do` = The new Info to the button.
 
 #### update function
