@@ -2262,7 +2262,7 @@ function akdo:createFrame(titletext)
 
 				local Button = Instance.new("TextButton")
 				Button.BackgroundTransparency = 1
-				Button.Position = UDim2.new(0.015, 0, -0.027, 0)
+				Button.Position = UDim2.new(0.015, 0, 0, 0)
 				Button.Size = Components.TextSize.WithIcon
 				Button.Text = name or "Button"
 				Button.TextColor3 = Theme.TextColor
@@ -2276,6 +2276,16 @@ function akdo:createFrame(titletext)
 					scrollParent.CanvasSize = UDim2.new(1, 0, 0, (#ButtonContent:GetChildren() * 35) - (2 * 35) + 10)
 					ButtonContent.Visible = true
 				end)
+
+				local arrow = Instance.new("TextLabel")
+				arrow.BackgroundTransparency = 1
+				arrow.Position = UDim2.new(0.9, 0, 0, 0)
+				arrow.Size = UDim2.new(0.1, 0, 1, 0)
+				arrow.Text = "→"
+				arrow.TextColor3 = Theme.TextColor
+				arrow.TextScaled = true
+				arrow.Parent = ButtonFrame
+				
 
 				local Image = Instance.new("ImageButton")
 				Image.Parent = ButtonFrame
@@ -2298,6 +2308,15 @@ function akdo:createFrame(titletext)
 					Button.Size = Components.TextSize.Full
 					Image:Destroy()
 				end
+
+
+				CreateStyledButton(ButtonContent, "← Back", "", function()
+					for _, tab in pairs(tabsTable) do
+						tab.Visible = false
+					end
+					tabContent.Visible = true
+					tabContentScroll.CanvasSize = UDim2.new(0, 0, 0, contentLayout.AbsoluteContentSize.Y + 20)
+				end)
 
 				function FBE:updateFrameButton(name, Info)
 
@@ -2327,16 +2346,6 @@ function akdo:createFrame(titletext)
 							end)
 						end
 					end
-				end
-
-				function FBE:addBackButton()
-					CreateStyledButton(ButtonContent, "← Back", "", function()
-						for _, tab in pairs(tabsTable) do
-							tab.Visible = false
-						end
-						tabContent.Visible = true
-						tabContentScroll.CanvasSize = UDim2.new(0, 0, 0, contentLayout.AbsoluteContentSize.Y + 20)
-					end)
 				end
 
 				function FBE:addButton(name, Info, callback)
@@ -2695,5 +2704,5 @@ function akdo:createFrame(titletext)
 	end
 
 	return TabsAndStyles
-end	
+end		
 return akdo
