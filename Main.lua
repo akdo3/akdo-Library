@@ -6,11 +6,22 @@ akdo.Setting = {
 		TextColor 				    = Color3.fromRGB(0, 235, 0),
 		BorderColor 			    = Color3.fromRGB(0, 235, 0),
 		AccentColor                 = Color3.fromRGB(30, 30, 30),
-		ButtonColor 			    = Color3.fromRGB(10, 10, 18),
+		ButtonColor 			    = Color3.fromRGB(16, 16, 16),
 		ErrorColor                  = Color3.fromRGB(255, 50, 50),
 		TextNeonColor				= Color3.fromRGB(0, 100, 0),
 		ToggleOnColor 				= Color3.fromRGB(0, 255, 0),
 		ToggleOffColor 				= Color3.fromRGB(180, 180, 180),
+		NotificationsMainColor		= Color3.fromRGB(0, 255, 0),
+		TabUnderLineColor			= Color3.fromRGB(0, 235, 0),
+		confirmationFrame = {
+			Transparency		= 0.06,
+			BackgroundColor		= Color3.fromRGB(10, 10, 18),
+			TextColor			= Color3.fromRGB(0, 255, 0),
+			BorderColor			= Color3.fromRGB(0, 255, 0),
+			ButtonColor			= Color3.fromRGB(25, 25, 25),
+			ButtonBorderColor	= Color3.fromRGB(0, 255, 0),
+			ButtonHoverColor    = Color3.fromRGB(30, 30, 30),
+		},
 	},
 
 	Animation = {
@@ -86,15 +97,10 @@ akdo.Setting = {
 				Off = "rbxassetid://6031068425",
 			},
 		},
-		Dropdown = {
-			Arrow = "http://www.roblox.com/asset/?id=6031090994",
-		},
-		DropShadow = {
-			Image = "rbxassetid://6015897843",
-			SliceCenter = Rect.new(49, 49, 450, 450),
-		}
 	},
-	silent = false	
+	Notifications = false,
+	RowCellPadding = UDim2.new(0.05, 0, 0.05, 0),
+	ButtonPOS = UDim2.new(0.05, 0, 0, 0),
 }
 
 function akdo:createFrame(titletext)
@@ -104,10 +110,12 @@ function akdo:createFrame(titletext)
 	local Players = game:GetService("Players")
 	local LocalPlayer = Players.LocalPlayer
 
-	local Theme = akdo.Setting.Theme
-	local Animation = akdo.Setting.Animation
-	local Layout = akdo.Setting.Layout
-	local Components = akdo.Setting.Components
+	local Theme 				= akdo.Setting.Theme
+	local confirmationFrameSe	= Theme.confirmationFrame
+	local Animation 			= akdo.Setting.Animation
+	local Layout 				= akdo.Setting.Layout
+	local Components 			= akdo.Setting.Components
+	local Notifications 		= akdo.Setting.Notifications
 
 	local MOTION_MAIN = TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 	local MOTION_CONTENT_FADE = TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
@@ -287,7 +295,7 @@ function akdo:createFrame(titletext)
 
 	makeDraggable(titleButton, minimizedButton)
 
-	local buttonClose = createHeaderButton(Header, "X", 0.93, function()
+	function akdo:confirmationFrame(text, onAccept)
 		if Frame:FindFirstChild("akdo_confirm") then return end
 		local tweenInfo_Container = TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
 		local tweenInfo_Content = TweenInfo.new(0.7, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
@@ -299,13 +307,13 @@ function akdo:createFrame(titletext)
 		confirmationFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 		confirmationFrame.Position = UDim2.new(0.5, 0, 0.45, 0)
 		confirmationFrame.Size = UDim2.new(0.55, 0, 0, 0)
-		confirmationFrame.BackgroundColor3 = Theme.BackgroundColor
+		confirmationFrame.BackgroundColor3 = confirmationFrameSe.BackgroundColor
 		confirmationFrame.BackgroundTransparency = 1
 		confirmationFrame.ClipsDescendants = true
 		confirmationFrame.ZIndex = 99
 		confirmationFrame.Parent = Frame
 		addCorner(confirmationFrame, akdo.Setting.Layout.WindowCorner)
-		addStroke(confirmationFrame, 1.2, Theme.BorderColor)
+		addStroke(confirmationFrame, 1.2, confirmationFrameSe.BorderColor)
 
 		local contentHolder = Instance.new("Frame")
 		contentHolder.Name = "ContentHolder"
@@ -317,15 +325,32 @@ function akdo:createFrame(titletext)
 		local title = Instance.new("TextLabel")
 		title.Size = UDim2.new(1, -40, 0.3, 0)
 		title.Position = UDim2.new(0, 20, 0.05, 0)
-		title.Text = "Are you sure you want to close?"
-		title.TextColor3 = Theme.TextColor
+		title.Text = text
+		title.TextColor3 = confirmationFrameSe.TextColor
 		title.TextScaled = true
 		title.BackgroundTransparency = 1
 		title.Font = Enum.Font.GothamBlack
 		title.ZIndex = 100
 		title.Parent = contentHolder
 
-		TweenService:Create(confirmationFrame, tweenInfo_Container, {Size = UDim2.new(0.55, 0, 0.36, 0), Position = UDim2.new(0.5, 0, 0.5, 0), BackgroundTransparency = Theme.Transparency}):Play()
+		local function closeDialog(andDestroyUI)
+			if not confirmationFrame or not confirmationFrame.Parent then return end
+
+			TweenService:Create(contentHolder, tweenInfo_Exit, {Position = UDim2.new(0, 0, 1, 0)}):Play()
+			local exitTween = TweenService:Create(confirmationFrame, TweenInfo.new(tweenInfo_Exit.Time + 0.1, tweenInfo_Exit.EasingStyle, tweenInfo_Exit.EasingDirection), {BackgroundTransparency = 1, Size = UDim2.new(confirmationFrame.Size.X.Scale, 0, 0, 0)})
+			exitTween:Play()
+
+			exitTween.Completed:Connect(function() 
+				if confirmationFrame and confirmationFrame.Parent then
+					confirmationFrame:Destroy() 
+				end
+				if andDestroyUI and onAccept then
+					onAccept()
+				end
+			end)
+		end
+
+		TweenService:Create(confirmationFrame, tweenInfo_Container, {Size = UDim2.new(0.55, 0, 0.36, 0), Position = UDim2.new(0.5, 0, 0.5, 0), BackgroundTransparency = confirmationFrameSe.Transparency}):Play()
 		TweenService:Create(contentHolder, tweenInfo_Content, {Position = UDim2.new(0, 0, 0, 0)}):Play()
 
 		local function themedButton(text, position, callback)
@@ -335,23 +360,23 @@ function akdo:createFrame(titletext)
 			b.Position = position
 			b.Text = text
 			b.Font = Enum.Font.GothamBlack
-			b.TextColor3 = Theme.TextColor
+			b.TextColor3 = confirmationFrameSe.TextColor
 			b.TextScaled = true
-			b.BackgroundColor3 = Theme.ButtonColor
+			b.BackgroundColor3 = confirmationFrameSe.ButtonColor
 			b.AutoButtonColor = false
 			b.ZIndex = 100
 			b.Parent = contentHolder
 			addCorner(b, Layout.ElementCorner)
-			local stroke = addStroke(b, 2, Theme.BorderColor, Enum.ApplyStrokeMode.Border)
+			local stroke = addStroke(b, 2, confirmationFrameSe.BorderColor, Enum.ApplyStrokeMode.Border)
 			local originalBtnPosition = b.Position
 
 			b.MouseEnter:Connect(function()
-				TweenService:Create(b, tweenInfo_Hover, {BackgroundColor3 = Theme.AccentColor, Position = originalBtnPosition - UDim2.fromOffset(0, 3)}):Play()
+				TweenService:Create(b, tweenInfo_Hover, {BackgroundColor3 = confirmationFrameSe.ButtonHoverColor, Position = originalBtnPosition - UDim2.fromOffset(0, 3)}):Play()
 				TweenService:Create(stroke, tweenInfo_Hover, {Thickness = 2.5}):Play()
 			end)
 
 			b.MouseLeave:Connect(function()
-				TweenService:Create(b, tweenInfo_Hover, {BackgroundColor3 = Theme.ButtonColor, Position = originalBtnPosition}):Play()
+				TweenService:Create(b, tweenInfo_Hover, {BackgroundColor3 = confirmationFrameSe.ButtonColor, Position = originalBtnPosition}):Play()
 				TweenService:Create(stroke, tweenInfo_Hover, {Thickness = 2}):Play()
 			end)
 
@@ -359,15 +384,28 @@ function akdo:createFrame(titletext)
 			return b
 		end
 
-		local yesButton
-		local noButton
+		themedButton("Yes", UDim2.new(0.53, 0, 0.6, 0), function() closeDialog(true) end)
+		themedButton("No", UDim2.new(0.05, 0, 0.6, 0), function() closeDialog(false) end)
 
-		yesButton = themedButton("Yes", UDim2.new(0.53, 0, 0.6, 0), function()
-			yesButton.Active = false
-			if noButton then noButton.Active = false end
+		local internalCloseBtn = Instance.new("TextButton")
+		internalCloseBtn.Text = "X"
+		internalCloseBtn.Font = Enum.Font.GothamBold
+		internalCloseBtn.TextScaled = true
+		internalCloseBtn.TextColor3 = Theme.ErrorColor
+		internalCloseBtn.BackgroundTransparency = 1
+		internalCloseBtn.Size = UDim2.new(0.1, 0, 0.2, 0)
+		internalCloseBtn.Position = UDim2.new(0.9, 0, 0, 0)
+		internalCloseBtn.ZIndex = 101
+		internalCloseBtn.Parent = contentHolder
+		internalCloseBtn.MouseButton1Click:Connect(function() closeDialog(false) end)
 
-			local mainFrame = confirmationFrame.Parent
-			if confirmationFrame then confirmationFrame:Destroy() end
+		return confirmationFrame
+	end
+
+	local buttonClose = createHeaderButton(Header, "X", 0.93, function()
+		akdo:confirmationFrame("Are you sure you want to close?", function()
+			local mainFrame = Frame
+			if not mainFrame or not mainFrame.Parent then return end
 
 			local shardContainer = Instance.new("Frame")
 			shardContainer.Name = "ShardContainer"
@@ -431,32 +469,6 @@ function akdo:createFrame(titletext)
 					ScreenGui:Destroy()
 				end
 			end)
-		end)
-
-		noButton = themedButton("No", UDim2.new(0.05, 0, 0.6, 0), function()
-			if confirmationFrame then
-				TweenService:Create(contentHolder, tweenInfo_Exit, {Position = UDim2.new(0, 0, 1, 0)}):Play()
-				local exitTween = TweenService:Create(confirmationFrame, TweenInfo.new(tweenInfo_Exit.Time + 0.1, tweenInfo_Exit.EasingStyle, tweenInfo_Exit.EasingDirection), {BackgroundTransparency = 1, Size = UDim2.new(confirmationFrame.Size.X.Scale, 0, 0, 0)})
-				exitTween:Play()
-				exitTween.Completed:Connect(function() confirmationFrame:Destroy() end)	
-			end
-		end)
-
-		local internalCloseBtn = Instance.new("TextButton")
-		internalCloseBtn.Text = "X"
-		internalCloseBtn.Font = Enum.Font.GothamBold
-		internalCloseBtn.TextScaled = true
-		internalCloseBtn.TextColor3 = Theme.ErrorColor
-		internalCloseBtn.BackgroundTransparency = 1
-		internalCloseBtn.Size = UDim2.new(0.1, 0, 0.2, 0)
-		internalCloseBtn.Position = UDim2.new(0.9, 0, 0, 0)
-		internalCloseBtn.ZIndex = 101
-		internalCloseBtn.Parent = contentHolder
-		internalCloseBtn.MouseButton1Click:Connect(function() 
-			TweenService:Create(contentHolder, tweenInfo_Exit, {Position = UDim2.new(0, 0, 1, 0)}):Play()
-			local exitTween = TweenService:Create(confirmationFrame, TweenInfo.new(tweenInfo_Exit.Time + 0.1, tweenInfo_Exit.EasingStyle, tweenInfo_Exit.EasingDirection), {BackgroundTransparency = 1, Size = UDim2.new(confirmationFrame.Size.X.Scale, 0, 0, 0)})
-			exitTween:Play()
-			exitTween.Completed:Connect(function() confirmationFrame:Destroy() end)	
 		end)
 	end, Theme.ErrorColor)
 
@@ -525,7 +537,7 @@ function akdo:createFrame(titletext)
 	InfoFrame.Size = UDim2.new(0.7133, 0, 0.08, 0)
 	InfoFrame.Visible = false
 	InfoFrame.ClipsDescendants = true
-	InfoFrame.ZIndex = 2
+	InfoFrame.ZIndex = 999
 	addCorner(InfoFrame, Layout.ElementCorner)
 	addStroke(InfoFrame, 1, Theme.TextColor)
 
@@ -610,7 +622,7 @@ function akdo:createFrame(titletext)
 	local NotificationYOffset = 0
 	local ActiveNotifications = {}
 
-	local function ShowNotification(text)
+	function akdo:ShowNotification(text)
 		local Notification = Instance.new("Frame")
 		Notification.Name = "Notification"
 		Notification.Parent = ScreenGui
@@ -621,7 +633,7 @@ function akdo:createFrame(titletext)
 		Notification.ClipsDescendants = true
 		Notification.ZIndex = 10 + (#ActiveNotifications + 3)
 		addCorner(Notification, UDim.new(0.15, 0))
-		addStroke(Notification, 1, Theme.BorderColor)
+		addStroke(Notification, 1, Theme.NotificationsMainColor)
 
 		local Notification_Text = Instance.new("TextLabel")
 		Notification_Text.Parent = Notification
@@ -637,13 +649,13 @@ function akdo:createFrame(titletext)
 
 		local Line = Instance.new("Frame")
 		Line.Parent = Notification
-		Line.BackgroundColor3 = Theme.BorderColor
+		Line.BackgroundColor3 = Theme.NotificationsMainColor
 		Line.Size = UDim2.new(0.02, 0, 1, 0)
 		Line.ZIndex = 11 + (#ActiveNotifications + 3)
 
 		local Bar = Instance.new("Frame")
 		Bar.Parent = Notification
-		Bar.BackgroundColor3 = Theme.BorderColor
+		Bar.BackgroundColor3 = Theme.NotificationsMainColor
 		Bar.Position = UDim2.new(0, 0, 1, 0)
 		Bar.Size = UDim2.new(1, 0, -0.1, 0)
 		Bar.ZIndex = 11 + (#ActiveNotifications + 3)
@@ -728,14 +740,6 @@ function akdo:createFrame(titletext)
 		tabContainer.CanvasSize = UDim2.new(0, 0, 0, tabLayout.AbsoluteContentSize.Y + 10)
 	end)
 
-	--[[local tabContentContainer = Instance.new("Frame")
-	tabContentContainer.Size = UDim2.new(0.76, 0, 0.809, 0)
-	tabContentContainer.Position = UDim2.new(0.217, 0, 0.153, 0)
-	tabContentContainer.BackgroundColor3 = Theme.BackgroundColor
-	tabContentContainer.BackgroundTransparency = 1
-	tabContentContainer.Parent = Frame
-	addCorner(tabContentContainer, UDim.new(0, 8)) ]]
-
 	local tabContentScroll = Instance.new("ScrollingFrame")
 	tabContentScroll.Size = UDim2.new(0.76, 0, 0.809, 0)
 	tabContentScroll.Position = UDim2.new(0.2, 0, 0.153, 0)
@@ -746,6 +750,10 @@ function akdo:createFrame(titletext)
 	tabContentScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 	tabContentScroll.Parent = Frame
 	addCorner(tabContentScroll, UDim.new(0, 8))
+
+	local function updateCanvasSize(contentParent)
+		tabContentScroll.CanvasSize = UDim2.new(0, 0, 0, #contentParent:GetChildren() * 35)
+	end
 
 	--[[local TabsFrame = Instance.new("Frame")
 	TabsFrame.Name = "TabsFrame"
@@ -924,17 +932,14 @@ function akdo:createFrame(titletext)
 		if #tabs == 1 then
 			tabContent.Visible = true
 			currentTab = tabContent
-			contentLayout:ApplyLayout()
-			contentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-				tabContentScroll.CanvasSize = UDim2.new(0, 0, 0, contentLayout.AbsoluteContentSize.Y + 15)
-			end)
+			tabContent.ChildAdded:Connect(function() updateCanvasSize(tabContent) end)
 		end
 
 		local underline = Instance.new("Frame")
 		underline.Size = UDim2.new(0, 0, 0, 2)
 		underline.Position = UDim2.new(0.5, 0, 1, 0)
 		underline.AnchorPoint = Vector2.new(0.5, 0)
-		underline.BackgroundColor3 = Theme.BorderColor
+		underline.BackgroundColor3 = Theme.TabUnderLineColor
 		underline.BorderSizePixel = 0
 		underline.Parent = tabButton
 
@@ -980,8 +985,7 @@ function akdo:createFrame(titletext)
 				currentTab.Position = offsetStart
 				currentTab.Visible = true
 
-				contentLayout:ApplyLayout()
-				tabContentScroll.CanvasSize = UDim2.new(0, 0, 0, contentLayout.AbsoluteContentSize.Y + 20)
+				updateCanvasSize(tabContent)
 
 				TweenService:Create(previous, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = offsetEnd}):Play()
 
@@ -1057,16 +1061,6 @@ function akdo:createFrame(titletext)
 			end)
 		end
 
-		local function ApplyPressEffects(hittable, parent)
-			hittable.MouseButton1Click:Connect(function()
-				local originalSize = parent.Size
-				local tween = TweenService:Create(parent, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), { Size =  UDim2.new(originalSize.X.Scale * 1.03, originalSize.X.Offset * 1.03, originalSize.Y.Scale * 1.03, originalSize.Y.Offset * 1.03)})
-				tween:Play()
-				tween.Completed:Wait()
-				TweenService:Create(parent, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), { Size =  UDim2.new(originalSize.X.Scale * 0.97, originalSize.X.Offset * 0.97, originalSize.Y.Scale * 0.97, originalSize.Y.Offset * 0.97)}):Play()
-			end)
-		end
-
 		local function ManageInfoIcon(parentFrame, infoText)
 			local handler = {}
 			local connection = nil
@@ -1089,7 +1083,6 @@ function akdo:createFrame(titletext)
 			if hasInfo then
 				connection = Icon.MouseButton1Click:Connect(function()
 					ShowInfo(infoText)
-					ApplyPressEffects(Icon, Icon)
 				end)
 			end
 
@@ -1099,13 +1092,12 @@ function akdo:createFrame(titletext)
 					connection = nil
 				end
 
-				local hasInfo = infoText and infoText ~= ""
+				local hasInfo = typeof(infoText) == "string" and infoText ~= ""
 				Icon.Visible = hasInfo
 
 				if hasInfo then
 					connection = Icon.MouseButton1Click:Connect(function()
 						ShowInfo(infoText)
-						ApplyPressEffects(Icon, Icon)
 					end)
 				end
 				return hasInfo
@@ -1131,8 +1123,7 @@ function akdo:createFrame(titletext)
 			TextLabel.Name = "ButtonText"
 			TextLabel.Parent = ButtonFrame
 			TextLabel.BackgroundTransparency = 1
-			TextLabel.Size = UDim2.new(1, -30, 1, 0)
-			TextLabel.Position = UDim2.fromOffset(12, 0)
+			TextLabel.Size = UDim2.new(1, 0, 1, 0)
 			TextLabel.Text = name or "Button"
 			TextLabel.TextColor3 = Theme.TextColor
 			TextLabel.TextScaled = true
@@ -1140,7 +1131,6 @@ function akdo:createFrame(titletext)
 			TextLabel.ZIndex = 2
 
 			local infoHandler = ManageInfoIcon(ButtonFrame, Info)
-			local Image = infoHandler.Instance
 			local Hitbox = Instance.new("TextButton")
 			Hitbox.Name = "Hitbox"
 			Hitbox.Parent = ButtonFrame
@@ -1167,7 +1157,7 @@ function akdo:createFrame(titletext)
 				if mainConnection then mainConnection:Disconnect() end
 				callback = newCallback or callback
 				mainConnection = Hitbox.MouseButton1Click:Connect(function()
-					ShowNotification("Button Clicked!")
+					if Notifications then akdo:ShowNotification("Button Clicked!") end
 					if callback then callback() end
 				end)
 			end
@@ -1185,1451 +1175,1217 @@ function akdo:createFrame(titletext)
 			end
 
 			ApplyHoverEffects(Hitbox, ButtonFrame)
-			ApplyPressEffects(Hitbox, ButtonFrame)
 
 			ButtonAPI:update(name, Info, callback)
 			return ButtonAPI
 		end
 
-		local function CreateStyledToggle(parent, name, Info, callback, Icon, style)
-			local ToggleAPI = {}
-			local toggled = false
-
-			local currentName = name or "Toggle"
-			local currentInfo = Info or ""
-			local currentCallback = callback or function() end
-			local currentIcon = Icon or false
-			local currentStyle = style
-
-			local ToggleFrame = CreateBaseComponent(parent)
-			local ToggleTextButton = Instance.new("TextButton")
-			local infoHandler = ManageInfoIcon(ToggleFrame, currentInfo)
-
-			local ToggleContainerFrame = Instance.new("Frame")
-			local RoundedFrameToggle = Instance.new("Frame")
-			local HitBox = Instance.new("TextButton")
-			local stroke = addStroke(ToggleContainerFrame, 1.5, Color3.fromRGB(0, 255, 0))
-
-			local ToggleButtonImageButton = Instance.new("ImageButton")
-
-			ToggleTextButton.Parent = ToggleFrame
-			ToggleTextButton.BackgroundTransparency = 1
-			ToggleTextButton.Size = Components.TextSize.WithTwoIcons
-			ToggleTextButton.Text = currentName
-			ToggleTextButton.TextColor3 = Theme.TextColor
-			ToggleTextButton.TextScaled = true
-			ToggleTextButton.TextXAlignment = Enum.TextXAlignment.Left
-
-			local function updateVisuals()
-				if currentIcon and typeof(currentIcon) == "string" or typeof(currentIcon) == "number" then
-					ToggleContainerFrame.Visible = false
-					ToggleButtonImageButton.Visible = true
-					if Components.Toggle[currentIcon] then
-						ToggleButtonImageButton.Image = toggled and Components.Toggle[currentIcon].On or Components.Toggle[currentIcon].Off
-					end
-
-					if currentInfo and currentInfo ~= "" then
-						ToggleFrame.Size = UDim2.new(0.7, 0, 1, 0)
-						ToggleButtonImageButton.Position = UDim2.new(0.7, 0, 0, 0)
-					else
-						ToggleFrame.Size = Components.TextSize.WithTwoIcons
-					end
-				else
-					ToggleContainerFrame.Visible = true
-					ToggleButtonImageButton.Visible = false
-
-					local targetPosition = toggled and UDim2.new(0.5, 0, 0.1, 0) or UDim2.new(0.055, 0, 0.1, 0)
-					local targetContainerColor = toggled and Theme.ToggleOnColor or Theme.AccentColor
-					local targetStrokeColor = toggled and Color3.fromRGB(0, 121, 0) or Color3.fromRGB(0, 255, 0)
-
-					RoundedFrameToggle:TweenPosition(targetPosition, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25, true)
-					TweenService:Create(ToggleContainerFrame, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut), { BackgroundColor3 = targetContainerColor }):Play()
-					TweenService:Create(stroke, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut), { Color = targetStrokeColor }):Play()
-				end
+		local function addAllMatrials(table, parent)
+			function table:addButton(name, Info, callback)
+				CreateStyledButton(parent, name, Info, callback)
 			end
 
-			local function handleToggle()
-				toggled = not toggled
-				if currentCallback then
-					currentCallback(toggled)
-				end
-				updateVisuals()
-			end
+			function table:addToggle(name, Info, callback, Icon, style)
+				local ToggleAPI = {}
+				local toggled = false
 
-			function ToggleAPI:NewName(newName)
-				currentName = newName or currentName
+				local currentName = name or "Toggle"
+				local currentInfo = Info or ""
+				local currentCallback = callback or function() end
+				local currentIcon = Icon or false
+				local currentStyle = style
+
+				local ToggleFrame = CreateBaseComponent(parent)
+				local ToggleTextButton = Instance.new("TextButton")
+				local infoHandler = ManageInfoIcon(ToggleFrame, currentInfo)
+
+				local ToggleContainerFrame = Instance.new("Frame")
+				local RoundedFrameToggle = Instance.new("Frame")
+				local HitBox = Instance.new("TextButton")
+				local stroke = addStroke(ToggleContainerFrame, 1.5, Color3.fromRGB(0, 255, 0))
+
+				local ToggleButtonImageButton = Instance.new("ImageButton")
+
+				ToggleTextButton.Parent = ToggleFrame
+				ToggleTextButton.BackgroundTransparency = 1
+				ToggleTextButton.Size = Components.TextSize.WithTwoIcons
 				ToggleTextButton.Text = currentName
-			end
+				ToggleTextButton.TextColor3 = Theme.TextColor
+				ToggleTextButton.TextScaled = true
+				ToggleTextButton.TextXAlignment = Enum.TextXAlignment.Left
 
-			function ToggleAPI:newInfo(newInfo)
-				currentInfo = newInfo or ""
-				infoHandler:Update(currentInfo)
-				updateVisuals()
-			end
+				local function updateVisuals()
+					if currentIcon and typeof(currentIcon) == "string" or typeof(currentIcon) == "number" then
+						ToggleContainerFrame.Visible = false
+						ToggleButtonImageButton.Visible = true
+						if Components.Toggle[currentIcon] then
+							ToggleButtonImageButton.Image = toggled and Components.Toggle[currentIcon].On or Components.Toggle[currentIcon].Off
+						end
 
-			function ToggleAPI:newcallback(newCallback)
-				currentCallback = newCallback or function() end
-			end
-
-			function ToggleAPI:newIcon(newIcon)
-				currentIcon = newIcon
-				updateVisuals()
-			end
-
-			function ToggleAPI:newStyle(newStyle)
-				currentStyle = newStyle
-				local cornerRadius = (currentStyle and UDim.new(0.3, 0)) or UDim.new(1, 0)
-				if ToggleContainerFrame.Parent and RoundedFrameToggle.Parent then
-					addCorner(ToggleContainerFrame, cornerRadius)
-					addCorner(RoundedFrameToggle, cornerRadius)
-				end
-			end
-
-			function ToggleAPI:update(newName, newInfo, newCallback, newIcon, newStyle)
-				ToggleAPI:NewName(newName)
-				ToggleAPI:newInfo(newInfo)
-				ToggleAPI:newcallback(newCallback)
-				ToggleAPI:newIcon(newIcon)
-				ToggleAPI:newStyle(newStyle)
-			end
-
-			function ToggleAPI:destroy()
-				infoHandler:Destroy()
-				ToggleFrame:Destroy()
-			end
-
-			ToggleContainerFrame.Parent = ToggleFrame
-			ToggleContainerFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-			ToggleContainerFrame.Position = UDim2.new(0.83, 0, 0.1, 0)
-			ToggleContainerFrame.Size = UDim2.new(0.15, 0, 0.8, 0)
-
-			RoundedFrameToggle.Parent = ToggleContainerFrame
-			RoundedFrameToggle.BackgroundColor3 = Color3.fromRGB(52, 52, 52)
-			RoundedFrameToggle.Position = UDim2.new(0.055, 0, 0.1, 0)
-			RoundedFrameToggle.Size = UDim2.new(0.4, 0, 0.8, 0)
-
-			HitBox.Parent = ToggleContainerFrame
-			HitBox.BackgroundTransparency = 1
-			HitBox.Size = UDim2.new(1, 0, 1, 0)
-			HitBox.Text = ""
-			HitBox.ZIndex = 2
-
-			ToggleButtonImageButton.Name = "imageButton"
-			ToggleButtonImageButton.Parent = ToggleFrame
-			ToggleButtonImageButton.BackgroundTransparency = 1
-			ToggleButtonImageButton.Position = UDim2.new(0.8, 0, 0, 0)
-			ToggleButtonImageButton.Size = UDim2.new(0.2, 0, 1, 0)
-			ToggleButtonImageButton.ImageColor3 = Theme.TextColor
-
-			ToggleTextButton.MouseButton1Click:Connect(handleToggle)
-			HitBox.MouseButton1Click:Connect(handleToggle)
-			ToggleButtonImageButton.MouseButton1Click:Connect(handleToggle)
-
-			ApplyHoverEffects(ToggleTextButton, ToggleFrame)
-
-			ToggleAPI:update(currentName, currentInfo, currentCallback, currentIcon, currentStyle)
-
-			return ToggleAPI
-		end
-
-		local function CreateStyledTextBox(parent, name, Info, placeholderText, callback, stat, onlyNumbers, onlyLetters)
-			local TextBoxAPI = {}
-			callback = callback or function() end
-
-			local TextBoxFrame = CreateBaseComponent(parent)
-			local Stroke = TextBoxFrame:FindFirstChildOfClass("UIStroke")
-
-			local FloatingLabel = Instance.new("TextLabel")
-			FloatingLabel.Name = "FloatingLabel"
-			FloatingLabel.Parent = TextBoxFrame
-			FloatingLabel.BackgroundTransparency = 1
-			FloatingLabel.Size = UDim2.new(1, -24, 1, 0)
-			FloatingLabel.Position = UDim2.fromOffset(12, 0)
-			FloatingLabel.Text = name or "TextBox"
-			FloatingLabel.TextColor3 = Theme.TextColor
-			FloatingLabel.Font = Enum.Font.Gotham
-			FloatingLabel.TextScaled = true
-			FloatingLabel.TextXAlignment = Enum.TextXAlignment.Left
-			FloatingLabel.ZIndex = 3
-
-			local TextBox = Instance.new("TextBox")
-			TextBox.Name = "Input"
-			TextBox.Parent = TextBoxFrame
-			TextBox.BackgroundTransparency = 1
-			TextBox.Size = UDim2.new(1, -24, 0.6, 0)
-			TextBox.Position = UDim2.new(0, 12, 0.4, 0)
-			TextBox.PlaceholderText = placeholderText or ""
-			TextBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
-			TextBox.Text = ""
-			TextBox.TextColor3 = Theme.TextColor
-			TextBox.Font = Enum.Font.Gotham
-			TextBox.TextScaled = true
-			TextBox.ClearTextOnFocus = false
-			TextBox.ZIndex = 2
-
-			local infoHandler = ManageInfoIcon(TextBoxFrame)
-
-			function TextBoxAPI:setText(text, silent)
-				TextBox.Text = text or ""
-				if not silent then callback(TextBox.Text) end
-				if text == "" then
-					TweenService:Create(FloatingLabel, MOTION_FOCUS, { Position = UDim2.fromOffset(12, 0), Size = UDim2.new(1, -24, 1, 0), TextTransparency = 0 }):Play()
-				else
-					TweenService:Create(FloatingLabel, MOTION_FOCUS, { Position = UDim2.fromOffset(12, 2), Size = UDim2.new(0.5, 0, 0.4, 0), TextTransparency = 0.3 }):Play()
-				end
-			end
-
-			function TextBoxAPI:getText() return TextBox.Text end
-			function TextBoxAPI:destroy()
-				infoHandler:Destroy()
-				TextBoxFrame:Destroy()
-			end
-
-			TextBox.Focused:Connect(function()
-				TweenService:Create(Stroke, MOTION_FOCUS, {Transparency = 0.5}):Play()
-				TweenService:Create(FloatingLabel, MOTION_FOCUS, { Position = UDim2.fromOffset(12, 2), Size = UDim2.new(0.5, 0, 0.4, 0), TextTransparency = 0.3 }):Play()
-			end)
-
-			if stat then
-				TextBox:GetPropertyChangedSignal("Text"):Connect(function()
-					if onlyLetters and TextBox.Text:match("%d") then
-						TextBox.Text = ""
-					elseif onlyNumbers and TextBox.Text:match("%D") then
-						TextBox.Text = ""
+						if currentInfo and currentInfo ~= "" then
+							ToggleFrame.Size = UDim2.new(0.7, 0, 1, 0)
+							ToggleButtonImageButton.Position = UDim2.new(0.7, 0, 0, 0)
+						else
+							ToggleFrame.Size = Components.TextSize.WithTwoIcons
+						end
 					else
-						callback(TextBox.Text)
-					end
-				end)
-			else
-				TextBox.FocusLost:Connect(function()
-					if onlyLetters and TextBox.Text:match("%d") then
-						TextBox.Text = ""
-					elseif onlyNumbers and TextBox.Text:match("%D") then
-						TextBox.Text = ""
-					else
-						callback(TextBox.Text)
-					end
-				end)
-			end
+						ToggleContainerFrame.Visible = true
+						ToggleButtonImageButton.Visible = false
 
-			local hasInfo = infoHandler:Update(Info, ShowInfo)
-			if hasInfo then
-				TextBox.Size = UDim2.new(1, -54, 0.6, 0)
-				FloatingLabel.Size = UDim2.new(1, -54, 1, 0)
-			end
+						local targetPosition = toggled and UDim2.new(0.5, 0, 0.1, 0) or UDim2.new(0.055, 0, 0.1, 0)
+						local targetContainerColor = toggled and Theme.ToggleOnColor or Theme.AccentColor
+						local targetStrokeColor = toggled and Color3.fromRGB(0, 121, 0) or Color3.fromRGB(0, 255, 0)
 
-			return TextBoxAPI
-		end
-
-		local function CreateStyledDropdown(parent, name, Info, items, itemsPerRow, callback)
-			local DropdownAPI = {}
-			local UserInputService = game:GetService("UserInputService")
-			local TweenService = game:GetService("TweenService")
-
-			local selectedItem = nil
-			local isExpanded = false
-
-			items = (type(items) == "table" and items) or {}
-			itemsPerRow = (type(itemsPerRow) == "number" and itemsPerRow > 0) and itemsPerRow or 1
-			callback = callback or function() end
-
-			local MOTION_HOVER = TweenInfo.new(0.2, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
-			local MOTION_PRESS = TweenInfo.new(0.1, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
-			local MOTION_EXPAND_OPEN = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-			local MOTION_EXPAND_CLOSE = TweenInfo.new(0.2, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
-
-			local DropdownFrame = Instance.new("Frame")
-			local DropdownButton = Instance.new("TextButton")
-			local DropdownImageButton = Instance.new("ImageButton")
-			local DropdownList = Instance.new("ScrollingFrame")
-			local UIGridLayout = Instance.new("UIGridLayout")
-
-			DropdownFrame.Parent = parent
-			DropdownFrame.BackgroundColor3 = Theme.ButtonColor
-			DropdownFrame.Size = Layout.ButtonSize
-			addCorner(DropdownFrame, Layout.ElementCorner)
-
-			DropdownButton.Parent = DropdownFrame
-			DropdownButton.BackgroundTransparency = 1
-			DropdownButton.Size = Components.TextSize.WithIcon
-			DropdownButton.Text = name or "Dropdown"
-			DropdownButton.TextColor3 = Theme.TextColor
-			DropdownButton.TextScaled = true
-			DropdownButton.TextXAlignment = Enum.TextXAlignment.Left
-
-			DropdownImageButton.Parent = DropdownFrame
-			DropdownImageButton.BackgroundTransparency = 1
-			DropdownImageButton.Position = UDim2.new(0.9, 0, 0, 0)
-			DropdownImageButton.Size = UDim2.new(0.1, 0, 1, 0)
-			DropdownImageButton.Image = "http://www.roblox.com/asset/?id=6031090994"
-			DropdownImageButton.ImageColor3 = Theme.TextColor
-
-			DropdownList.Parent = parent
-			DropdownList.BackgroundColor3 = Theme.BackgroundColor
-			DropdownList.Position = UDim2.new(0, 0, 1, 0)
-			DropdownList.Size = UDim2.new(0.95, 0, 0, 0)
-			DropdownList.ScrollingDirection = Enum.ScrollingDirection.Y
-			DropdownList.Visible = false
-			DropdownList.ScrollBarThickness = 3
-			addCorner(DropdownList, Layout.ElementCorner)
-
-			UIGridLayout.Parent = DropdownList
-			UIGridLayout.CellSize = UDim2.new(1 / itemsPerRow, -10, 0, 30)
-			UIGridLayout.CellPadding = UDim2.new(0, 5, 0, 5)
-			UIGridLayout.FillDirection = Enum.FillDirection.Horizontal
-
-			local function updateButtonText()
-				if selectedItem then
-					DropdownButton.Text = name .. ": " .. tostring(selectedItem)
-				else
-					DropdownButton.Text = name
-				end
-			end
-
-			local function createItems()
-				for _, child in ipairs(DropdownList:GetChildren()) do
-					if child:IsA("TextButton") then child:Destroy() end
-				end
-
-				for _, itemText in pairs(items) do
-					local ItemButton = Instance.new("TextButton")
-					ItemButton.Parent = DropdownList
-					ItemButton.BackgroundColor3 = Theme.ButtonColor
-					ItemButton.Text = tostring(itemText)
-					ItemButton.Size = UDim2.new(1, 0, 0, 30)
-					ItemButton.TextColor3 = Theme.TextColor
-					ItemButton.TextScaled = true
-					ItemButton.BackgroundTransparency = 1
-					ItemButton.TextTransparency = 1
-					addCorner(ItemButton, Layout.ElementCorner)
-
-					ItemButton.MouseButton1Click:Connect(function()
-						selectedItem = itemText
-						updateButtonText()
-						callback(itemText)
-						DropdownAPI.ToggleDropdown(false)
-					end)
-				end
-			end
-
-			function DropdownAPI:ToggleDropdown(forceState)
-				local shouldBeVisible = if forceState ~= nil then forceState else not isExpanded
-				if shouldBeVisible == isExpanded then return end
-
-				isExpanded = shouldBeVisible
-
-				if isExpanded then
-					local numRows = math.ceil(#items / itemsPerRow)
-					local itemHeight = 35
-					local newHeight = numRows * itemHeight
-					local maxHeight = 100
-					local finalHeight = math.min(newHeight, maxHeight)
-					DropdownList.CanvasSize = UDim2.new(1, 0, 0, newHeight)
-					DropdownList.Visible = true
-					TweenService:Create(DropdownImageButton, MOTION_EXPAND_OPEN, {Rotation = 90}):Play()
-					TweenService:Create(DropdownList, MOTION_EXPAND_OPEN, {Size = UDim2.new(DropdownFrame.Size.X.Scale, 0, 0, finalHeight)}):Play()
-
-					for i, child in ipairs(DropdownList:GetChildren()) do
-						if child:IsA("TextButton") then
-							task.delay(0.1 + (i * 0.03), function()
-								if isExpanded then
-									TweenService:Create(child, MOTION_HOVER, {BackgroundTransparency = 0.8, TextTransparency = 0}):Play()
-								end
-							end)
-						end
-					end
-				else
-					TweenService:Create(DropdownImageButton, MOTION_EXPAND_CLOSE, {Rotation = 0}):Play()
-					for _, child in ipairs(DropdownList:GetChildren()) do
-						if child:IsA("TextButton") then
-							TweenService:Create(child, MOTION_PRESS, {BackgroundTransparency = 1, TextTransparency = 1}):Play()
-						end
-					end
-					local closeTween = TweenService:Create(DropdownList, MOTION_EXPAND_CLOSE, {Size = UDim2.new(DropdownFrame.Size.X.Scale, 0, 0, 0)})
-					closeTween.Completed:Connect(function()
-						if not isExpanded then
-							DropdownList.Visible = false
-						end
-					end)
-					closeTween:Play()
-				end
-			end
-
-			DropdownImageButton.MouseButton1Click:Connect(function() DropdownAPI.ToggleDropdown() end)
-			DropdownButton.MouseButton1Click:Connect(function() DropdownAPI.ToggleDropdown() end)
-
-			if Info and Info ~= "" then
-				DropdownImageButton.Position = UDim2.new(0.8, 0, 0, 0)
-				DropdownButton.Size = Components.TextSize.WithTwoIcons
-
-				local InfoImage = Instance.new("ImageButton")
-				InfoImage.Parent = DropdownFrame
-				InfoImage.BackgroundTransparency = 1
-				InfoImage.Position = Components.Image.InfoImagePOS
-				InfoImage.Size = Components.Image.ImageSize
-				InfoImage.Image = "http://www.roblox.com/asset/?id=6026568210"
-				InfoImage.ImageColor3 = Theme.TextColor
-				InfoImage.ZIndex = 2
-				InfoImage.MouseButton1Click:Connect(function()
-					TextInfo.Text = Info
-					if InfoFrame.Size.Y.Scale ~= 0.148 then
-						InfoFrame.Visible = true
-						local tweenSize = TweenService:Create(InfoFrame, MOTION_EXPAND_OPEN, {Size = UDim2.new(0.7133, 0, 0.148, 0)})
-						tweenSize:Play()
-					end
-				end)
-			end
-
-			function DropdownAPI:newName(newName)
-				name = newName or name
-				updateButtonText()
-			end
-
-			function DropdownAPI:setItems(newItems)
-				if type(newItems) == "table" then
-					items = newItems
-					if selectedItem and not table.find(items, selectedItem) then
-						selectedItem = nil
-						updateButtonText()
-					end
-					createItems()
-				end
-			end
-
-			function DropdownAPI:newCallback(newCallback)
-				callback = newCallback or function() end
-			end
-
-			function DropdownAPI:update(newName, newItems, newCallback)
-				self:newName(newName)
-				self:setItems(newItems)
-				self:newCallback(newCallback)
-			end
-
-			function DropdownAPI:updateDropdown(newName, newInfo, newItems, newItemsPerRow, newCallback)
-				self:update(newName, newInfo, newItems, newCallback)
-				if type(newItemsPerRow) == "number" and newItemsPerRow > 0 then 
-					itemsPerRow = newItemsPerRow
-					UIGridLayout.CellSize = UDim2.new(1 / itemsPerRow, -10, 0, 30)
-				end
-				createItems()
-			end
-
-			function DropdownAPI:addItem(itemToAdd)
-				if itemToAdd == nil then return end
-				table.insert(items, itemToAdd)
-				createItems()
-			end
-
-			function DropdownAPI:removeItem(itemToRemove)
-				if itemToRemove == nil then return end
-				local index = table.find(items, itemToRemove)
-				if index then
-					table.remove(items, index)
-					if selectedItem == itemToRemove then
-						selectedItem = nil
-						updateButtonText()
-					end
-					createItems()
-				end
-			end
-
-			function DropdownAPI:getSelected() return selectedItem end
-
-			function DropdownAPI:setSelected(itemToSelect, silent)
-				if table.find(items, itemToSelect) then
-					selectedItem = itemToSelect
-					updateButtonText()
-					if not silent then callback(itemToSelect) end
-				end
-			end
-
-			local clickOutsideConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-				if gameProcessed or not isExpanded then return end
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-					local mouseLocation = UserInputService:GetMouseLocation()
-					local clickedOnSelf = false
-					if not clickedOnSelf then
-						DropdownAPI.ToggleDropdown(false)
+						RoundedFrameToggle:TweenPosition(targetPosition, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25, true)
+						TweenService:Create(ToggleContainerFrame, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut), { BackgroundColor3 = targetContainerColor }):Play()
+						TweenService:Create(stroke, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut), { Color = targetStrokeColor }):Play()
 					end
 				end
-			end)
 
-			function DropdownAPI:destroy()
-				if clickOutsideConnection then
-					clickOutsideConnection:Disconnect()
-					clickOutsideConnection = nil
+				local function handleToggle()
+					toggled = not toggled
+					if currentCallback then
+						currentCallback(toggled)
+					end
+					updateVisuals()
 				end
-				DropdownFrame:Destroy()
-				DropdownList:Destroy()
-			end
 
-			updateButtonText()
-			createItems()
-
-			return DropdownAPI
-		end
-
-		local function CreateStyledSlider(parent, name, Info, beginValue, min, max, callback, getMode)
-			local SliderAPI = {}
-			callback = callback or function() end
-			beginValue = type(beginValue) == "number" and beginValue or 100
-			min = type(min) == "number" and min or 0
-			max = type(max) == "number" and max or 200
-			if max <= min then max = min + 1 end
-			local currentValue = beginValue
-			local MOTION_SLIDE = TweenInfo.new(0.1, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
-
-			local STFrame = CreateBaseComponent(parent)
-
-			local TextLabel = Instance.new("TextLabel")
-			TextLabel.Name = "Text"
-			TextLabel.Parent = STFrame
-			TextLabel.BackgroundTransparency = 1
-			TextLabel.Font = Enum.Font.Gotham
-			TextLabel.Text = name or "Slider"
-			TextLabel.TextColor3 = Theme.TextColor
-			TextLabel.TextScaled = true
-			TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-			TextLabel.ZIndex = 2
-
-			local TextBox = Instance.new("TextBox")
-			TextBox.Name = "Input"
-			TextBox.Parent = STFrame
-			TextBox.BackgroundTransparency = 1
-			TextBox.PlaceholderColor3 = Theme.TextColor
-			TextBox.Text = tostring(math.floor(beginValue))
-			TextBox.TextColor3 = Theme.TextColor
-			TextBox.Font = Enum.Font.Gotham
-			TextBox.TextScaled = true
-			TextBox.ZIndex = 2
-			addCorner(TextBox, UDim.new(0.15, 0))
-
-			local SliderTrack = Instance.new("Frame")
-			SliderTrack.Name = "SliderTrack"
-			SliderTrack.Parent = STFrame
-			SliderTrack.BackgroundColor3 = Theme.BackgroundColor
-			SliderTrack.BorderSizePixel = 0
-			addCorner(SliderTrack, UDim.new(0.5, 0))
-
-			local FillSlider = Instance.new("Frame")
-			FillSlider.Parent = SliderTrack
-			FillSlider.BackgroundColor3 = Theme.TextColor
-			addCorner(FillSlider, UDim.new(1,0))
-
-			local Trigger = Instance.new("TextButton")
-			Trigger.Name = "Trigger"
-			Trigger.Parent = SliderTrack
-			Trigger.BackgroundTransparency = 1
-			Trigger.Size = UDim2.fromScale(1, 1)
-			Trigger.Text = ""
-			Trigger.ZIndex = 3
-
-			local infoHandler = ManageInfoIcon(STFrame)
-			local function updateSliderVisuals(value)
-				local output = math.clamp((value - min) / (max - min), 0, 1)
-				TweenService:Create(FillSlider, MOTION_SLIDE, {Size = UDim2.new(output, 0, 1, 0)}):Play()
-				if tostring(math.floor(value)) ~= TextBox.Text then
-					TextBox.Text = tostring(math.floor(value))
+				function ToggleAPI:NewName(newName)
+					currentName = newName or currentName
+					ToggleTextButton.Text = currentName
 				end
-				currentValue = value
-			end
-			function SliderAPI:setValue(newValue, silent)
-				local numValue = math.clamp(newValue, min, max)
-				updateSliderVisuals(numValue)
-				if not silent then callback(numValue) end
-			end
-			function SliderAPI:getValue() return currentValue end
-			function SliderAPI:update(newName, newInfo, newMin, newMax, newCallback)
-				name = newName or name
-				min = newMin or min
-				max = newMax or max
-				callback = newCallback or callback
-				TextLabel.Text = name
-				if max <= min then max = min + 1 end
-				infoHandler:Update(newInfo, ShowInfo)
-				SliderAPI:setValue(SliderAPI:getValue(), true)
-			end
-			function SliderAPI:destroy()
-				infoHandler:Destroy()
-				STFrame:Destroy()
-			end
-			local isDragging = false
-			Trigger.InputBegan:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-					isDragging = true
-					task.spawn(function()
-						while isDragging do
-							local sliderPosX = Trigger.AbsolutePosition.X
-							local sliderSizeX = Trigger.AbsoluteSize.X
-							local output = math.clamp((UserInputService:GetMouseLocation().X - sliderPosX) / sliderSizeX, 0, 1)
-							local value = output * (max - min) + min
-							updateSliderVisuals(value)
-							callback(value)
-							task.wait()
-						end
-					end)
+
+				function ToggleAPI:newInfo(newInfo)
+					currentInfo = newInfo or ""
+					infoHandler:Update(currentInfo)
+					updateVisuals()
 				end
-			end)
-			UserInputService.InputEnded:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-					isDragging = false
+
+				function ToggleAPI:newcallback(newCallback)
+					currentCallback = newCallback or function() end
 				end
-			end)
-			local function processTextInput()
-				local sanitizedText = TextBox.Text:gsub("%D", "")
-				local numValue = tonumber(sanitizedText) or min
-				SliderAPI:setValue(numValue, false)
-			end
-			if getMode then
-				TextBox:GetPropertyChangedSignal("Text"):Connect(function()
-					if not TextBox:IsFocused() then return end
-					local sanitizedText = TextBox.Text:gsub("%D", "")
-					if sanitizedText ~= TextBox.Text then TextBox.Text = sanitizedText end
-					local numValue = tonumber(sanitizedText) or min
-					local clampedValue = math.clamp(numValue, min, max)
-					updateSliderVisuals(clampedValue)
-					callback(clampedValue)
-				end)
-			else
-				TextBox.FocusLost:Connect(processTextInput)
-			end
-			local function updateLayout(hasInfo)
-				if hasInfo then
-					TextLabel.Size = UDim2.new(0.5, 0, 1, 0)
-					TextBox.Position = UDim2.new(0.875, 0, 0.5, 0)
-					TextBox.Size = UDim2.new(0.125, 0, 0.7, 0)
-					TextBox.AnchorPoint = Vector2.new(0.5, 0.5)
-					SliderTrack.Position = UDim2.new(0.5, 0, 0.5, 0)
-					SliderTrack.Size = UDim2.new(0.3, 0, 0.45, 0)
-					SliderTrack.AnchorPoint = Vector2.new(1, 0.5)
-				else
-					TextLabel.Size = UDim2.new(0.4, 0, 1, 0)
-					TextBox.Position = UDim2.new(0.42, 0, 0.5, 0)
-					TextBox.Size = UDim2.new(0.125, 0, 0.7, 0)
-					TextBox.AnchorPoint = Vector2.new(0, 0.5)
-					SliderTrack.Position = UDim2.new(0.55, 0, 0.5, 0)
-					SliderTrack.Size = UDim2.new(0.42, 0, 0.45, 0)
-					SliderTrack.AnchorPoint = Vector2.new(0, 0.5)
+
+				function ToggleAPI:newIcon(newIcon)
+					currentIcon = newIcon
+					updateVisuals()
 				end
-			end
-			local hasInfo = infoHandler:Update(Info, ShowInfo)
-			updateLayout(hasInfo)
-			updateSliderVisuals(beginValue)
-			return SliderAPI
-		end
 
-		local function CreateStyledSliderButton(parent, name, Info, options)
-			local SliderButtonAPI = {}
-			options = options or {}
-			local sliderCallback = options.sliderCallback or function() end
-			local buttonCallback = options.buttonCallback or function() end
-			local beginValue = type(options.beginValue) == "number" and options.beginValue or 100
-			local min = type(options.min) == "number" and options.min or 0
-			local max = type(options.max) == "number" and options.max or 200
-			if max <= min then max = min + 1 end
-			local currentValue = beginValue
-			local toggledState = false
-			local MOTION_SLIDE = TweenInfo.new(0.1, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
-
-			local STFrame = CreateBaseComponent(parent)
-
-			local TextLabel = Instance.new("TextLabel")
-			TextLabel.Name = "Text"
-			TextLabel.Parent = STFrame
-			TextLabel.BackgroundTransparency = 1
-			TextLabel.Font = Enum.Font.Gotham
-			TextLabel.Text = name or "SliderButton"
-			TextLabel.TextColor3 = Theme.TextColor
-			TextLabel.TextScaled = true
-			TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-			TextLabel.ZIndex = 2
-
-			local TextBox = Instance.new("TextBox")
-			TextBox.Name = "Input"
-			TextBox.Parent = STFrame
-			TextBox.BackgroundTransparency = 1
-			TextBox.PlaceholderColor3 = Theme.TextColor
-			TextBox.Text = tostring(math.floor(beginValue))
-			TextBox.TextColor3 = Theme.TextColor
-			TextBox.Font = Enum.Font.Gotham
-			TextBox.TextScaled = true
-			TextBox.ZIndex = 2
-			addCorner(TextBox, UDim.new(0.15, 0))
-
-			local SliderTrack = Instance.new("Frame")
-			SliderTrack.Name = "SliderTrack"
-			SliderTrack.Parent = STFrame
-			SliderTrack.BackgroundColor3 = Theme.BackgroundColor
-			SliderTrack.BorderSizePixel = 0
-			addCorner(SliderTrack, UDim.new(0.5, 0))
-
-			local FillSlider = Instance.new("Frame")
-			FillSlider.Parent = SliderTrack
-			FillSlider.BackgroundColor3 = Theme.AccentColor
-			FillSlider.BorderSizePixel = 0
-			addCorner(FillSlider, UDim.new(0.5, 0))
-			local gradient = Instance.new("UIGradient")
-			gradient.Color = ColorSequence.new{ ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 127)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 170, 255)) }
-			gradient.Parent = FillSlider
-
-			local Trigger = Instance.new("TextButton")
-			Trigger.Name = "Trigger"
-			Trigger.Parent = SliderTrack
-			Trigger.BackgroundTransparency = 1
-			Trigger.Size = UDim2.fromScale(1, 1)
-			Trigger.Text = ""
-			Trigger.ZIndex = 3
-
-			local ToggleButton = Instance.new("ImageButton")
-			ToggleButton.Name = "ToggleButton"
-			ToggleButton.Parent = STFrame
-			ToggleButton.BackgroundTransparency = 1
-			ToggleButton.Image = "http://www.roblox.com/asset/?id=6031068433"
-			ToggleButton.ImageColor3 = Theme.TextColor
-			ToggleButton.ZIndex = 2
-
-			local infoHandler = ManageInfoIcon(STFrame)
-			local function updateSliderVisuals(value)
-				local output = math.clamp((value - min) / (max - min), 0, 1)
-				TweenService:Create(FillSlider, MOTION_SLIDE, {Size = UDim2.new(output, 0, 1, 0)}):Play()
-				if tostring(math.floor(value)) ~= TextBox.Text then
-					TextBox.Text = tostring(math.floor(value))
+				function ToggleAPI:newStyle(newStyle)
+					currentStyle = newStyle
+					local cornerRadius = (currentStyle and UDim.new(0.3, 0)) or UDim.new(1, 0)
+					if ToggleContainerFrame.Parent and RoundedFrameToggle.Parent then
+						addCorner(ToggleContainerFrame, cornerRadius)
+						addCorner(RoundedFrameToggle, cornerRadius)
+					end
 				end
-				currentValue = value
-			end
-			function SliderButtonAPI:setValue(newValue, silent)
-				local numValue = math.clamp(newValue, min, max)
-				updateSliderVisuals(numValue)
-				if not silent then sliderCallback(numValue) end
-			end
-			function SliderButtonAPI:getValue() return currentValue end
-			function SliderButtonAPI:setToggled(newState, silent)
-				toggledState = newState
-				ToggleButton.Image = if toggledState then "http://www.roblox.com/asset/?id=6031068426" else "http://www.roblox.com/asset/?id=6031068433"
-				if not silent then buttonCallback(toggledState) end
-			end
-			function SliderButtonAPI:getToggled() return toggledState end
-			function SliderButtonAPI:onSliderChange(newCallback) sliderCallback = newCallback or function() end end
-			function SliderButtonAPI:onButtonToggle(newCallback) buttonCallback = newCallback or function() end end
-			function SliderButtonAPI:update(newOptions)
-				newOptions = newOptions or {}
-				name = newOptions.name or name
-				min = newOptions.min or min
-				max = newOptions.max or max
-				TextLabel.Text = name
-				if max <= min then max = min + 1 end
-				infoHandler:Update(newOptions.info, ShowInfo)
-				SliderButtonAPI:setValue(SliderButtonAPI:getValue(), true)
-			end
-			function SliderButtonAPI:destroy()
-				infoHandler:Destroy()
-				STFrame:Destroy()
-			end
-			local isDragging = false
-			Trigger.InputBegan:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-					isDragging = true
-					task.spawn(function()
-						while isDragging do
-							local sliderPosX = Trigger.AbsolutePosition.X
-							local sliderSizeX = Trigger.AbsoluteSize.X
-							local output = math.clamp((UserInputService:GetMouseLocation().X - sliderPosX) / sliderSizeX, 0, 1)
-							local value = output * (max - min) + min
-							updateSliderVisuals(value)
-							sliderCallback(value)
-							task.wait()
-						end
-					end)
+
+				function ToggleAPI:update(newName, newInfo, newCallback, newIcon, newStyle)
+					ToggleAPI:NewName(newName)
+					ToggleAPI:newInfo(newInfo)
+					ToggleAPI:newcallback(newCallback)
+					ToggleAPI:newIcon(newIcon)
+					ToggleAPI:newStyle(newStyle)
 				end
-			end)
-			UserInputService.InputEnded:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-					isDragging = false
+
+				function ToggleAPI:destroy()
+					infoHandler:Destroy()
+					ToggleFrame:Destroy()
 				end
-			end)
-			local function processTextInput()
-				local sanitizedText = TextBox.Text:gsub("%D", "")
-				local numValue = tonumber(sanitizedText) or min
-				SliderButtonAPI:setValue(numValue, false)
-			end
-			if options.getMode then
-				TextBox:GetPropertyChangedSignal("Text"):Connect(function()
-					if not TextBox:IsFocused() then return end
-					local sanitizedText = TextBox.Text:gsub("%D", "")
-					if sanitizedText ~= TextBox.Text then TextBox.Text = sanitizedText end
-					local numValue = tonumber(sanitizedText) or min
-					local clampedValue = math.clamp(numValue, min, max)
-					updateSliderVisuals(clampedValue)
-					sliderCallback(clampedValue)
-				end)
-			else
-				TextBox.FocusLost:Connect(processTextInput)
-			end
-			ToggleButton.MouseButton1Click:Connect(function() SliderButtonAPI:setToggled(not toggledState) end)
-			local function updateLayout(hasInfo)
-				if hasInfo then
-					TextLabel.Size = UDim2.new(0.4, 0, 1, 0)
-					TextBox.Position = UDim2.new(0.7, 0, 0.5, 0)
-					ToggleButton.Position = UDim2.new(0.85, 0, 0.5, 0)
-					SliderTrack.Position = UDim2.new(0.42, 0, 0.5, 0)
-					SliderTrack.Size = UDim2.new(0.26, 0, 0.45, 0)
-				else
-					TextLabel.Size = UDim2.new(0.4, 0, 1, 0)
-					TextBox.Position = UDim2.new(0.42, 0, 0.5, 0)
-					ToggleButton.Position = UDim2.new(0.94, 0, 0.5, 0)
-					SliderTrack.Position = UDim2.new(0.55, 0, 0.5, 0)
-					SliderTrack.Size = UDim2.new(0.35, 0, 0.45, 0)
-				end
-				TextBox.Size = UDim2.new(0.125, 0, 0.7, 0)
-				ToggleButton.Size = UDim2.new(0.1, 0, 0.6, 0)
-				TextBox.AnchorPoint = Vector2.new(0, 0.5)
-				ToggleButton.AnchorPoint = Vector2.new(0.5, 0.5)
-				SliderTrack.AnchorPoint = Vector2.new(0, 0.5)
-			end
-			local hasInfo = infoHandler:Update(Info, ShowInfo)
-			updateLayout(hasInfo)
-			updateSliderVisuals(beginValue)
-			return SliderButtonAPI
-		end
 
-		local function CreateDropdownToggle(parent, name, items, itemsPerRow, callback)
-			local DropdownAPI = {}
-			name = name or "Dropdown"
-			items = items or {}
-			itemsPerRow = itemsPerRow or 1
-			callback = callback or function() end
-			local toggled = false
-			local selectedItem = nil
-			local listVisible = false
+				ToggleContainerFrame.Parent = ToggleFrame
+				ToggleContainerFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+				ToggleContainerFrame.Position = UDim2.new(0.83, 0, 0.1, 0)
+				ToggleContainerFrame.Size = UDim2.new(0.15, 0, 0.8, 0)
 
-			local DTFrame = CreateBaseComponent(parent)
-			local Stroke = DTFrame:FindFirstChildOfClass("UIStroke")
-			local ScaleController = Instance.new("UIScale")
-			ScaleController.Parent = DTFrame
+				RoundedFrameToggle.Parent = ToggleContainerFrame
+				RoundedFrameToggle.BackgroundColor3 = Color3.fromRGB(52, 52, 52)
+				RoundedFrameToggle.Position = UDim2.new(0.055, 0, 0.1, 0)
+				RoundedFrameToggle.Size = UDim2.new(0.4, 0, 0.8, 0)
 
-			local DropdownButton = Instance.new("TextButton")
-			DropdownButton.Parent = DTFrame
-			DropdownButton.BackgroundTransparency = 1
-			DropdownButton.Size = Components.TextSize.WithTwoIcons
-			DropdownButton.Text = name
-			DropdownButton.TextColor3 = Theme.TextColor
-			DropdownButton.Font = Enum.Font.Gotham
-			DropdownButton.TextScaled = true
-			DropdownButton.TextXAlignment = Enum.TextXAlignment.Left
-			DropdownButton.ZIndex = 2
+				HitBox.Parent = ToggleContainerFrame
+				HitBox.BackgroundTransparency = 1
+				HitBox.Size = UDim2.new(1, 0, 1, 0)
+				HitBox.Text = ""
+				HitBox.ZIndex = 2
 
-			local DropdownImage = Instance.new("ImageButton")
-			DropdownImage.Parent = DTFrame
-			DropdownImage.BackgroundTransparency = 1
-			DropdownImage.Position = UDim2.new(0.9, 0, 0, 0)
-			DropdownImage.Size = UDim2.new(0.1, 0, 1, 0)
-			DropdownImage.Image = "http://www.roblox.com/asset/?id=6031090994"
-			DropdownImage.ImageColor3 = Theme.TextColor
-			DropdownImage.ZIndex = 2
+				ToggleButtonImageButton.Name = "imageButton"
+				ToggleButtonImageButton.Parent = ToggleFrame
+				ToggleButtonImageButton.BackgroundTransparency = 1
+				ToggleButtonImageButton.Position = UDim2.new(0.8, 0, 0, 0)
+				ToggleButtonImageButton.Size = UDim2.new(0.2, 0, 1, 0)
+				ToggleButtonImageButton.ImageColor3 = Theme.TextColor
 
-			local ToggleButton = Instance.new("ImageButton")
-			ToggleButton.Parent = DTFrame
-			ToggleButton.BackgroundTransparency = 1
-			ToggleButton.Position = UDim2.new(0.8, 0, 0, 0)
-			ToggleButton.Size = UDim2.new(0.1, 0, 1, 0)
-			ToggleButton.Image = "http://www.roblox.com/asset/?id=6031068433"
-			ToggleButton.ImageColor3 = Theme.TextColor
-			ToggleButton.ZIndex = 2
+				ToggleTextButton.MouseButton1Click:Connect(handleToggle)
+				HitBox.MouseButton1Click:Connect(handleToggle)
+				ToggleButtonImageButton.MouseButton1Click:Connect(handleToggle)
 
-			local DropdownList = Instance.new("ScrollingFrame")
-			DropdownList.Parent = DTFrame.Parent
-			DropdownList.BackgroundColor3 = Theme.BackgroundColor
-			DropdownList.BorderSizePixel = 0
-			DropdownList.Size = UDim2.new(DTFrame.Size.X.Scale, 0, 0, 0)
-			DropdownList.Visible = false
-			DropdownList.ScrollingDirection = Enum.ScrollingDirection.Y
-			DropdownList.ScrollBarThickness = 4
-			DropdownList.ZIndex = 10
-			addCorner(DropdownList, Layout.ElementCorner)
-			addStroke(DropdownList, 1.5, Theme.AccentColor)
+				ApplyHoverEffects(ToggleTextButton, ToggleFrame)
 
-			DTFrame:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
-				DropdownList.Position = UDim2.fromOffset(DTFrame.AbsolutePosition.X, DTFrame.AbsolutePosition.Y + DTFrame.AbsoluteSize.Y + 5)
-			end)
-			local UIGridLayout = Instance.new("UIGridLayout")
-			UIGridLayout.FillDirection = Enum.FillDirection.Horizontal
-			UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-			UIGridLayout.Parent = DropdownList
-			local function toggleListVisibility(forceState)
-				local shouldBeVisible = forceState ~= nil and forceState or not listVisible
-				if shouldBeVisible == listVisible then return end
-				listVisible = shouldBeVisible
-				if listVisible then
-					local numRows = math.ceil(#items / itemsPerRow)
-					local newHeight = (numRows * 35) + ((numRows - 1) * 5)
-					local finalHeight = math.min(newHeight, 140)
-					DropdownList.CanvasSize = UDim2.new(0, 0, 0, newHeight)
-					DropdownList.Visible = true
-					TweenService:Create(DropdownImage, MOTION_EXPAND, {Rotation = 90}):Play()
-					TweenService:Create(DropdownList, MOTION_EXPAND, {Size = UDim2.new(DTFrame.Size.X.Scale, 0, 0, finalHeight)}):Play()
-				else
-					TweenService:Create(DropdownImage, MOTION_EXPAND, {Rotation = 0}):Play()
-					local closeTween = TweenService:Create(DropdownList, MOTION_EXPAND, {Size = UDim2.new(DTFrame.Size.X.Scale, 0, 0, 0)})
-					closeTween:Play()
-					closeTween.Completed:Wait()
-					if not listVisible then DropdownList.Visible = false end
-				end
+				ToggleAPI:update(currentName, currentInfo, currentCallback, currentIcon, currentStyle)
+
+				return ToggleAPI
 			end
 
-			local function createItems()
-				for _, child in ipairs(DropdownList:GetChildren()) do
-					if child:IsA("TextButton") then child:Destroy() end
-				end
-				UIGridLayout.CellSize = UDim2.new(1 / itemsPerRow, -5, 0, 30)
+			function table:addDropdown(name, Info, items, itemsPerRow, callback)
+				local DropdownAPI = {}
+				local UserInputService = game:GetService("UserInputService")
+				local TweenService = game:GetService("TweenService")
+
+				local selectedItem = nil
+				local isExpanded = false
+
+				items = (type(items) == "table" and items) or {}
+				itemsPerRow = (type(itemsPerRow) == "number" and itemsPerRow > 0) and itemsPerRow or 1
+				callback = callback or function() end
+
+				local MOTION_HOVER = TweenInfo.new(0.2, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
+				local MOTION_PRESS = TweenInfo.new(0.1, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
+				local MOTION_EXPAND_OPEN = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+				local MOTION_EXPAND_CLOSE = TweenInfo.new(0.2, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
+
+				local DropdownFrame = Instance.new("Frame")
+				local DropdownButton = Instance.new("TextButton")
+				local DropdownImageButton = Instance.new("ImageButton")
+				local DropdownList = Instance.new("ScrollingFrame")
+				local UIGridLayout = Instance.new("UIGridLayout")
+
+				DropdownFrame.Parent = parent
+				DropdownFrame.BackgroundColor3 = Theme.ButtonColor
+				DropdownFrame.Size = Layout.ButtonSize
+				addCorner(DropdownFrame, Layout.ElementCorner)
+
+				DropdownButton.Parent = DropdownFrame
+				DropdownButton.BackgroundTransparency = 1
+				DropdownButton.Size = Components.TextSize.WithIcon
+				DropdownButton.Text = name or "Dropdown"
+				DropdownButton.TextColor3 = Theme.TextColor
+				DropdownButton.TextScaled = true
+				DropdownButton.TextXAlignment = Enum.TextXAlignment.Left
+
+				DropdownImageButton.Parent = DropdownFrame
+				DropdownImageButton.BackgroundTransparency = 1
+				DropdownImageButton.Position = UDim2.new(0.9, 0, 0, 0)
+				DropdownImageButton.Size = UDim2.new(0.1, 0, 1, 0)
+				DropdownImageButton.Image = "http://www.roblox.com/asset/?id=6031090994"
+				DropdownImageButton.ImageColor3 = Theme.TextColor
+
+				DropdownList.Parent = parent
+				DropdownList.BackgroundColor3 = Theme.BackgroundColor
+				DropdownList.Position = UDim2.new(0, 0, 1, 0)
+				DropdownList.Size = UDim2.new(0.95, 0, 0, 0)
+				DropdownList.ScrollingDirection = Enum.ScrollingDirection.Y
+				DropdownList.Visible = false
+				DropdownList.ScrollBarThickness = 3
+				addCorner(DropdownList, Layout.ElementCorner)
+
+				UIGridLayout.Parent = DropdownList
+				UIGridLayout.CellSize = UDim2.new(1 / itemsPerRow, -10, 0, 30)
 				UIGridLayout.CellPadding = UDim2.new(0, 5, 0, 5)
-				for _, itemText in ipairs(items) do
-					local ItemButton = Instance.new("TextButton")
-					ItemButton.Parent = DropdownList
-					ItemButton.BackgroundColor3 = Theme.ButtonColor
-					ItemButton.Text = itemText
-					ItemButton.TextColor3 = Theme.TextColor
-					ItemButton.TextScaled = true
-					addCorner(ItemButton, Layout.ElementCorner)
-					ItemButton.MouseButton1Click:Connect(function()
-						DropdownAPI:setSelected(itemText)
+				UIGridLayout.FillDirection = Enum.FillDirection.Horizontal
+
+				local function updateButtonText()
+					if selectedItem then
+						DropdownButton.Text = name .. ": " .. tostring(selectedItem)
+					else
+						DropdownButton.Text = name
+					end
+				end
+
+				local function createItems()
+					for _, child in ipairs(DropdownList:GetChildren()) do
+						if child:IsA("TextButton") then child:Destroy() end
+					end
+
+					for _, itemText in pairs(items) do
+						local ItemButton = Instance.new("TextButton")
+						ItemButton.Parent = DropdownList
+						ItemButton.BackgroundColor3 = Theme.ButtonColor
+						ItemButton.Text = tostring(itemText)
+						ItemButton.Size = UDim2.new(1, 0, 0, 30)
+						ItemButton.TextColor3 = Theme.TextColor
+						ItemButton.TextScaled = true
+						ItemButton.BackgroundTransparency = 1
+						ItemButton.TextTransparency = 1
+						addCorner(ItemButton, Layout.ElementCorner)
+
+						ItemButton.MouseButton1Click:Connect(function()
+							selectedItem = itemText
+							updateButtonText()
+							callback(itemText)
+							DropdownAPI.ToggleDropdown(false)
+						end)
+					end
+				end
+
+				function DropdownAPI:ToggleDropdown(forceState)
+					local shouldBeVisible = if forceState ~= nil then forceState else not isExpanded
+					if shouldBeVisible == isExpanded then return end
+
+					isExpanded = shouldBeVisible
+
+					if isExpanded then
+						local numRows = math.ceil(#items / itemsPerRow)
+						local itemHeight = 35
+						local newHeight = numRows * itemHeight
+						local maxHeight = 100
+						local finalHeight = math.min(newHeight, maxHeight)
+						DropdownList.CanvasSize = UDim2.new(1, 0, 0, newHeight)
+						DropdownList.Visible = true
+						TweenService:Create(DropdownImageButton, MOTION_EXPAND_OPEN, {Rotation = 90}):Play()
+						TweenService:Create(DropdownList, MOTION_EXPAND_OPEN, {Size = UDim2.new(DropdownFrame.Size.X.Scale, 0, 0, finalHeight)}):Play()
+
+						for i, child in ipairs(DropdownList:GetChildren()) do
+							if child:IsA("TextButton") then
+								task.delay(0.1 + (i * 0.03), function()
+									if isExpanded then
+										TweenService:Create(child, MOTION_HOVER, {BackgroundTransparency = 0.8, TextTransparency = 0}):Play()
+									end
+								end)
+							end
+						end
+					else
+						TweenService:Create(DropdownImageButton, MOTION_EXPAND_CLOSE, {Rotation = 0}):Play()
+						for _, child in ipairs(DropdownList:GetChildren()) do
+							if child:IsA("TextButton") then
+								TweenService:Create(child, MOTION_PRESS, {BackgroundTransparency = 1, TextTransparency = 1}):Play()
+							end
+						end
+						local closeTween = TweenService:Create(DropdownList, MOTION_EXPAND_CLOSE, {Size = UDim2.new(DropdownFrame.Size.X.Scale, 0, 0, 0)})
+						closeTween.Completed:Connect(function()
+							if not isExpanded then
+								DropdownList.Visible = false
+							end
+						end)
+						closeTween:Play()
+					end
+				end
+
+				DropdownImageButton.MouseButton1Click:Connect(function() DropdownAPI.ToggleDropdown() end)
+				DropdownButton.MouseButton1Click:Connect(function() DropdownAPI.ToggleDropdown() end)
+
+				if Info and Info ~= "" then
+					DropdownImageButton.Position = UDim2.new(0.8, 0, 0, 0)
+					DropdownButton.Size = Components.TextSize.WithTwoIcons
+
+					local InfoImage = Instance.new("ImageButton")
+					InfoImage.Parent = DropdownFrame
+					InfoImage.BackgroundTransparency = 1
+					InfoImage.Position = Components.Image.InfoImagePOS
+					InfoImage.Size = Components.Image.ImageSize
+					InfoImage.Image = "http://www.roblox.com/asset/?id=6026568210"
+					InfoImage.ImageColor3 = Theme.TextColor
+					InfoImage.ZIndex = 2
+					InfoImage.MouseButton1Click:Connect(function()
+						TextInfo.Text = Info
+						if InfoFrame.Size.Y.Scale ~= 0.148 then
+							InfoFrame.Visible = true
+							local tweenSize = TweenService:Create(InfoFrame, MOTION_EXPAND_OPEN, {Size = UDim2.new(0.7133, 0, 0.148, 0)})
+							tweenSize:Play()
+						end
 					end)
 				end
-			end
 
-			function DropdownAPI:newCallback(newCallback) callback = newCallback or function() end end
+				function DropdownAPI:newName(newName)
+					name = newName or name
+					updateButtonText()
+				end
 
-			function DropdownAPI:setItems(newItems)
-				items = newItems or {}
+				function DropdownAPI:addItem(itemToAdd)
+					if itemToAdd == nil then return end
+					table.insert(items, itemToAdd)
+					createItems()
+				end
+
+				function DropdownAPI:removeItem(itemToRemove)
+					if itemToRemove == nil then return end
+					local index = table.find(items, itemToRemove)
+					if index then
+						table.remove(items, index)
+						if selectedItem == itemToRemove then
+							selectedItem = nil
+							updateButtonText()
+						end
+						createItems()
+					end
+				end
+
+				function DropdownAPI:setItems(newItems)
+					if type(newItems) == "table" then
+						items = newItems
+						if selectedItem and not table.find(items, selectedItem) then
+							selectedItem = nil
+							updateButtonText()
+						end
+						createItems()
+					end
+				end
+
+				function DropdownAPI:newCallback(newCallback)
+					callback = newCallback or function() end
+				end
+
+				function DropdownAPI:update(newName, newItems, newCallback)
+					self:newName(newName)
+					self:setItems(newItems)
+					self:newCallback(newCallback)
+				end
+
+				function DropdownAPI:updateDropdown(newName, newInfo, newItems, newItemsPerRow, newCallback)
+					self:update(newName, newInfo, newItems, newCallback)
+					if type(newItemsPerRow) == "number" and newItemsPerRow > 0 then 
+						itemsPerRow = newItemsPerRow
+						UIGridLayout.CellSize = UDim2.new(1 / itemsPerRow, -10, 0, 30)
+					end
+					createItems()
+				end
+
+				function DropdownAPI:getSelected() return selectedItem end
+
+				function DropdownAPI:setSelected(itemToSelect, silent)
+					if table.find(items, itemToSelect) then
+						selectedItem = itemToSelect
+						updateButtonText()
+						if not silent then callback(itemToSelect) end
+					end
+				end
+
+				local clickOutsideConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+					if gameProcessed or not isExpanded then return end
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						local mouseLocation = UserInputService:GetMouseLocation()
+						local clickedOnSelf = false
+						if not clickedOnSelf then
+							DropdownAPI.ToggleDropdown(false)
+						end
+					end
+				end)
+
+				function DropdownAPI:destroy()
+					if clickOutsideConnection then
+						clickOutsideConnection:Disconnect()
+						clickOutsideConnection = nil
+					end
+					DropdownFrame:Destroy()
+					DropdownList:Destroy()
+				end
+
+				updateButtonText()
 				createItems()
+
+				return DropdownAPI
 			end
 
-			function DropdownAPI:getSelected() return selectedItem end
-			function DropdownAPI:setSelected(itemToSelect, silent)
-				if table.find(items, itemToSelect) then
-					selectedItem = itemToSelect
-					DropdownButton.Text = name .. ": " .. itemToSelect
-					toggleListVisibility(false)
+			function table:addSlider(name, Info, BeginValue, Min, Max, callback, GetMode, TextBoxDisable)
+				local SliderAPI = {}
+				callback = callback or function() end
+				BeginValue = type(BeginValue) == "number" and BeginValue or 100
+				Min = type(Min) == "number" and Min or 0
+				Max = type(Max) == "number" and Max or 200
+				if Max <= Min then Max = Min + 1 end
+				local currentValue = BeginValue
+				local MOTION_SLIDE = TweenInfo.new(0.1, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
+
+				local STFrame = CreateBaseComponent(parent)
+
+				local TextLabel = Instance.new("TextLabel")
+				TextLabel.Name = "Text"
+				TextLabel.Parent = STFrame
+				TextLabel.BackgroundTransparency = 1
+				TextLabel.Font = Enum.Font.Gotham
+				TextLabel.Text = name or "Slider"
+				TextLabel.TextColor3 = Theme.TextColor
+				TextLabel.TextScaled = true
+				TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+				TextLabel.ZIndex = 2
+
+				local TextBox = Instance.new("TextBox")
+				TextBox.Name = "Input"
+				TextBox.Parent = STFrame
+				TextBox.BackgroundTransparency = 1
+				TextBox.PlaceholderColor3 = Theme.TextColor
+				TextBox.Text = tostring(math.floor(BeginValue))
+				TextBox.TextColor3 = Theme.TextColor
+				TextBox.Font = Enum.Font.Gotham
+				TextBox.TextScaled = true
+				TextBox.ZIndex = 2
+				addCorner(TextBox, UDim.new(0.15, 0))
+
+				local SliderTrack = Instance.new("Frame")
+				SliderTrack.Name = "SliderTrack"
+				SliderTrack.Parent = STFrame
+				SliderTrack.BackgroundColor3 = Theme.BackgroundColor
+				addCorner(SliderTrack, UDim.new(0.5, 0))
+
+				local FillSlider = Instance.new("Frame")
+				FillSlider.Parent = SliderTrack
+				FillSlider.BackgroundColor3 = Theme.TextColor
+				addCorner(FillSlider, UDim.new(1,0))
+
+				local Trigger = Instance.new("TextButton")
+				Trigger.Name = "Trigger"
+				Trigger.Parent = SliderTrack
+				Trigger.BackgroundTransparency = 1
+				Trigger.Size = UDim2.fromScale(1, 1)
+				Trigger.Text = ""
+				Trigger.ZIndex = 3
+
+				local infoHandler = ManageInfoIcon(STFrame)
+				local function updateSliderVisuals(value)
+					local output = math.clamp((value - Min) / (Max - Min), 0, 1)
+					TweenService:Create(FillSlider, MOTION_SLIDE, {Size = UDim2.new(output, 0, 1, 0)}):Play()
+					if tostring(math.floor(value)) ~= TextBox.Text then
+						TextBox.Text = tostring(math.floor(value))
+					end
+					currentValue = value
+				end
+				function SliderAPI:setValue(newValue, silent)
+					local numValue = math.clamp(newValue, Min, Max)
+					updateSliderVisuals(numValue)
+					if not silent then callback(numValue) end
+				end
+				function SliderAPI:getValue() return currentValue end
+				function SliderAPI:update(newName, newInfo, newMin, newMax, newCallback)
+					name = newName or name
+					Min = newMin or Min
+					Max = newMax or Max
+					callback = newCallback or callback
+					TextLabel.Text = name
+					if Max <= Min then Max = Min + 1 end
+					infoHandler:Update(newInfo, ShowInfo)
+					SliderAPI:setValue(SliderAPI:getValue(), true)
+				end
+				function SliderAPI:destroy()
+					infoHandler:Destroy()
+					STFrame:Destroy()
+				end
+				local isDragging = false
+				Trigger.InputBegan:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						isDragging = true
+						task.spawn(function()
+							while isDragging do
+								local sliderPosX = Trigger.AbsolutePosition.X
+								local sliderSizeX = Trigger.AbsoluteSize.X
+								local output = math.clamp((UserInputService:GetMouseLocation().X - sliderPosX) / sliderSizeX, 0, 1)
+								local value = output * (Max - Min) + Min
+								updateSliderVisuals(value)
+								callback(value)
+								task.wait()
+							end
+						end)
+					end
+				end)
+				UserInputService.InputEnded:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						isDragging = false
+					end
+				end)
+				local function processTextInput()
+					local sanitizedText = TextBox.Text:gsub("%D", "")
+					local numValue = tonumber(sanitizedText) or Min
+					SliderAPI:setValue(numValue, false)
+				end
+				if GetMode then
+					TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+						if not TextBox:IsFocused() then return end
+						local sanitizedText = TextBox.Text:gsub("%D", "")
+						if sanitizedText ~= TextBox.Text then TextBox.Text = sanitizedText end
+						local numValue = tonumber(sanitizedText) or Min
+						local clampedValue = math.clamp(numValue, Min, Max)
+						updateSliderVisuals(clampedValue)
+						callback(clampedValue)
+					end)
+				else
+					TextBox.FocusLost:Connect(processTextInput)
+				end
+				local function updateLayout(hasInfo)
+					if hasInfo then
+						TextLabel.Size = UDim2.new(0.5, 0, 1, 0)
+						TextBox.Position = UDim2.new(0.875, 0, 0.5, 0)
+						TextBox.Size = UDim2.new(0.125, 0, 0.7, 0)
+						TextBox.AnchorPoint = Vector2.new(0.5, 0.5)
+						SliderTrack.Position = UDim2.new(0.5, 0, 0.5, 0)
+						SliderTrack.Size = UDim2.new(0.3, 0, 0.45, 0)
+						SliderTrack.AnchorPoint = Vector2.new(1, 0.5)
+					else
+						TextLabel.Size = UDim2.new(0.4, 0, 1, 0)
+						TextBox.Position = UDim2.new(0.42, 0, 0.5, 0)
+						TextBox.Size = UDim2.new(0.125, 0, 0.7, 0)
+						TextBox.AnchorPoint = Vector2.new(0, 0.5)
+						SliderTrack.Position = UDim2.new(0.55, 0, 0.5, 0)
+						SliderTrack.Size = UDim2.new(0.42, 0, 0.45, 0)
+						SliderTrack.AnchorPoint = Vector2.new(0, 0.5)
+					end
+				end
+				local hasInfo = infoHandler:Update(Info, ShowInfo)
+				updateLayout(hasInfo)
+				updateSliderVisuals(BeginValue)
+				return SliderAPI
+			end
+
+			function table:addTextBox(name, Info, placeholderText, callback, stat, onlyNumbers, onlyLetters)
+				local TextBoxAPI = {}
+				name = name or "TextBox"
+				Info = Info or ""
+				placeholderText = typeof(placeholderText) == "string" and placeholderText or ""
+				callback = callback or function() end
+				stat = stat or false
+
+				local TextBoxFrame = CreateBaseComponent(parent)
+
+				local FloatingLabel = Instance.new("TextLabel")
+				FloatingLabel.Parent = TextBoxFrame
+				FloatingLabel.BackgroundTransparency = 1
+				FloatingLabel.Size = UDim2.new(0.813, 0, 1, 0)
+				FloatingLabel.Text = name
+				FloatingLabel.TextColor3 = Theme.TextColor
+				FloatingLabel.TextScaled = true
+				FloatingLabel.TextXAlignment = Enum.TextXAlignment.Left
+				FloatingLabel.ZIndex = 3
+
+				local TextBox = Instance.new("TextBox")
+				TextBox.Name = "Input"
+				TextBox.Parent = TextBoxFrame
+				TextBox.BackgroundColor3 = Theme.AccentColor
+				TextBox.Size = UDim2.new(0.15, 0, 0.8, 0)
+				TextBox.Position = UDim2.new(0.83, 0, 0.1, 0)
+				TextBox.PlaceholderText = placeholderText
+				TextBox.PlaceholderColor3 = Theme.TextColor
+				TextBox.Text = ""
+				TextBox.TextColor3 = Theme.TextColor
+				TextBox.Font = Enum.Font.Gotham
+				TextBox.TextScaled = true
+				TextBox.ClearTextOnFocus = false
+				TextBox.ZIndex = 2
+				addCorner(TextBox, UDim.new(0.15,0))
+				local Stroke = addStroke(TextBox, 1.5, Theme.BackgroundColor)
+
+				local infoHandler = ManageInfoIcon(TextBoxFrame, Info)
+
+				if stat then
+					TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+						if onlyLetters and TextBox.Text:match("%d") then
+							TextBox.Text = ""
+						elseif onlyNumbers and TextBox.Text:match("%D") then
+							TextBox.Text = ""
+						else
+							callback(TextBox.Text)
+						end
+					end)
+				else
+					TextBox.FocusLost:Connect(function()
+						if onlyLetters and TextBox.Text:match("%d") then
+							TextBox.Text = ""
+						elseif onlyNumbers and TextBox.Text:match("%D") then
+							TextBox.Text = ""
+						else
+							callback(TextBox.Text)
+						end
+					end)
+				end
+
+				if Info and Info ~= "" then
+					FloatingLabel.Size = UDim2.new(0.713, 0, 1, 0)
+					TextBox.Position = UDim2.new(0.73, 0, 0.1, 0)
+				end
+
+				function TextBoxAPI:setText(text, silent)
+					TextBox.Text = text or ""
+					callback(TextBox.Text)
+				end
+
+				function TextBoxAPI:destroy()
+					TextBoxFrame:Destroy()
+				end
+
+				return TextBoxAPI
+			end
+
+			function table:addSB(name, buttonText, beginValue, min, max, sliderCallback, buttonCallback, getMode, textBoxDisable)
+				local SliderButtonAPI = {}
+				local updateSliderVisuals, processTextInput
+				local isDragging = false
+				local currentValue
+				local MOTION_SLIDE = TweenInfo.new(0.1, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
+
+				name = name or "SliderButton"
+				sliderCallback = sliderCallback or function() end
+				buttonCallback = buttonCallback or function() end
+				buttonText = buttonText or "Action"
+				beginValue = type(beginValue) == "number" and beginValue or 100
+				min = type(min) == "number" and min or 0
+				max = type(max) == "number" and max or 200
+				if max <= min then max = min + 1 end
+				currentValue = beginValue
+
+				local STFrame = CreateBaseComponent(parent)
+
+				local TextLabel = Instance.new("TextLabel")
+				TextLabel.Name = "Text"
+				TextLabel.Parent = STFrame
+				TextLabel.BackgroundTransparency = 1
+				TextLabel.Font = Enum.Font.Gotham
+				TextLabel.Text = name
+				TextLabel.TextColor3 = Theme.TextColor
+				TextLabel.TextScaled = true
+				TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+				TextLabel.ZIndex = 2
+				TextLabel.Size = UDim2.new(0.3, 0, 1, 0)
+				TextLabel.Position = UDim2.new(0, 0, 0, 0)
+
+				local SliderTrack = Instance.new("Frame")
+				SliderTrack.Name = "SliderTrack"
+				SliderTrack.Parent = STFrame
+				SliderTrack.BackgroundColor3 = Theme.AccentColor
+				SliderTrack.Size = UDim2.new(0.3, 0, 0.35, 0)
+				SliderTrack.Position = UDim2.new(0.42, 0, 0.225, 0)
+				addCorner(SliderTrack, UDim.new(0.5, 0))
+
+				local FillSlider = Instance.new("Frame")
+				FillSlider.Parent = SliderTrack
+				FillSlider.BackgroundColor3 = Theme.TextColor
+				addCorner(FillSlider, UDim.new(1,0))
+
+				local Trigger = Instance.new("TextButton")
+				Trigger.Name = "Trigger"
+				Trigger.Parent = SliderTrack
+				Trigger.BackgroundTransparency = 1
+				Trigger.Size = UDim2.fromScale(1, 1)
+				Trigger.Text = ""
+				Trigger.ZIndex = 3
+
+				local TextBox = Instance.new("TextBox")
+				TextBox.Name = "Input"
+				TextBox.Parent = STFrame
+				TextBox.BackgroundTransparency = 1
+				TextBox.PlaceholderColor3 = Theme.TextColor
+				TextBox.Text = tostring(math.floor(beginValue))
+				TextBox.TextColor3 = Theme.TextColor
+				TextBox.Font = Enum.Font.Gotham
+				TextBox.TextScaled = true
+				TextBox.ZIndex = 2
+				TextBox.ClearTextOnFocus = false
+				TextBox.Size = UDim2.new(0.125, 0, 0.8, 0)
+				TextBox.Position = UDim2.new(0.3, 0, 0.1, 0)
+				addCorner(TextBox, UDim.new(0.15, 0))
+
+				local ActionButton = Instance.new("TextButton")
+				ActionButton.Name = "ActionButton"
+				ActionButton.Parent = STFrame
+				ActionButton.BackgroundColor3 = Theme.AccentColor
+				ActionButton.TextColor3 = Theme.TextColor
+				ActionButton.Text = buttonText
+				ActionButton.Font = Enum.Font.Gotham
+				ActionButton.TextScaled = true
+				ActionButton.ZIndex = 2
+				ActionButton.Size = UDim2.new(0.15, 0, 0.8, 0)
+				ActionButton.Position = UDim2.new(0.8, 0, 0.1, 0)
+				addCorner(ActionButton, UDim.new(0.15, 0))
+
+				updateSliderVisuals = function(value)
+					local output = math.clamp((value - min) / (max - min), 0, 1)
+					TweenService:Create(FillSlider, MOTION_SLIDE, {Size = UDim2.new(output, 0, 1, 0)}):Play()
+					if tostring(math.floor(value)) ~= TextBox.Text then
+						TextBox.Text = tostring(math.floor(value))
+					end
+					currentValue = value
+				end
+
+				processTextInput = function()
+					local sanitizedText = TextBox.Text:gsub("%D", "")
+					local numValue = tonumber(sanitizedText) or min
+					SliderButtonAPI:setValue(numValue, false)
+				end
+
+				function SliderButtonAPI:setValue(newValue, silent)
+					local numValue = math.clamp(newValue, min, max)
+					updateSliderVisuals(numValue)
+					if not silent then sliderCallback(numValue) end
+				end
+				function SliderButtonAPI:getValue() return currentValue end
+				function SliderButtonAPI:update(newOptions)
+					newOptions = newOptions or {}
+					name = newOptions.name or name
+					min = newOptions.min or min
+					max = newOptions.max or max
+					buttonText = newOptions.buttonText or buttonText
+					TextLabel.Text = name
+					ActionButton.Text = buttonText
+					if max <= min then max = min + 1 end
+					SliderButtonAPI:setValue(SliderButtonAPI:getValue(), true)
+				end
+				function SliderButtonAPI:destroy()
+					STFrame:Destroy()
+				end
+
+				Trigger.InputBegan:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						isDragging = true
+						task.spawn(function()
+							while isDragging do
+								local sliderPosX = Trigger.AbsolutePosition.X
+								local sliderSizeX = Trigger.AbsoluteSize.X
+								local output = math.clamp((UserInputService:GetMouseLocation().X - sliderPosX) / sliderSizeX, 0, 1)
+								local value = output * (max - min) + min
+								updateSliderVisuals(value)
+								sliderCallback(value)
+								task.wait()
+							end
+						end)
+					end
+				end)
+				UserInputService.InputEnded:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						isDragging = false
+					end
+				end)
+
+				if getMode then
+					TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+						if not TextBox:IsFocused() then return end
+						local sanitizedText = TextBox.Text:gsub("%D", "")
+						if sanitizedText ~= TextBox.Text then TextBox.Text = sanitizedText end
+						local numValue = tonumber(sanitizedText) or min
+						local clampedValue = math.clamp(numValue, min, max)
+						updateSliderVisuals(clampedValue)
+						sliderCallback(clampedValue)
+					end)
+				else
+					TextBox.FocusLost:Connect(processTextInput)
+				end
+
+				ActionButton.MouseButton1Click:Connect(buttonCallback)
+
+				updateSliderVisuals(beginValue)
+
+				return SliderButtonAPI
+			end
+
+			function table:addDT(name, items, itemsPerRow, callback)
+				local DropdownAPI = {}
+				name = name or "Dropdown"
+				items = items or {}
+				itemsPerRow = itemsPerRow or 1
+				callback = callback or function() end
+				local toggled = false
+				local selectedItem = nil
+				local listVisible = false
+
+				local DTFrame = CreateBaseComponent(parent)
+				local Stroke = DTFrame:FindFirstChildOfClass("UIStroke")
+				local ScaleController = Instance.new("UIScale")
+				ScaleController.Parent = DTFrame
+
+				local DropdownButton = Instance.new("TextButton")
+				DropdownButton.Parent = DTFrame
+				DropdownButton.BackgroundTransparency = 1
+				DropdownButton.Size = Components.TextSize.WithTwoIcons
+				DropdownButton.Text = name
+				DropdownButton.TextColor3 = Theme.TextColor
+				DropdownButton.Font = Enum.Font.Gotham
+				DropdownButton.TextScaled = true
+				DropdownButton.TextXAlignment = Enum.TextXAlignment.Left
+				DropdownButton.ZIndex = 2
+
+				local DropdownImage = Instance.new("ImageButton")
+				DropdownImage.Parent = DTFrame
+				DropdownImage.BackgroundTransparency = 1
+				DropdownImage.Position = UDim2.new(0.9, 0, 0, 0)
+				DropdownImage.Size = UDim2.new(0.1, 0, 1, 0)
+				DropdownImage.Image = "http://www.roblox.com/asset/?id=6031090994"
+				DropdownImage.ImageColor3 = Theme.TextColor
+				DropdownImage.ZIndex = 2
+
+				local ToggleButton = Instance.new("ImageButton")
+				ToggleButton.Parent = DTFrame
+				ToggleButton.BackgroundTransparency = 1
+				ToggleButton.Position = UDim2.new(0.8, 0, 0, 0)
+				ToggleButton.Size = UDim2.new(0.1, 0, 1, 0)
+				ToggleButton.Image = "http://www.roblox.com/asset/?id=6031068433"
+				ToggleButton.ImageColor3 = Theme.TextColor
+				ToggleButton.ZIndex = 2
+
+				local DropdownList = Instance.new("ScrollingFrame")
+				DropdownList.Parent = DTFrame.Parent
+				DropdownList.BackgroundColor3 = Theme.BackgroundColor
+				DropdownList.BorderSizePixel = 0
+				DropdownList.Size = UDim2.new(DTFrame.Size.X.Scale, 0, 0, 0)
+				DropdownList.Visible = false
+				DropdownList.ScrollingDirection = Enum.ScrollingDirection.Y
+				DropdownList.ScrollBarThickness = 4
+				DropdownList.ZIndex = 10
+				addCorner(DropdownList, Layout.ElementCorner)
+				addStroke(DropdownList, 1.5, Theme.AccentColor)
+
+				DTFrame:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
+					DropdownList.Position = UDim2.fromOffset(DTFrame.AbsolutePosition.X, DTFrame.AbsolutePosition.Y + DTFrame.AbsoluteSize.Y + 5)
+				end)
+				local UIGridLayout = Instance.new("UIGridLayout")
+				UIGridLayout.FillDirection = Enum.FillDirection.Horizontal
+				UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+				UIGridLayout.Parent = DropdownList
+				local function toggleListVisibility(forceState)
+					local shouldBeVisible = forceState ~= nil and forceState or not listVisible
+					if shouldBeVisible == listVisible then return end
+					listVisible = shouldBeVisible
+					if listVisible then
+						local numRows = math.ceil(#items / itemsPerRow)
+						local newHeight = (numRows * 35) + ((numRows - 1) * 5)
+						local finalHeight = math.min(newHeight, 140)
+						DropdownList.CanvasSize = UDim2.new(0, 0, 0, newHeight)
+						DropdownList.Visible = true
+						TweenService:Create(DropdownImage, MOTION_EXPAND, {Rotation = 90}):Play()
+						TweenService:Create(DropdownList, MOTION_EXPAND, {Size = UDim2.new(DTFrame.Size.X.Scale, 0, 0, finalHeight)}):Play()
+					else
+						TweenService:Create(DropdownImage, MOTION_EXPAND, {Rotation = 0}):Play()
+						local closeTween = TweenService:Create(DropdownList, MOTION_EXPAND, {Size = UDim2.new(DTFrame.Size.X.Scale, 0, 0, 0)})
+						closeTween:Play()
+						closeTween.Completed:Wait()
+						if not listVisible then DropdownList.Visible = false end
+					end
+				end
+
+				local function createItems()
+					for _, child in ipairs(DropdownList:GetChildren()) do
+						if child:IsA("TextButton") then child:Destroy() end
+					end
+					UIGridLayout.CellSize = UDim2.new(1 / itemsPerRow, -5, 0, 30)
+					UIGridLayout.CellPadding = UDim2.new(0, 5, 0, 5)
+					for _, itemText in ipairs(items) do
+						local ItemButton = Instance.new("TextButton")
+						ItemButton.Parent = DropdownList
+						ItemButton.BackgroundColor3 = Theme.ButtonColor
+						ItemButton.Text = itemText
+						ItemButton.TextColor3 = Theme.TextColor
+						ItemButton.TextScaled = true
+						addCorner(ItemButton, Layout.ElementCorner)
+						ItemButton.MouseButton1Click:Connect(function()
+							DropdownAPI:setSelected(itemText)
+						end)
+					end
+				end
+
+				function DropdownAPI:newCallback(newCallback) callback = newCallback or function() end end
+
+				function DropdownAPI:setItems(newItems)
+					items = newItems or {}
+					createItems()
+				end
+
+				function DropdownAPI:getSelected() return selectedItem end
+				function DropdownAPI:setSelected(itemToSelect, silent)
+					if table.find(items, itemToSelect) then
+						selectedItem = itemToSelect
+						DropdownButton.Text = name .. ": " .. itemToSelect
+						toggleListVisibility(false)
+						if not silent then callback(toggled, selectedItem) end
+					end
+				end
+
+				function DropdownAPI:getToggled() return toggled end
+				function DropdownAPI:setToggled(newState, silent)
+					toggled = newState
+					ToggleButton.Image = if toggled then "http://www.roblox.com/asset/?id=6031068426" else "http://www.roblox.com/asset/?id=6031068433"
 					if not silent then callback(toggled, selectedItem) end
 				end
+
+				function DropdownAPI:newName(newName)
+					name = newName or name
+					DropdownButton.Text = name .. ": " .. (selectedItem or "")
+				end
+
+				function DropdownAPI:updateDropdown(newName, newItems, newitemsPerRow, newCallback)
+					self:newName(newName)
+					self:setItems(newItems)
+					self:newCallback(newCallback)
+
+					local numRows = math.ceil(#newItems / newitemsPerRow)
+					DropdownList.CanvasSize = UDim2.new(0, 0, 0, numRows * 35) + ((numRows - 1) * 5)
+					DropdownList.Visible = true
+					TweenService:Create(DropdownImage, MOTION_EXPAND, {Rotation = 90}):Play()
+					TweenService:Create(DropdownList, MOTION_EXPAND, {Size = UDim2.new(DTFrame.Size.X.Scale, 0, 0, math.min(numRows * 35 + ((numRows - 1) * 5), 140))}):Play()
+
+				end
+
+				function DropdownAPI:destroy()
+					DTFrame:Destroy()
+					DropdownList:Destroy()
+				end
+
+				ToggleButton.MouseButton1Click:Connect(function() DropdownAPI:setToggled(not toggled) end)
+				DropdownButton.MouseButton1Click:Connect(function() toggleListVisibility() end)
+				DropdownImage.MouseButton1Click:Connect(function() toggleListVisibility() end)
+
+				ApplyHoverEffects(DTFrame, DTFrame)
+				createItems()
+				return DropdownAPI
 			end
 
-			function DropdownAPI:getToggled() return toggled end
-			function DropdownAPI:setToggled(newState, silent)
-				toggled = newState
-				ToggleButton.Image = if toggled then "http://www.roblox.com/asset/?id=6031068426" else "http://www.roblox.com/asset/?id=6031068433"
-				if not silent then callback(toggled, selectedItem) end
+			function table:addLabel(text)
+				local labelAPI = {}
+				local labelFrame = CreateBaseComponent(parent)
+				labelFrame.BackgroundTransparency = 1
+
+				local label = Instance.new("TextLabel")
+				label.Size = UDim2.fromScale(1, 1)
+				label.Text = text or "Label"
+				label.TextColor3 = Theme.TextColor
+				label.TextScaled = true
+				label.BackgroundTransparency = 1
+				label.Parent = labelFrame
+
+				function labelAPI:updateLabel(newText) label.Text = newText or label.Text end
+				function labelAPI:getInstance() return labelFrame end
+				function labelAPI:destroy() labelFrame:Destroy() end
+				return labelAPI
 			end
 
-			function DropdownAPI:newName(newName)
-				name = newName or name
-				DropdownButton.Text = name .. ": " .. (selectedItem or "")
+			function table:addSection(text)
+				local sectionAPI = {}
+
+				local Section = Instance.new("TextLabel")
+				Section.Size = Layout.ButtonSize
+				Section.BackgroundColor3 = Theme.ButtonColor
+				Section.Text = text or "Section"
+				Section.TextColor3 = Theme.TextColor
+				Section.TextScaled = true
+				Section.Parent = parent
+				addCorner(Section, Layout.ElementCorner)
+
+				function sectionAPI:updateSection(newText) Section.Text = "  " .. (newText or Section.Text) end
+				function sectionAPI:getInstance() return Section end
+				function sectionAPI:destroy() Section:Destroy() end
+				return sectionAPI
 			end
 
-			function DropdownAPI:updateDropdown(newName, newItems, newitemsPerRow, newCallback)
-				self:newName(newName)
-				self:setItems(newItems)
-				self:newCallback(newCallback)
-
-				local numRows = math.ceil(#newItems / newitemsPerRow)
-				DropdownList.CanvasSize = UDim2.new(0, 0, 0, numRows * 35) + ((numRows - 1) * 5)
-				DropdownList.Visible = true
-				TweenService:Create(DropdownImage, MOTION_EXPAND, {Rotation = 90}):Play()
-				TweenService:Create(DropdownList, MOTION_EXPAND, {Size = UDim2.new(DTFrame.Size.X.Scale, 0, 0, math.min(numRows * 35 + ((numRows - 1) * 5), 140))}):Play()
-
+			function table:addSeparator()
+				local separatorFrame = Instance.new("Frame")
+				separatorFrame.Name = "Separator"
+				separatorFrame.Parent = parent
+				separatorFrame.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+				separatorFrame.BorderSizePixel = 0
+				separatorFrame.Size = UDim2.new(0.95, 0, 0, 0.1) 
+				return separatorFrame
 			end
 
-			function DropdownAPI:destroy()
-				DTFrame:Destroy()
-				DropdownList:Destroy()
-			end
-
-			ToggleButton.MouseButton1Click:Connect(function() DropdownAPI:setToggled(not toggled) end)
-			DropdownButton.MouseButton1Click:Connect(function() toggleListVisibility() end)
-			DropdownImage.MouseButton1Click:Connect(function() toggleListVisibility() end)
-
-			ApplyHoverEffects(DTFrame, DTFrame)
-			createItems()
-			return DropdownAPI
-		end
-
-		local function CreateLabel(parent, text)
-			local labelAPI = {}
-			local labelFrame = CreateBaseComponent(parent)
-			labelFrame.BackgroundTransparency = 1
-
-			local label = Instance.new("TextLabel")
-			label.Size = UDim2.fromScale(1, 1)
-			label.Text = text or "Label"
-			label.TextColor3 = Theme.TextColor
-			label.TextScaled = true
-			label.BackgroundTransparency = 1
-			label.Parent = labelFrame
-
-			function labelAPI:updateLabel(newText) label.Text = newText or label.Text end
-			function labelAPI:getInstance() return labelFrame end
-			function labelAPI:destroy() labelFrame:Destroy() end
-			return labelAPI
-		end
-
-		local function CreateSection(parent, text)
-			local sectionAPI = {}
-
-			local Section = Instance.new("TextLabel")
-			Section.Size = Layout.ButtonSize
-			Section.BackgroundColor3 = Theme.ButtonColor
-			Section.Text = text or "Section"
-			Section.TextColor3 = Theme.TextColor
-			Section.TextScaled = true
-			Section.Parent = parent
-			addCorner(Section, Layout.ElementCorner)
-
-			function sectionAPI:updateSection(newText) Section.Text = "  " .. (newText or Section.Text) end
-			function sectionAPI:getInstance() return Section end
-			function sectionAPI:destroy() Section:Destroy() end
-			return sectionAPI
 		end
 
 		local EI = {}
 
-		function EI:addButton(name, Info, callback)
-			return CreateStyledButton(tabContent, name, Info, callback)
-		end
+		addAllMatrials(EI, tabContent)
 
-		function EI:addToggle(name, Info, callback, Icon, style)
-			return CreateStyledToggle(tabContent, name, Info, callback, Icon, style)
-		end
+		local CreateLogicFrameButton, CreateActualRow
 
-		function EI:addDropdown(name, Info, items, itemsPerRow, callback)
-			return CreateStyledDropdown(tabContent, name, Info, items, itemsPerRow, callback)
-		end
+		CreateLogicFrameButton = function(name, Info, parent, frame)
+			local FBE = {}
+			local name = name or "ButtonFrame"
 
-		function EI:addSlider(name, Info, BeginValue, Min, Max, callback, GetMode, TextBoxDisable)
-			CreateStyledSlider(tabContent, name, Info, BeginValue, Min, Max, callback, GetMode, TextBoxDisable)
-		end
+			local ButtonContent = Instance.new("Frame")
+			ButtonContent.Size = UDim2.new(1, 0, 1, 0)
+			ButtonContent.Position = UDim2.new(0, 0, 0, 0)
+			ButtonContent.BackgroundColor3 = Theme.BackgroundColor
+			ButtonContent.BackgroundTransparency = 1
+			ButtonContent.Visible = false
+			ButtonContent.Parent = tabContentScroll
+			addCorner(ButtonContent, UDim.new(0, 8))
+			tabs[#tabs + 1] = ButtonContent
 
-		function EI:addSB(name, info, beginValue, min, max, sliderCallback, buttonCallback, getMode, textBoxDisable)
-			CreateStyledSliderButton(tabContent, name, info, beginValue, min, max, sliderCallback, buttonCallback, getMode, textBoxDisable)
-		end
+			local ButtonContentLayout = Instance.new("UIListLayout")
+			ButtonContentLayout.Parent = ButtonContent
+			ButtonContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+			ButtonContentLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+			ButtonContentLayout.Padding = UDim.new(0, 5)
 
-		function EI:addTextBox(name, Info, placeholderText, callback, stat, onlyNumbers, onlyLetters)
-			local options = {
-				stat = stat,
-				onlyNumbers = onlyNumbers,
-				onlyLetters = onlyLetters
-			}
-			return CreateStyledTextBox(tabContent, name, Info, placeholderText, options, callback)
-		end
+			local ButtonFrame = Instance.new("Frame")
+			ButtonFrame.Parent = parent
+			ButtonFrame.BackgroundColor3 = Theme.ButtonColor
+			ButtonFrame.Size = Layout.ButtonSize
+			addCorner(ButtonFrame, Layout.ElementCorner)
 
-		function EI:addDT(name, items, itemsPerRow, callback)
-			return CreateDropdownToggle(tabContent, name, items, itemsPerRow, callback)
-		end
+			local Button = Instance.new("TextButton")
+			Button.BackgroundTransparency = 1
+			Button.Position = UDim2.new(0.05, 0, 0, 0)
+			Button.Size = Components.TextSize.WithIcon
+			Button.Text = name
+			Button.TextColor3 = Theme.TextColor
+			Button.TextScaled = true
+			Button.TextXAlignment = Enum.TextXAlignment.Left
+			Button.Parent = ButtonFrame
+			Button.MouseButton1Click:Connect(function() 
+				for _, tab in pairs(tabs) do
+					tab.Visible = false
+				end
 
-		function EI:addLabel(text)
-			return CreateLabel(tabContent, text)
-		end
+				updateCanvasSize(ButtonContent)
+				ButtonContent.Visible = true
+			end)
 
-		function EI:addSection(text)
-			return CreateSection(tabContent, text)
-		end
+			local arrow = Instance.new("TextLabel")
+			arrow.BackgroundTransparency = 1
+			arrow.Position = UDim2.new(0.9, 0, 0, 0)
+			arrow.Size = UDim2.new(0.1, 0, 1, 0)
+			arrow.Text = "→"
+			arrow.TextColor3 = Theme.TextColor
+			arrow.TextScaled = true
+			arrow.Parent = ButtonFrame
 
-		function EI:addFrameButton(name, Info, parent)
 
-			local function CreateLogic(name, Info, parent, scrollParent, tabsTable)
-				local FBE = {}
+			local Image = Instance.new("ImageButton")
+			Image.Parent = ButtonFrame
+			Image.BackgroundTransparency = 1
+			Image.Position = Components.Image.InfoImagePOS
+			Image.Size = Components.Image.ImageSize
+			Image.Image = "http://www.roblox.com/asset/?id=6026568210"
+			Image.ImageColor3 = Theme.TextColor
 
-				local ButtonContent = Instance.new("Frame")
-				ButtonContent.Size = UDim2.new(1, 0, 1, 0)
-				ButtonContent.Position = UDim2.new(0, 0, 0, 0)
-				ButtonContent.BackgroundColor3 = Theme.BackgroundColor
-				ButtonContent.BackgroundTransparency = 1
-				ButtonContent.Visible = false
-				ButtonContent.Parent = scrollParent
-				addCorner(ButtonContent, UDim.new(0, 8))
-				tabsTable[#tabsTable + 1] = ButtonContent
-				
-				local ButtonContentLayout = Instance.new("UIListLayout")
-				ButtonContentLayout.Parent = ButtonContent
-				ButtonContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-				ButtonContentLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-				ButtonContentLayout.Padding = UDim.new(0, 5)
-
-				local ButtonFrame = Instance.new("Frame")
-				ButtonFrame.Parent = parent
-				ButtonFrame.BackgroundColor3 = Theme.ButtonColor
-				ButtonFrame.Size = Layout.ButtonSize
-				addCorner(ButtonFrame, Layout.ElementCorner)
-
-				local Button = Instance.new("TextButton")
-				Button.BackgroundTransparency = 1
-				Button.Position = UDim2.new(0.015, 0, 0, 0)
-				Button.Size = Components.TextSize.WithIcon
-				Button.Text = name or "Button"
-				Button.TextColor3 = Theme.TextColor
-				Button.TextScaled = true
-				Button.TextXAlignment = Enum.TextXAlignment.Left
-				Button.Parent = ButtonFrame
-				Button.MouseButton1Click:Connect(function() 
-					for _, tab in pairs(tabsTable) do
-						tab.Visible = false
+			if Info and Info ~= "" then
+				Image.MouseButton1Click:Connect(function()
+					TextInfo.Text = Info
+					if not InfoFrame.Visible then
+						InfoFrame.Visible = true
+						local tweenSize = TweenService:Create(InfoFrame, Animation.TweenInfo, {Size = UDim2.new(0.7133, 0,0.148, 0)})
+						tweenSize:Play()
 					end
-					scrollParent.CanvasSize = UDim2.new(1, 0, 0, (#ButtonContent:GetChildren() * 35) - (2 * 35) + 10)
-					ButtonContent.Visible = true
 				end)
-
-				local arrow = Instance.new("TextLabel")
-				arrow.BackgroundTransparency = 1
-				arrow.Position = UDim2.new(0.9, 0, 0, 0)
-				arrow.Size = UDim2.new(0.1, 0, 1, 0)
-				arrow.Text = "→"
-				arrow.TextColor3 = Theme.TextColor
-				arrow.TextScaled = true
-				arrow.Parent = ButtonFrame
-				
-
-				local Image = Instance.new("ImageButton")
-				Image.Parent = ButtonFrame
-				Image.BackgroundTransparency = 1
-				Image.Position = Components.Image.InfoImagePOS
-				Image.Size = Components.Image.ImageSize
-				Image.Image = "http://www.roblox.com/asset/?id=6026568210"
-				Image.ImageColor3 = Theme.TextColor
-
-				if Info and Info ~= "" then
-					Image.MouseButton1Click:Connect(function()
-						TextInfo.Text = Info
-						if not InfoFrame.Visible then
-							InfoFrame.Visible = true
-							local tweenSize = TweenService:Create(InfoFrame, Animation.TweenInfo, {Size = UDim2.new(0.7133, 0,0.148, 0)})
-							tweenSize:Play()
-						end
-					end)
-				else
-					Button.Size = Components.TextSize.Full
-					Image:Destroy()
-				end
-
-
-				CreateStyledButton(ButtonContent, "← Back", "", function()
-					for _, tab in pairs(tabsTable) do
-						tab.Visible = false
-					end
-					tabContent.Visible = true
-					tabContentScroll.CanvasSize = UDim2.new(0, 0, 0, contentLayout.AbsoluteContentSize.Y + 20)
-				end)
-
-				function FBE:updateFrameButton(name, Info)
-
-					if name and name ~= "" then
-						Button.Text = name
-					end
-
-					if Info and Info ~= "" then
-						if Image then
-							Image.MouseButton1Click:Connect(function()
-								TextInfo.Text = Info
-							end)
-						else
-							local Image = Instance.new("ImageButton")
-							Image.BackgroundTransparency = 1
-							Image.Position = Components.Image.InfoImagePOS
-							Image.Size = Components.Image.ImageSize
-							Image.Image = "http://www.roblox.com/asset/?id=6026568210"
-							Image.ImageColor3 = Theme.TextColor
-							Image.MouseButton1Click:Connect(function()
-								TextInfo.Text = Info
-								if InfoFrame.Size.Y ~= {0.148, 0} then
-									InfoFrame.Visible = true
-									local tweenSize = TweenService:Create(InfoFrame, Animation.TweenInfo, {Size = UDim2.new(0.7133, 0,0.148, 0)})
-									tweenSize:Play()
-								end
-							end)
-						end
-					end
-				end
-
-				function FBE:addButton(name, Info, callback)
-					return CreateStyledButton(ButtonContent, name, Info, callback)
-				end
-
-				function FBE:addToggle(name, Info, callback, Icon, style)
-					return CreateStyledToggle(ButtonContent, name, Info, callback, Icon, style)
-				end
-
-				function FBE:addDropdown(name, Info, items, itemsPerRow, callback)
-					return CreateStyledDropdown(ButtonContent, name, Info, items, itemsPerRow, callback)
-				end
-
-				function FBE:addSlider(name, Info, BeginValue, Min, Max, callback, GetMode, TextBoxDisable)
-					CreateStyledSlider(ButtonContent, name, Info, BeginValue, Min, Max, callback, GetMode, TextBoxDisable)
-				end
-
-				function FBE:addTextBox(name, Info, placeholderText, callback, stat, onlyNumbers, onlyLetters)
-					local options = {
-						stat = stat,
-						onlyNumbers = onlyNumbers,
-						onlyLetters = onlyLetters
-					}
-					return CreateStyledTextBox(ButtonContent, name, Info, placeholderText, options, callback)
-				end
-
-				function FBE:addDT(name, items, itemsPerRow, callback)
-					return CreateDropdownToggle(ButtonContent, name, items, itemsPerRow, callback)
-				end
-
-				function FBE:addLabel(text)
-					return CreateLabel(ButtonContent, text)
-				end
-
-				function FBE:addSection(text)
-					return CreateSection(ButtonContent, text)
-				end
-
-				function FBE:addRow(FramePerRow, lines)
-					local row = Instance.new("Frame")
-					row.Name = "RFrame"
-					row.Size = UDim2.new(0.95, 0, 0, 30)
-					row.BackgroundTransparency = 1
-					row.Parent = ButtonContent
-
-					local GridLayout = Instance.new("UIGridLayout")
-					GridLayout.CellPadding = UDim2.new(0.02, 0, 0.02, 0)
-					GridLayout.FillDirection = Enum.FillDirection.Horizontal
-					GridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-					GridLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-					GridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-					GridLayout.Parent = row
-
-					local function update()
-						local buttonCount = 0
-						for _, child in ipairs(row:GetChildren()) do
-							if child:IsA("Frame") or child:IsA("TextButton") or child:IsA("ImageButton") then
-								buttonCount = buttonCount + 1
-							end
-						end
-
-						local actualFramePerRow = FramePerRow and math.min(buttonCount, FramePerRow) or buttonCount
-						local totalPaddingScale = (actualFramePerRow - 1) * GridLayout.CellPadding.X.Scale
-						local availableWidthScale = 1 - totalPaddingScale
-						local cellWidthScale = availableWidthScale / actualFramePerRow
-
-						local rowHeight
-						if lines and lines > 0 then
-							rowHeight = 1 / lines
-						else
-							local rowsNeeded = math.ceil(buttonCount / (FramePerRow or buttonCount))
-							rowHeight = 1 / rowsNeeded
-						end
-
-						GridLayout.CellSize = UDim2.new(cellWidthScale, 0, rowHeight, 0)
-					end
-
-					row.ChildAdded:Connect(update)
-					row.ChildRemoved:Connect(update)
-					update()
-
-					local REI = {}
-
-					function REI:addButton(name, Info, callback)
-						return CreateStyledButton(row, name, Info, callback)
-					end
-
-					function REI:addToggle(name, Info, callback, Icon, style)
-						return CreateStyledToggle(row, name, Info, callback, Icon, style)
-					end
-
-					function REI:addDropdown(name, Info, items, itemsPerRow, callback)
-						return CreateStyledDropdown(row, name, Info, items, itemsPerRow, callback)
-					end
-
-					function REI:addSlider(name, Info, BeginValue, Min, Max, callback, GetMode, TextBoxDisable)
-						CreateStyledSlider(row, name, Info, BeginValue, Min, Max, callback, GetMode, TextBoxDisable)
-					end
-
-					function REI:addTextBox(name, Info, placeholderText, callback, stat, onlyNumbers, onlyLetters)
-						local options = {
-							stat = stat,
-							onlyNumbers = onlyNumbers,
-							onlyLetters = onlyLetters
-						}
-						return CreateStyledTextBox(row, name, Info, placeholderText, options, callback)
-					end
-
-					function REI:addDT(name, items, itemsPerRow, callback)
-						return CreateDropdownToggle(row, name, items, itemsPerRow, callback)
-					end
-
-					function REI:addLabel(text)
-						return CreateLabel(row, text)
-					end
-
-					function REI:addSection(text)
-						return CreateSection(row, text)
-					end
-
-					function REI:addFrameButton(name, Info)
-						return EI:addFrameButton(name, Info, row)
-					end
-
-					function REI:addRow(FramePerRow, lines)
-						local rowe = Instance.new("Frame")
-						rowe.Name = "RFrame"
-						rowe.Size = UDim2.new(0.95, 0, 0, 30)
-						rowe.BackgroundTransparency = 1
-						rowe.Parent = row
-
-						local GridLayout = Instance.new("UIGridLayout")
-						GridLayout.CellPadding = UDim2.new(0.02, 0, 0.02, 0)
-						GridLayout.FillDirection = Enum.FillDirection.Horizontal
-						GridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-						GridLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-						GridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-						GridLayout.Parent = rowe
-
-						local function update()
-							local buttonCount = 0
-							for _, child in ipairs(row:GetChildren()) do
-								if child:IsA("Frame") or child:IsA("TextButton") or child:IsA("ImageButton") then
-									print(child)
-									buttonCount = buttonCount + 1
-								end
-							end
-
-							local actualFramePerRow = FramePerRow and math.min(buttonCount, FramePerRow) or buttonCount
-							local totalPaddingScale = (actualFramePerRow - 1) * GridLayout.CellPadding.X.Scale
-							local availableWidthScale = 1 - totalPaddingScale
-							local cellWidthScale = availableWidthScale / actualFramePerRow
-
-							local rowHeight
-							if lines and lines > 0 then
-								rowHeight = 1 / lines
-							else
-								local rowsNeeded = math.ceil(buttonCount / (FramePerRow or buttonCount))
-								rowHeight = 1 / rowsNeeded
-							end
-
-							GridLayout.CellSize = UDim2.new(cellWidthScale, 0, rowHeight, 0)
-						end
-
-						rowe.ChildAdded:Connect(update)
-						rowe.ChildRemoved:Connect(update)
-						update()
-
-						return REI
-					end
-
-					return REI
-				end
-
-				function FBE:addFrameButton(name, Info)
-					return CreateLogic(name, Info, ButtonContent, scrollParent, tabsTable)
-				end
-
-				return FBE
+			else
+				Button.Size = Components.TextSize.Full
+				Image:Destroy()
 			end
 
-			return CreateLogic(name, Info, parent or tabContent, tabContentScroll, tabs)
+
+			CreateStyledButton(ButtonContent, "← Back", "", function()
+				for _, tab in pairs(tabs) do
+					tab.Visible = false
+				end
+				frame.Visible = true
+				updateCanvasSize(parent)
+			end)
+
+			function FBE:updateFrameButton(newname, newInfo)
+				newname = newname or name
+
+				Button.Text = newname
+
+				if newInfo and newInfo ~= "" then
+					if Image then
+						Image.MouseButton1Click:Connect(function()
+							TextInfo.Text = Info
+						end)
+					else
+						local Image = Instance.new("ImageButton")
+						Image.BackgroundTransparency = 1
+						Image.Position = Components.Image.InfoImagePOS
+						Image.Size = Components.Image.ImageSize
+						Image.Image = "http://www.roblox.com/asset/?id=6026568210"
+						Image.ImageColor3 = Theme.TextColor
+						Image.MouseButton1Click:Connect(function()
+							TextInfo.Text = newInfo
+							if InfoFrame.Size.Y ~= {0.148, 0} then
+								InfoFrame.Visible = true
+								local tweenSize = TweenService:Create(InfoFrame, Animation.TweenInfo, {Size = UDim2.new(0.7133, 0,0.148, 0)})
+								tweenSize:Play()
+							end
+						end)
+					end
+				end
+			end
+
+			function FBE:openFrame()
+				for _, tab in pairs(tabs) do
+					tab.Visible = false
+				end
+				ButtonContent.Visible = true
+				updateCanvasSize(ButtonContent)
+			end
+
+			function FBE:destroy()
+				ButtonContent:Destroy()
+				ButtonFrame:Destroy()
+			end
+
+			function FBE:addRow(FramePerRow, lines)
+				return CreateActualRow(ButtonContent, FramePerRow, lines)
+			end
+
+			function FBE:addFrameButton(name, Info)
+				return CreateLogicFrameButton(name, Info, ButtonContent, ButtonContent)
+			end
+
+			addAllMatrials(FBE, ButtonContent)
+
+			return FBE
+		end
+
+		CreateActualRow = function(parent, FramePerRow, lines)
+			local row = Instance.new("Frame")
+			row.Name = "RFrame"
+			row.Size = UDim2.new(0.95, 0, 0, 30)
+			row.BackgroundTransparency = 1
+			row.Parent = parent
+
+			local GridLayout = Instance.new("UIGridLayout")
+			GridLayout.CellPadding = UDim2.new(0.02, 0, 0.02, 0)
+			GridLayout.FillDirection = Enum.FillDirection.Horizontal
+			GridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+			GridLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+			GridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+			GridLayout.Parent = row
+
+			local function update()
+				local visibleChildren = {}
+				for _, child in ipairs(row:GetChildren()) do
+					if child:IsA("GuiObject") and child.Visible then
+						table.insert(visibleChildren, child)
+					end
+				end
+				local buttonCount = #visibleChildren
+
+				if buttonCount == 0 then return end
+
+				local actualFramePerRow = FramePerRow and math.min(buttonCount, FramePerRow) or buttonCount
+				local totalPaddingScale = (actualFramePerRow - 1) * GridLayout.CellPadding.X.Scale
+				local availableWidthScale = 1 - totalPaddingScale
+				local cellWidthScale = availableWidthScale / actualFramePerRow
+
+				local rowHeight
+				if lines and lines > 0 then
+					rowHeight = 1 / lines
+				else
+					local rowsNeeded = math.ceil(buttonCount / (FramePerRow or buttonCount))
+					rowHeight = 1 / rowsNeeded
+				end
+
+				GridLayout.CellSize = UDim2.new(cellWidthScale, 0, rowHeight, 0)
+			end
+
+			row.ChildAdded:Connect(update)
+			row.ChildRemoved:Connect(update)
+			update()
+
+			local REI = {}
+
+			function REI:addButton(name, Info, callback)
+				return CreateStyledButton(row, name, Info, callback)
+			end
+
+			function REI:addFrameButton(name, Info)
+				return CreateLogicFrameButton(name, Info, row)
+			end
+
+			function REI:addRow(newFramePerRow, newLines)
+				return CreateActualRow(row, newFramePerRow, newLines)
+			end
+
+			addAllMatrials(REI, row)
+
+			return REI
+		end
+
+		function EI:addFrameButton(name, Info)
+			return CreateLogicFrameButton(name, Info, tabContent)
 		end
 
 		function EI:addRow(FramePerRow, lines)
-
-			local function CreateActualRow(parent, FramePerRow, lines)
-				local row = Instance.new("Frame")
-				row.Name = "RFrame"
-				row.Size = UDim2.new(0.95, 0, 0, 30)
-				row.BackgroundTransparency = 1
-				row.Parent = parent -- تستخدم المتغير هنا
-
-				local GridLayout = Instance.new("UIGridLayout")
-				GridLayout.CellPadding = UDim2.new(0.02, 0, 0.02, 0)
-				GridLayout.FillDirection = Enum.FillDirection.Horizontal
-				GridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-				GridLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-				GridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-				GridLayout.Parent = row
-
-				local function update()
-					local visibleChildren = {}
-					for _, child in ipairs(row:GetChildren()) do
-						-- نتأكد من أن العنصر مرئي وواجهة مستخدم قبل حسابه
-						if child:IsA("GuiObject") and child.Visible then
-							table.insert(visibleChildren, child)
-						end
-					end
-					local buttonCount = #visibleChildren
-
-					if buttonCount == 0 then return end
-
-					local actualFramePerRow = FramePerRow and math.min(buttonCount, FramePerRow) or buttonCount
-					local totalPaddingScale = (actualFramePerRow - 1) * GridLayout.CellPadding.X.Scale
-					local availableWidthScale = 1 - totalPaddingScale
-					local cellWidthScale = availableWidthScale / actualFramePerRow
-
-					local rowHeight
-					if lines and lines > 0 then
-						rowHeight = 1 / lines
-					else
-						local rowsNeeded = math.ceil(buttonCount / (FramePerRow or buttonCount))
-						rowHeight = 1 / rowsNeeded
-					end
-
-					GridLayout.CellSize = UDim2.new(cellWidthScale, 0, rowHeight, 0)
-				end
-
-				row.ChildAdded:Connect(update)
-				row.ChildRemoved:Connect(update)
-				update()
-
-				local REI = {}
-
-				function REI:addButton(name, Info, callback)
-					return CreateStyledButton(row, name, Info, callback)
-				end
-
-				function REI:addToggle(name, Info, callback, Icon, style)
-					return CreateStyledToggle(row, name, Info, callback, Icon, style)
-				end
-
-				function REI:addDropdown(name, Info, items, itemsPerRow, callback)
-					return CreateStyledDropdown(row, name, Info, items, itemsPerRow, callback)
-				end
-
-				function REI:addSlider(name, Info, BeginValue, Min, Max, callback, GetMode, TextBoxDisable)
-					CreateStyledSlider(row, name, Info, BeginValue, Min, Max, callback, GetMode, TextBoxDisable)
-				end
-
-				function REI:addTextBox(name, Info, placeholderText, callback, stat, onlyNumbers, onlyLetters)
-					local options = {
-						stat = stat,
-						onlyNumbers = onlyNumbers,
-						onlyLetters = onlyLetters
-					}
-					return CreateStyledTextBox(row, name, Info, placeholderText, options, callback)
-				end
-
-				function REI:addDT(name, items, itemsPerRow, callback)
-					return CreateDropdownToggle(row, name, items, itemsPerRow, callback)
-				end
-
-				function REI:addLabel(text)
-					return CreateLabel(row, text)
-				end
-
-				function REI:addSection(text)
-					return CreateSection(row, text)
-				end
-
-				function REI:addFrameButton(name, Info)
-					return EI:addFrameButton(name, Info, row)
-				end
-
-				function REI:addRow(newFramePerRow, newLines)
-					return CreateActualRow(row, newFramePerRow, newLines)
-				end
-
-				return REI
-			end
-
 			return CreateActualRow(tabContent, FramePerRow, lines)
 		end
 
@@ -2670,7 +2426,7 @@ function akdo:createFrame(titletext)
 		underline.Size = UDim2.new(0, 0, 0, 2)
 		underline.Position = UDim2.new(0.5, 0, 1, 0)
 		underline.AnchorPoint = Vector2.new(0.5, 0)
-		underline.BackgroundColor3 = Theme.BorderColor
+		underline.BackgroundColor3 = Theme.TabUnderLineColor
 		underline.BorderSizePixel = 0
 		underline.Parent = tabSettingsButton
 
@@ -2691,7 +2447,7 @@ function akdo:createFrame(titletext)
 			for _, tabsButton in pairs(tabsButtons) do
 				tabsButton.BackgroundColor3 = Theme.ButtonColor
 			end
-			tabContentScroll.CanvasSize = UDim2.new(1, 0, 0, (#tabContent:GetChildren() * 35) - (2 * 35) + 10)
+			updateCanvasSize(tabContent)
 			tabSettingsButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 			tabContent.Visible = true
 			tween.Completed:Wait()
@@ -2704,5 +2460,5 @@ function akdo:createFrame(titletext)
 	end
 
 	return TabsAndStyles
-end		
+end	
 return akdo
